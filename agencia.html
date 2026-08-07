@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title id="titulo-pagina">Agencia de Viajes | Reserva tu pasaje</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+        if (typeof html2canvas === 'undefined') {
+            var script = document.createElement('script');
+            script.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
+            document.head.appendChild(script);
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg: #fafaf9;
+            --surface: #ffffff;
+            --rojo: #e63946;
+            --rojo-oscuro: #c1121f;
+            --rojo-claro: #fef2f2;
+            --verde: #25d366;
+            --verde-oscuro: #128c7e;
+            --azul: #2563eb;
+            --azul-claro: #eff6ff;
+            --ambar: #f59e0b;
+            --ambar-claro: #fffbeb;
+            --texto: #1e293b;
+            --texto-claro: #64748b;
+            --borde: #e8e4e0;
+            --sombra: 0 2px 8px rgba(0,0,0,0.06);
+            --sombra-md: 0 4px 16px rgba(0,0,0,0.1);
+            --sombra-lg: 0 12px 30px rgba(0,0,0,0.12);
+            --sombra-xl: 0 20px 50px rgba(0,0,0,0.18);
+            --radio: 16px;
+            --radio-sm: 10px;
+            --transicion: 0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+            background:var(--bg); color:var(--texto); line-height:1.5;
+            min-height:100vh; display:flex; flex-direction:column;
+            -webkit-font-smoothing:antialiased;
+        }
+
+        .btn { position:relative; overflow:hidden; }
+        .ripple { position:absolute; border-radius:50%; background:rgba(255,255,255,0.4); transform:scale(0); animation:rippleEffect 0.6s ease-out; pointer-events:none; }
+        @keyframes rippleEffect { to { transform:scale(4); opacity:0; } }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+        .shake { animation:shake 0.4s ease; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        .spinner { display:inline-block; width:20px; height:20px; border:3px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; }
+
+        .topbar { background:var(--rojo); color:#fff; padding:0 10px; position:sticky; top:0; z-index:500; min-height:54px; box-shadow:0 2px 16px rgba(230,57,70,0.35); }
+        .topbar-inner { max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; min-height:54px; gap:4px; flex-wrap:wrap; padding:6px 0; }
+        .topbar-brand { font-size:14px; font-weight:800; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex-shrink:0; }
+        .topbar-brand:hover { opacity:0.85; }
+        .topbar-nav { display:flex; gap:6px; align-items:center; flex-shrink:0; flex-wrap:wrap; justify-content:center; }
+        .nav-btn { display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 10px; border-radius:12px; font-weight:700; font-size:9px; cursor:pointer; border:1.5px solid rgba(255,255,255,0.25); background:rgba(255,255,255,0.06); color:#fff; transition:var(--transicion); white-space:nowrap; font-family:inherit; min-width:55px; text-align:center; }
+        .nav-btn:hover { background:rgba(255,255,255,0.18); }
+        .nav-btn:active { transform:scale(0.94); }
+        .nav-btn.activo { background:#fff; color:var(--rojo); border-color:#fff; font-weight:800; }
+        .nav-btn svg { width:18px; height:18px; flex-shrink:0; }
+        .nav-btn .nav-texto { font-size:8px; line-height:1; }
+        .badge-count { position:absolute; top:-4px; right:-4px; background:#ffd700; color:#000; min-width:16px; height:16px; border-radius:50%; font-size:8px; font-weight:900; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.2); animation:popIn 0.3s ease; z-index:10; pointer-events:none; }
+        @keyframes popIn { 0%{transform:scale(0)} 70%{transform:scale(1.2)} 100%{transform:scale(1)} }
+
+        .dropdown { position:relative; }
+        .dropdown-menu { display:none; position:absolute; top:calc(100% + 8px); right:0; background:#fff; border-radius:14px; box-shadow:var(--sombra-xl); border:1px solid var(--borde); min-width:190px; padding:6px; z-index:600; animation:dropIn 0.2s ease; }
+        .dropdown-menu.mostrar { display:block; }
+        @keyframes dropIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+        .dropdown-item { display:flex; align-items:center; gap:10px; padding:11px 14px; border-radius:10px; color:var(--texto); text-decoration:none; font-weight:600; font-size:13px; transition:var(--transicion); border:none; background:none; width:100%; cursor:pointer; font-family:inherit; }
+        .dropdown-item:hover { background:#f1f5f9; }
+        .dropdown-item.whatsapp { color:#128c7e; }
+        .dropdown-item.whatsapp:hover { background:#d1fae5; }
+        .dropdown-item.llamar { color:var(--rojo); }
+        .dropdown-item.llamar:hover { background:#fef2f2; }
+
+        .portada-container { width:100%; max-height:350px; overflow:hidden; position:relative; display:none; }
+        .portada-container.visible { display:block; }
+        .portada-img { width:100%; height:300px; object-fit:cover; transition:transform 0.3s ease; }
+        .portada-container:hover .portada-img { transform:scale(1.02); }
+
+        .carrusel-container { max-width:1000px; margin:20px auto 0; position:relative; display:none; overflow:hidden; border-radius:var(--radio-sm); }
+        .carrusel-container.visible { display:block; }
+        .carrusel-track { display:flex; transition:transform 0.5s ease-in-out; will-change:transform; }
+        .carrusel-slide { flex:0 0 100%; position:relative; }
+        .carrusel-slide img { width:100%; height:280px; object-fit:cover; display:block; }
+        .carrusel-slide .slide-info { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:#fff; padding:8px 14px; font-size:13px; font-weight:600; text-align:center; }
+        .carrusel-dots { display:flex; justify-content:center; gap:8px; margin-top:10px; }
+        .carrusel-dot { width:8px; height:8px; border-radius:50%; background:#cbd5e1; cursor:pointer; transition:var(--transicion); }
+        .carrusel-dot.activo { background:var(--rojo); width:24px; border-radius:10px; }
+        .carrusel-flecha { position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.85); border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:18px; box-shadow:var(--sombra); z-index:10; display:flex; align-items:center; justify-content:center; transition:var(--transicion); }
+        .carrusel-flecha:hover { background:#fff; }
+        .carrusel-flecha.izq { left:10px; }
+        .carrusel-flecha.der { right:10px; }
+
+        .heroe-info-bar { background:linear-gradient(160deg, #1a1a2e 0%, #2d1a1a 100%); color:#fff; text-align:center; padding:16px 12px; display:flex; justify-content:center; gap:16px; flex-wrap:wrap; font-size:10px; opacity:0.9; }
+        .heroe-info-bar span { white-space:nowrap; display:flex; align-items:center; gap:4px; }
+
+        .contenido { max-width:1000px; margin:0 auto; padding:24px 16px; flex:1; }
+        .seccion-titulo { font-size:clamp(17px,3vw,21px); font-weight:800; margin-bottom:18px; padding-bottom:10px; border-bottom:3px solid var(--rojo); display:flex; align-items:center; gap:10px; }
+
+        .ruta-card-grande { background:var(--surface); border-radius:var(--radio); overflow:hidden; border:1px solid var(--borde); box-shadow:var(--sombra); margin-bottom:24px; transition:var(--transicion); }
+        .ruta-card-grande:hover { box-shadow:var(--sombra-lg); transform:translateY(-2px); }
+        .ruta-card-grande.cancelada { border:2px solid #ef4444; opacity:0.85; }
+        .ruta-header-visual { background:linear-gradient(135deg, var(--rojo-claro), #fff5f5); padding:22px 26px; display:flex; align-items:center; gap:18px; border-bottom:1px solid var(--borde); }
+        .ruta-emoji-grande { font-size:44px; flex-shrink:0; }
+        .ruta-info-header { flex:1; min-width:0; }
+        .ruta-info-header h3 { font-size:18px; font-weight:800; margin-bottom:3px; }
+        .ruta-info-header .subtitulo { color:var(--texto-claro); font-size:12px; }
+        .cancelacion-aviso { background:#fef2f2; border:1px solid #ef4444; border-radius:10px; padding:12px 16px; margin:12px 20px; font-size:12px; color:#991b1b; display:flex; align-items:center; gap:8px; }
+        .ruta-visual { display:flex; align-items:center; gap:0; padding:18px 26px; flex-wrap:wrap; justify-content:center; overflow-x:auto; }
+        .ruta-nodo { display:flex; flex-direction:column; align-items:center; flex-shrink:0; min-width:65px; }
+        .ruta-nodo .punto-ciudad { width:14px; height:14px; border-radius:50%; background:var(--rojo); border:3px solid var(--rojo-claro); box-shadow:0 0 0 4px rgba(230,57,70,0.1); }
+        .ruta-nodo .nombre-ciudad { font-size:11px; font-weight:700; color:var(--texto); margin-top:6px; max-width:80px; text-align:center; line-height:1.2; }
+        .ruta-nodo .nombre-ciudad small { font-size:9px; color:var(--texto-claro); display:block; margin-top:1px; }
+        .ruta-conector { flex:1; height:3px; min-width:25px; background:linear-gradient(90deg, var(--rojo), var(--borde), var(--rojo)); background-size:200% 100%; animation:conectorAnim 2s linear infinite; border-radius:2px; margin:0 2px; }
+        @keyframes conectorAnim { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+        .ruta-nodo.parada .punto-ciudad { width:10px; height:10px; background:#7c3aed; border-color:#ede9fe; box-shadow:0 0 0 3px rgba(124,58,237,0.1); }
+        .ruta-nodo.parada .nombre-ciudad { font-weight:600; color:#5b21b6; }
+
+        .proximo-viaje-box { background:#f8fafc; margin:0 20px 18px; border-radius:var(--radio-sm); padding:16px 20px; border:2px solid var(--rojo); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; box-shadow:var(--sombra-md); }
+        .proximo-viaje-box .info-viaje { flex:1; min-width:0; }
+        .proximo-viaje-box .fecha-hora { font-size:16px; font-weight:800; color:var(--rojo); }
+        .proximo-viaje-box .detalles { font-size:11px; color:var(--texto-claro); }
+        .sin-viajes { text-align:center; color:var(--texto-claro); padding:14px; font-size:12px; font-style:italic; }
+        .badge-ultimos { display:inline-block; background:#ef4444; color:#fff; font-size:9px; padding:3px 8px; border-radius:10px; font-weight:800; animation:pulseUltimos 1.5s infinite; }
+        .badge-pago-adelantado { display:inline-block; background:#f59e0b; color:#000; font-size:9px; padding:3px 8px; border-radius:10px; font-weight:800; margin-left:4px; }
+        @keyframes pulseUltimos { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+        .btn { padding:11px 20px; border-radius:50px; font-weight:700; font-size:12px; cursor:pointer; transition:var(--transicion); border:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; white-space:nowrap; font-family:inherit; }
+        .btn-primario { background:var(--rojo); color:#fff; box-shadow:0 4px 14px rgba(230,57,70,0.3); }
+        .btn-primario:hover { background:var(--rojo-oscuro); transform:translateY(-1px); }
+        .btn-outline { background:transparent; border:2px solid var(--rojo); color:var(--rojo); }
+        .btn-outline:hover { background:var(--rojo-claro); }
+        .btn-sm { padding:7px 14px; font-size:10px; }
+        .btn-verde { background:var(--verde); color:#fff; }
+        .btn-verde:hover { background:var(--verde-oscuro); }
+        .btn-peligro { background:#ef4444; color:#fff; }
+        .btn-copiar { background:#f1f5f9; color:var(--texto); border:2px solid var(--borde); }
+        .btn-copiar.copiado { background:#d1fae5; border-color:#10b981; color:#065f46; }
+
+        .btn-volver-arriba { position:fixed; bottom:24px; right:24px; width:44px; height:44px; border-radius:50%; background:var(--rojo); color:#fff; border:none; cursor:pointer; z-index:400; box-shadow:var(--sombra-lg); display:none; align-items:center; justify-content:center; font-size:20px; transition:var(--transicion); }
+        .btn-volver-arriba.visible { display:flex; }
+        .btn-flotante-whatsapp { position:fixed; bottom:80px; right:24px; width:50px; height:50px; border-radius:50%; background:#25d366; color:#fff; border:none; cursor:pointer; z-index:400; box-shadow:0 4px 16px rgba(37,211,102,0.4); display:flex; align-items:center; justify-content:center; font-size:24px; transition:var(--transicion); animation:pulseFlotante 2s infinite; }
+        @keyframes pulseFlotante { 0%,100%{box-shadow:0 4px 16px rgba(37,211,102,0.4)} 50%{box-shadow:0 4px 30px rgba(37,211,102,0.7)} }
+        .btn-flotante-whatsapp:hover { transform:scale(1.1); }
+
+        .cal-card { background:var(--surface); border-radius:var(--radio); padding:20px; border:1px solid var(--borde); box-shadow:var(--sombra); margin-bottom:14px; max-width:600px; margin-left:auto; margin-right:auto; }
+        .cal-nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+        .cal-nav h3 { font-size:16px; font-weight:700; }
+        .cal-dias-semana { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; text-align:center; margin-bottom:4px; }
+        .cal-dias-semana span { font-size:10px; font-weight:700; color:var(--texto-claro); }
+        .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; text-align:center; }
+        .cal-dia { aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:8px; font-weight:600; font-size:12px; transition:var(--transicion); }
+        .cal-dia.otro { color:#cbd5e1; }
+        .cal-dia.hoy { border:2px solid var(--rojo); font-weight:800; }
+        .cal-dia.alta { cursor:pointer; background:#d1fae5; font-weight:700; border:1px solid #10b981; }
+        .cal-dia.media { cursor:pointer; background:#fef3c7; font-weight:700; border:1px solid #f59e0b; }
+        .cal-dia.baja { cursor:pointer; background:#fee2e2; font-weight:700; border:1px solid #ef4444; }
+        .cal-dia.sel { background:var(--rojo); color:#fff; }
+        .viajes-lista { margin-top:14px; }
+        .viaje-item { background:#f8fafc; border-radius:10px; padding:14px 16px; margin-bottom:8px; border:1px solid var(--borde); cursor:pointer; transition:var(--transicion); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+        .viaje-item:hover { border-color:var(--rojo); background:#fff; box-shadow:var(--sombra-md); }
+
+        .bus-wrapper { background:#f1f5f9; border-radius:14px; padding:22px; margin:14px 0; border:2px solid #cbd5e1; }
+        .bus-header { text-align:center; font-weight:700; font-size:10px; color:var(--texto-claro); margin-bottom:12px; text-transform:uppercase; }
+        .bus-grid { display:grid; grid-template-columns:1fr 34px 1fr; gap:7px; max-width:300px; margin:0 auto; }
+        .seat-col { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+        .pasillo { background:repeating-linear-gradient(0deg, #cbd5e1 0px, #cbd5e1 3px, transparent 3px, transparent 7px); border-radius:6px; }
+        .asiento { aspect-ratio:1; border-radius:7px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:11px; cursor:pointer; transition:var(--transicion); border:2px solid var(--borde); background:#fff; }
+        .asiento:hover:not(.ocupado) { border-color:var(--rojo); background:#fef2f2; transform:scale(1.08); z-index:2; }
+        .asiento.sel { background:#2563eb; color:#fff; border-color:#2563eb; }
+        .asiento.ocupado { background:#e2e8f0; color:#94a3b8; cursor:not-allowed; text-decoration:line-through; }
+
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); z-index:1000; justify-content:center; align-items:center; padding:16px; }
+        .modal-overlay.activo { display:flex; }
+        .modal { background:#fff; border-radius:var(--radio); padding:24px 20px; max-width:580px; width:100%; animation:modalIn 0.35s ease; max-height:85vh; overflow-y:auto; box-shadow:var(--sombra-xl); }
+        @keyframes modalIn { from { opacity:0; transform:translateY(30px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } }
+        .modal h2 { font-size:17px; font-weight:800; margin-bottom:12px; }
+
+        .form-grupo { margin-bottom:10px; }
+        .form-grupo label { display:block; font-size:10px; font-weight:700; text-transform:uppercase; color:var(--texto-claro); margin-bottom:4px; }
+        .form-grupo input, .form-grupo select, .form-grupo textarea { width:100%; padding:10px 12px; border:2px solid var(--borde); border-radius:8px; font-size:13px; transition:var(--transicion); font-family:inherit; }
+        .form-grupo input:focus, .form-grupo select:focus, .form-grupo textarea:focus { outline:none; border-color:var(--rojo); box-shadow:0 0 0 3px rgba(230,57,70,0.06); }
+        .form-grupo input.valido { border-color:#10b981; background:#f0fdf4; }
+        .form-grupo input.invalido { border-color:#ef4444; background:#fef2f2; }
+        .form-grupo textarea { resize:vertical; min-height:50px; }
+        .form-grupo input[type="file"] { padding:8px; border:2px dashed var(--borde); cursor:pointer; }
+        .form-grupo-check { display:flex; align-items:center; gap:8px; margin:8px 0; }
+        .form-grupo-check label { font-size:12px; font-weight:600; cursor:pointer; text-transform:none; color:var(--texto); }
+        .pasajero-box { background:#f8fafc; border-radius:10px; padding:12px; margin-bottom:8px; border:1px solid var(--borde); }
+        .pasajero-box h4 { font-size:12px; font-weight:700; margin-bottom:6px; }
+
+        .ticket { background:#fff; border:2px solid var(--rojo); border-radius:14px; padding:18px; margin:10px 0; }
+        .ticket-header { border-bottom:2px solid var(--rojo); padding-bottom:10px; margin-bottom:10px; text-align:center; }
+        .ticket-header h3 { font-size:16px; font-weight:800; color:var(--rojo); }
+        .ticket-body { text-align:left; font-size:12px; line-height:1.9; }
+
+        .reserva-card { background:var(--surface); border-radius:var(--radio); padding:18px; margin-bottom:12px; border:1px solid var(--borde); transition:var(--transicion); }
+        .reserva-card:hover { box-shadow:var(--sombra-md); }
+        .filtro-reservas { background:var(--surface); border-radius:var(--radio); padding:14px; border:1px solid var(--borde); margin-bottom:16px; display:flex; gap:8px; flex-wrap:wrap; }
+        .filtro-reservas input { flex:1; min-width:150px; padding:9px 12px; border:2px solid var(--borde); border-radius:8px; font-size:12px; }
+        .badge-estado { display:inline-block; padding:3px 9px; border-radius:20px; font-size:9px; font-weight:700; }
+
+        .confeti-container { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:2000; }
+        .confeti { position:absolute; width:9px; height:9px; border-radius:50%; animation:caer linear forwards; }
+        @keyframes caer { 0%{transform:translateY(-100px) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(720deg);opacity:0} }
+
+        footer { text-align:center; padding:22px 16px; color:var(--texto-claro); font-size:11px; border-top:1px solid var(--borde); margin-top:auto; display:flex; flex-wrap:wrap; justify-content:center; gap:16px; }
+
+        .countdown-reserva { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:700; color:#ef4444; margin-top:4px; }
+        .countdown-reserva .cd-num { background:#fef2f2; padding:2px 6px; border-radius:4px; }
+        .info-rapida { background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:10px 14px; margin:8px 0; font-size:11px; color:#1e40af; display:flex; align-items:center; gap:8px; }
+        .char-count { font-size:9px; color:var(--texto-claro); text-align:right; margin-top:2px; }
+
+        @media (max-width:600px) {
+            .nav-btn { padding:6px 8px; min-width:45px; font-size:8px; }
+            .nav-btn svg { width:16px; height:16px; }
+            .nav-btn .nav-texto { font-size:7px; }
+            .ruta-visual { justify-content:flex-start; padding:14px 16px; }
+            .proximo-viaje-box { flex-direction:column; align-items:stretch; text-align:center; margin:0 12px 14px; }
+            .btn-volver-arriba { bottom:16px; right:16px; width:40px; height:40px; }
+            .btn-flotante-whatsapp { bottom:70px; right:16px; width:44px; height:44px; font-size:20px; }
+            .carrusel-slide img { height:200px; }
+            .ruta-nodo { min-width:50px; }
+            .ruta-nodo .nombre-ciudad { font-size:9px; max-width:60px; }
+            .cal-card { max-width:100%; }
+        }
+        @media (max-width:380px) {
+            .contenido { padding:20px 10px; }
+            .modal { padding:18px 14px; }
+            .topbar-brand { font-size:12px; }
+            .btn-flotante-whatsapp { bottom:65px; right:12px; }
+            .btn-volver-arriba { bottom:12px; right:12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="topbar-brand" id="topbar-brand" onclick="navegar('home')">🚌 Agencia de Viajes</div>
+            <div class="topbar-nav">
+                <button class="nav-btn activo" id="btn-home" onclick="navegar('home')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span class="nav-texto">Inicio</span>
+                </button>
+                <button class="nav-btn" id="btn-mis-tickets" onclick="navegar('mis-tickets')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                    <span class="nav-texto">Tickets</span>
+                </button>
+                <button class="nav-btn" id="btn-mis-reservas" onclick="navegar('mis-reservas')" style="position:relative;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    <span class="nav-texto">Reservas</span>
+                    <span class="badge-count" id="reservas-count" style="display:none;">0</span>
+                </button>
+                <div class="dropdown">
+                    <button class="nav-btn" onclick="toggleDropdown('dropdown-contacto')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                        <span class="nav-texto">Contacto</span>
+                    </button>
+                    <div class="dropdown-menu" id="dropdown-contacto" style="right:0;left:auto;">
+                        <a href="#" class="dropdown-item llamar" id="link-llamar">📞 Llamar</a>
+                        <a href="#" class="dropdown-item whatsapp" id="link-whatsapp" target="_blank">💬 WhatsApp</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEROE INFO BAR - ARRIBA -->
+    <div class="heroe-info-bar" id="heroe-info-bar">
+        <span id="info-direccion">📍 Cargando...</span>
+        <span id="info-horario">🕐 Cargando...</span>
+        <span id="info-telefono">📞 Cargando...</span>
+    </div>
+
+    <!-- PORTADA -->
+    <div class="portada-container" id="portada-container">
+        <img class="portada-img" id="portada-img" src="" alt="Portada">
+    </div>
+
+    <!-- CARRUSEL -->
+    <div class="carrusel-container" id="carrusel-container">
+        <div class="carrusel-track" id="carrusel-track"></div>
+        <button class="carrusel-flecha izq" onclick="moverCarrusel(-1)">◀</button>
+        <button class="carrusel-flecha der" onclick="moverCarrusel(1)">▶</button>
+        <div class="carrusel-dots" id="carrusel-dots"></div>
+    </div>
+
+    <!-- SECCIONES -->
+    <div id="seccion-home"><div class="contenido" id="home-contenido"></div></div>
+    <div id="seccion-ruta-detalle" style="display:none;"><div class="contenido" id="ruta-detalle-container"></div></div>
+    <div id="seccion-mis-reservas" style="display:none;">
+        <div class="contenido" style="max-width:620px;">
+            <div class="seccion-titulo">🎫 Mis Reservas</div>
+            <div class="filtro-reservas"><input type="text" id="filtro-mis-reservas" placeholder="🔍 Buscar por código, ruta o fecha..." oninput="cargarMisReservas()"></div>
+            <div id="mis-reservas-lista"></div>
+            <p id="sin-reservas" style="text-align:center;color:var(--texto-claro);display:none;padding:20px;">No tienes reservas aún.</p>
+        </div>
+    </div>
+    <div id="seccion-mis-tickets" style="display:none;">
+        <div class="contenido" style="max-width:500px;">
+            <div class="seccion-titulo">🎫 Mis Tickets</div>
+            <div class="info-rapida">💡 Ingresa tu <strong>código de reserva</strong> y tu <strong>CI o número de teléfono (8 dígitos)</strong> para ver tus tickets.</div>
+            <div class="filtro-reservas" style="flex-direction:column;gap:10px;">
+                <div class="form-grupo"><label>Código de Reserva</label><input type="text" id="ticket-codigo" placeholder="TKT-XXXX" style="text-transform:uppercase;letter-spacing:2px;font-size:16px;text-align:center;"></div>
+                <div class="form-grupo"><label>CI (11 dígitos) o Teléfono (8 dígitos)</label><input type="text" id="ticket-verificacion" placeholder="04041860300 o 51234567" maxlength="11"></div>
+                <button class="btn btn-primario" onclick="buscarMisTickets()" style="width:100%;">🔍 Ver Tickets</button>
+            </div>
+            <div id="mis-tickets-resultado"></div>
+            <p id="sin-tickets" style="text-align:center;color:var(--texto-claro);display:none;padding:20px;">Ingresa tu código y CI/teléfono para ver tus tickets.</p>
+        </div>
+    </div>
+
+    <!-- MODAL RESERVA (CON LUGAR DE RECOGIDA) -->
+    <div class="modal-overlay" id="modal-reserva"><div class="modal">
+        <h2>🎫 Reservar Asientos</h2>
+        <p id="modal-viaje-info" style="font-weight:600;margin-bottom:2px;font-size:14px;"></p>
+        <div id="modal-paradas-info" style="margin-bottom:12px;font-size:12px;color:var(--texto-claro);"></div>
+        
+        <!-- 🚉 LUGAR DE RECOGIDA (NUEVO) -->
+        <div class="form-grupo" style="margin-top:8px;">
+            <label style="color: red;">🚉 ¿Dónde abordas?</label>
+            <select id="res-lugar-recogida-tipo" onchange="toggleLugarRecogida()">
+                <option value="oficial">En el lugar oficial</option>
+                <option value="personalizado">Lugar personalizado</option>
+            </select>
+        </div>
+        <div id="res-lugar-recogida-container" style="display:none;">
+            <div class="form-grupo">
+                <label style="color: red;">🏘️ Municipio (máx. 40 caracteres)</label>
+                <input type="text" id="res-municipio-recogida" placeholder="Ej: Centro Habana" maxlength="40" oninput="contarCaracteres(this,'count-municipio')">
+                <span class="char-count" id="count-municipio">0/40</span>
+            </div>
+            <div class="form-grupo">
+                <label style="color: red;">📍 Descripción (máx. 80 caracteres)</label>
+                <input type="text" id="res-descripcion-recogida" placeholder="Ej: Frente al parque central" maxlength="80" oninput="contarCaracteres(this,'count-descripcion')">
+                <span class="char-count" id="count-descripcion">0/80</span>
+            </div>
+        </div>
+        
+        <p style="font-weight:700;font-size:13px;margin-bottom:8px; color: black;">Selecciona tus asientos (máx. 6):</p>
+        <div class="bus-wrapper"><div class="bus-header">⬆️ Conductor</div><div class="bus-grid"><div class="seat-col" id="seats-left"></div><div class="pasillo"></div><div class="seat-col" id="seats-right"></div></div><div class="bus-header" style="margin-top:10px;">⬇️ Parte trasera</div></div>
+        <p id="asientos-info" style="text-align:center;font-weight:700;color:var(--rojo);font-size:14px;margin:8px 0;">Ninguno seleccionado</p>
+        <p id="precio-total-info" style="text-align:center;font-weight:700;color:var(--rojo);font-size:14px;margin:4px 0;"></p>
+        
+        <!-- NUEVO SISTEMA DE PARADA -->
+        <div class="form-grupo"><label style="color: red;">¿Dónde te bajas?</label><select id="res-parada-destino"><option value="destino_final" style="color: red;">Destino final</option></select></div>
+        <div class="form-grupo"><label style="color: red;">¿Exactamente dónde?</label><select id="res-tipo-parada"><option value="en_parada">🔽 En la parada</option><option value="antes_de">⬆️ Antes de la parada</option><option value="despues_de">⬇️ Después de la parada</option></select></div>
+        <div class="form-grupo"><label style="color: red;">Lugar específico (referencia)</label><input type="text" id="res-lugar-especifico" placeholder="Ej: Frente a la gasolinera..."></div>
+        
+        <div style="margin:10px 0;display:flex;align-items:center;gap:8px;"><input type="checkbox" id="mismo-tel" checked onchange="actualizarInfoAsientos()"><label for="mismo-tel" style="font-size:12px;font-weight:600; color: black;">Usar mismo teléfono</label></div>
+        <div class="form-grupo"><label>Teléfono (8 dígitos)</label><input id="res-telefono" type="tel" placeholder="51234567" maxlength="8" oninput="validarTelefonoSimple(this)"></div>
+        <div id="pasajeros-container"></div>
+        <button class="btn btn-primario" id="btn-confirmar-reserva" onclick="confirmarReserva()" style="margin-top:8px;">✅ Confirmar Reserva</button>
+        <button class="btn btn-outline" onclick="intentarCerrarModalReserva()" style="width:100%;margin-top:6px;">Cancelar</button>
+        <p id="modal-error" style="color:#ef4444;text-align:center;margin-top:10px;font-size:12px;"></p>
+    </div></div>
+
+    <!-- MODALES (MANTENIDOS IGUAL) -->
+    <div class="modal-overlay" id="modal-confirmacion"><div class="modal" style="max-width:560px;text-align:center;">
+        <div style="font-size:50px;">🎉</div><h2>¡Reserva Realizada!</h2>
+        <p style="color:var(--texto-claro);margin-bottom:12px;font-size:13px;">Guarda tu código de reserva:</p>
+        <div id="tickets-generados"></div>
+        <button class="btn btn-copiar" id="btn-copiar" onclick="copiarCodigos()" style="width:100%;margin-bottom:8px;">📋 Copiar código</button>
+        <a href="#" class="btn btn-verde" id="btn-whatsapp-confirmar" target="_blank" style="width:100%;padding:11px;border-radius:50px;text-decoration:none;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:6px;">💬 Compartir por WhatsApp</a>
+        <button class="btn btn-outline btn-sm" onclick="descargarTickets()" style="width:100%;margin-bottom:4px;">📥 Descargar Tickets</button>
+        <button class="btn btn-outline btn-sm" onclick="cerrarConfirmacion()" style="width:100%;">Cerrar</button>
+    </div></div>
+
+    <div class="modal-overlay" id="modal-formulario-pago"><div class="modal" style="max-width:480px;">
+        <h2>📤 Confirmar Pago</h2>
+        <p style="font-size:12px;color:var(--texto-claro);margin-bottom:12px;">Completa este formulario para confirmar tu reserva. Tienes <strong>24 horas</strong> antes de que los asientos se liberen.</p>
+        <div class="form-grupo"><label>Nombre completo *</label><input type="text" id="pago-nombre"></div>
+        <div class="form-grupo"><label>Teléfono (8 dígitos) *</label><input type="tel" id="pago-telefono" placeholder="51234567" maxlength="8"></div>
+        <div class="form-grupo"><label>ID de Transferencia *</label><input type="text" id="pago-id-transferencia" placeholder="TRX-123456789"></div>
+        <div class="form-grupo"><label>Captura de pantalla (opcional)</label><input type="file" id="pago-captura" accept="image/*"></div>
+        <button class="btn btn-primario" onclick="enviarConfirmacionPago()" style="width:100%;margin-top:8px;">📨 Enviar Confirmación</button>
+        <button class="btn btn-outline btn-sm" onclick="cerrarModalFormularioPago()" style="width:100%;margin-top:6px;">Cancelar</button>
+    </div></div>
+
+    <div class="modal-overlay" id="modal-cancelar"><div class="modal" style="max-width:420px;text-align:center;">
+        <div style="font-size:44px;">⚠️</div><h2>¿Cancelar Reserva?</h2>
+        <p style="color:var(--texto-claro);font-size:13px;margin-bottom:14px;" id="cancelar-info"></p>
+        <p style="font-size:12px;color:var(--texto-claro);">Solo se puede cancelar hasta 24h antes del viaje.</p>
+        <button class="btn btn-peligro" onclick="confirmarCancelacion()" style="width:100%;margin-bottom:8px;">🗑️ Sí, Cancelar</button>
+        <button class="btn btn-outline btn-sm" onclick="cerrarModalCancelar()" style="width:100%;">No, mantener</button>
+    </div></div>
+
+    <div class="modal-overlay" id="modal-borrar"><div class="modal" style="max-width:420px;text-align:center;">
+        <div style="font-size:44px;">🗑️</div><h2>¿Borrar Reserva?</h2>
+        <p style="color:var(--texto-claro);font-size:13px;margin-bottom:14px;" id="borrar-info"></p>
+        <button class="btn btn-peligro" onclick="confirmarBorrado()" style="width:100%;margin-bottom:8px;">🗑️ Sí, Borrar</button>
+        <button class="btn btn-outline btn-sm" onclick="cerrarModalBorrar()" style="width:100%;">No, conservar</button>
+    </div></div>
+
+    <div class="modal-overlay" id="modal-descartar"><div class="modal" style="max-width:420px;text-align:center;">
+        <div style="font-size:44px;">⚠️</div><h2>¿Descartar Cambios?</h2>
+        <p style="color:var(--texto-claro);font-size:13px;margin-bottom:14px;">Perderás los asientos seleccionados y datos ingresados.</p>
+        <button class="btn btn-peligro" onclick="confirmarDescartar()" style="width:100%;margin-bottom:8px;">🗑️ Sí, Descartar</button>
+        <button class="btn btn-outline btn-sm" onclick="cancelarDescartar()" style="width:100%;">Seguir reservando</button>
+    </div></div>
+
+    <div class="confeti-container" id="confeti-container"></div>
+    <button class="btn-volver-arriba" id="btn-volver-arriba" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆</button>
+    <a href="#" class="btn-flotante-whatsapp" id="btn-flotante-whatsapp" target="_blank" title="Contactar por WhatsApp">💬</a>
+
+    <footer>
+        <span>© <span id="footer-nombre">Agencia de Viajes</span></span>
+        <span id="footer-direccion">📍 Cargando...</span>
+        <span id="footer-telefono">📞 Cargando...</span>
+    </footer>
+
+    <script>
+        // ==========================================
+        // STORAGE KEYS
+        // ==========================================
+        var K = { VEHICULOS:'vp_v', RUTAS:'vp_r', VIAJES:'vp_vj', RESERVAS:'vp_rs', CONFIG:'vp_cf', CLIENTES:'vp_cl', ULTIMO_TEL:'vp_ultimo_tel', CONFIRMACIONES:'vp_conf' };
+
+        var viajeSeleccionado=null, asientosElegidos=[], reservasOcupadas=[], calDate=new Date(), calRutaIndex=null, calDiaSel=null;
+        var clienteActual=null, ultimosTickets=[], reservaACancelar=null, reservaABorrar=null, modalReservaTeniaDatos=false;
+        var codigoReservaPendiente=null;
+        var intervalosCountdown={};
+        var carruselIndex=0, carruselInterval=null;
+
+        function obtenerConfig(){
+            var cfg=JSON.parse(localStorage.getItem(K.CONFIG))||{};
+            return {nombre:cfg.nombre||'Agencia de Viajes',telefono:cfg.telefono||'',whatsapp:cfg.whatsapp||'',email:cfg.email||'',direccion:cfg.direccion||'La Habana, Cuba',color:cfg.color||'#e63946',emoji:cfg.emoji||'🚌',horario:cfg.horario||'Atención 24/7',usarPrecioPorParada:cfg.usarPrecioPorParada||false,portada:cfg.portada||'',carrusel:cfg.carrusel||[],logo:cfg.logo||''};
+        }
+
+        function aplicarConfiguracion(){
+            var cfg=obtenerConfig();
+            document.documentElement.style.setProperty('--rojo',cfg.color);
+            document.getElementById('topbar-brand').textContent=cfg.emoji+' '+cfg.nombre;
+            document.getElementById('info-direccion').textContent='📍 '+cfg.direccion;
+            document.getElementById('info-horario').textContent='🕐 '+cfg.horario;
+            document.getElementById('info-telefono').textContent='📞 '+cfg.telefono;
+            document.getElementById('footer-nombre').textContent=cfg.nombre;
+            document.getElementById('footer-direccion').textContent='📍 '+cfg.direccion;
+            document.getElementById('footer-telefono').textContent='📞 '+cfg.telefono;
+            document.getElementById('titulo-pagina').textContent=cfg.nombre+' | Reserva tu pasaje';
+            document.getElementById('link-llamar').href='tel:'+cfg.telefono;
+            document.getElementById('link-whatsapp').href='https://wa.me/'+(cfg.whatsapp||'').replace(/\+/g,'');
+            document.getElementById('btn-flotante-whatsapp').href='https://wa.me/'+(cfg.whatsapp||'').replace(/\+/g,'')+'?text='+encodeURIComponent('Hola! Quiero información sobre viajes.');
+            if(cfg.portada){ document.getElementById('portada-img').src=cfg.portada; }
+            if(cfg.carrusel&&cfg.carrusel.length>0){ document.getElementById('carrusel-container').classList.add('visible'); iniciarCarrusel(); }
+            clienteActual=JSON.parse(localStorage.getItem(K.CLIENTES));
+        }
+
+        // ==========================================
+        // CARRUSEL
+        // ==========================================
+        function iniciarCarrusel(){
+            var cfg=obtenerConfig();
+            if(!cfg.carrusel||cfg.carrusel.length===0) return;
+            var track=document.getElementById('carrusel-track');
+            var dots=document.getElementById('carrusel-dots');
+            track.innerHTML=cfg.carrusel.map(function(f){ return '<div class="carrusel-slide"><img src="'+f.imagen+'" alt=""><div class="slide-info">'+(f.nombre||'')+'</div></div>'; }).join('');
+            dots.innerHTML=cfg.carrusel.map(function(_,i){ return '<div class="carrusel-dot'+(i===0?' activo':'')+'" onclick="irASlide('+i+')"></div>'; }).join('');
+            carruselIndex=0; actualizarCarrusel(); iniciarAutoPlay();
+        }
+
+        function actualizarCarrusel(){
+            var track=document.getElementById('carrusel-track');
+            var dots=document.querySelectorAll('.carrusel-dot');
+            if(!track) return;
+            track.style.transform='translateX(-'+(carruselIndex*100)+'%)';
+            dots.forEach(function(dot,i){ dot.classList.toggle('activo',i===carruselIndex); });
+        }
+
+        function irASlide(index){
+            var total=(obtenerConfig().carrusel||[]).length;
+            if(total===0) return;
+            carruselIndex=((index%total)+total)%total;
+            actualizarCarrusel(); reiniciarAutoPlay();
+        }
+
+        function moverCarrusel(dir){ irASlide(carruselIndex+dir); }
+
+        function iniciarAutoPlay(){ if(carruselInterval) clearInterval(carruselInterval); carruselInterval=setInterval(function(){ irASlide(carruselIndex+1); },4000); }
+        function reiniciarAutoPlay(){ if(carruselInterval) clearInterval(carruselInterval); iniciarAutoPlay(); }
+
+        function mostrarPortadaYCarrusel(visible){
+            var portada=document.getElementById('portada-container');
+            var carrusel=document.getElementById('carrusel-container');
+            var cfg=obtenerConfig();
+            if(visible){
+                if(cfg.portada) portada.classList.add('visible'); else portada.classList.remove('visible');
+                if(cfg.carrusel&&cfg.carrusel.length>0){ carrusel.classList.add('visible'); iniciarCarrusel(); } else carrusel.classList.remove('visible');
+            } else { portada.classList.remove('visible'); carrusel.classList.remove('visible'); if(carruselInterval) clearInterval(carruselInterval); }
+        }
+
+        function toggleDropdown(id){ document.getElementById(id).classList.toggle('mostrar'); }
+        document.addEventListener('click',function(e){ if(!e.target.closest('.dropdown')) document.querySelectorAll('.dropdown-menu').forEach(function(m){ m.classList.remove('mostrar'); }); });
+        document.addEventListener('click',function(e){
+            var btn=e.target.closest('.btn'); if(!btn) return;
+            var ripple=document.createElement('span'); ripple.className='ripple';
+            var rect=btn.getBoundingClientRect(); var size=Math.max(rect.width,rect.height);
+            ripple.style.width=size+'px'; ripple.style.height=size+'px';
+            ripple.style.left=(e.clientX-rect.left-size/2)+'px'; ripple.style.top=(e.clientY-rect.top-size/2)+'px';
+            btn.appendChild(ripple); setTimeout(function(){ ripple.remove(); },600);
+        });
+        window.addEventListener('scroll',function(){ document.getElementById('btn-volver-arriba').classList.toggle('visible',window.scrollY>400); });
+
+        function lanzarConfeti(){
+            var colores=['#e63946','#ffd700','#10b981','#2563eb','#f59e0b','#7c3aed'];
+            var container=document.getElementById('confeti-container');
+            for(var i=0;i<50;i++){ var confeti=document.createElement('div'); confeti.className='confeti'; confeti.style.left=Math.random()*100+'%'; confeti.style.background=colores[Math.floor(Math.random()*colores.length)]; confeti.style.animationDuration=(2+Math.random()*3)+'s'; confeti.style.animationDelay=Math.random()*0.5+'s'; confeti.style.width=(6+Math.random()*7)+'px'; confeti.style.height=(6+Math.random()*7)+'px'; container.appendChild(confeti); setTimeout(function(){ confeti.remove(); },4000); }
+        }
+
+        function mostrarToast(mensaje,tipo){
+            var toast=document.createElement('div');
+            toast.style.cssText='position:fixed;top:24px;left:50%;transform:translateX(-50%);padding:11px 22px;border-radius:50px;font-weight:700;font-size:13px;z-index:3000;opacity:0;transition:opacity 0.3s;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);';
+            toast.style.background=tipo==='success'?'#10b981':'#ef4444'; toast.style.color='#fff';
+            toast.textContent=mensaje; document.body.appendChild(toast);
+            requestAnimationFrame(function(){ toast.style.opacity='1'; });
+            setTimeout(function(){ toast.style.opacity='0'; setTimeout(function(){ toast.remove(); },300); },2500);
+        }
+
+        function contarCaracteres(input,spanId){
+            var el=document.getElementById(spanId);
+            if(el) el.textContent=input.value.length+'/'+input.maxLength;
+        }
+
+        function validarTelefonoSimple(input){
+            var valor=input.value.replace(/\D/g,'');
+            if(valor.length>8) valor=valor.substring(0,8);
+            input.value=valor;
+            if(valor.length===8){ input.classList.add('valido'); input.classList.remove('invalido'); }
+            else if(valor.length>0){ input.classList.add('invalido'); input.classList.remove('valido'); }
+            else { input.classList.remove('valido','invalido'); }
+        }
+
+        function normalizarTelefono(tel){
+            var limpio=tel.replace(/[\s\+\-]/g,'');
+            if(limpio.startsWith('53')&&limpio.length===10) return limpio;
+            if(limpio.length===8&&/^\d{8}$/.test(limpio)) return '53'+limpio;
+            return limpio;
+        }
+
+        function validarCI(input){
+            var valor=input.value.trim();
+            if(valor.length===11&&/^\d{11}$/.test(valor)){ var dia=parseInt(valor.substring(0,2)),mes=parseInt(valor.substring(2,4)),anio=parseInt(valor.substring(4,6)); if(dia>=1&&dia<=31&&mes>=1&&mes<=12&&anio>=0&&anio<=99){ input.classList.add('valido'); input.classList.remove('invalido'); return true; } }
+            if(valor.length>=11){ input.classList.add('invalido'); input.classList.remove('valido'); } else { input.classList.remove('valido','invalido'); }
+            return valor.length===11&&/^\d{11}$/.test(valor);
+        }
+
+        // ==========================================
+        // TOGGLE LUGAR DE RECOGIDA (NUEVO)
+        // ==========================================
+        function toggleLugarRecogida(){
+            var tipo=document.getElementById('res-lugar-recogida-tipo').value;
+            document.getElementById('res-lugar-recogida-container').style.display=tipo==='personalizado'?'block':'none';
+        }
+
+        function navegar(seccion){
+            document.querySelectorAll('.dropdown-menu').forEach(function(m){ m.classList.remove('mostrar'); });
+            ['home','ruta-detalle','mis-reservas','mis-tickets'].forEach(function(s){ var el=document.getElementById('seccion-'+s); if(el) el.style.display='none'; });
+            if(seccion==='ruta-detalle') document.getElementById('seccion-ruta-detalle').style.display='block';
+            else { var el=document.getElementById('seccion-'+seccion); if(el) el.style.display='block'; }
+            document.getElementById('heroe-info-bar').style.display=['home','mis-reservas','mis-tickets'].indexOf(seccion)!==-1?'flex':'none';
+            ['home','mis-reservas','mis-tickets'].forEach(function(s){ var btn=document.getElementById('btn-'+s); if(btn) btn.classList.toggle('activo',seccion===s); });
+            mostrarPortadaYCarrusel(seccion==='home');
+            if(seccion==='home') cargarHome();
+            if(seccion==='mis-reservas') cargarMisReservas();
+            window.scrollTo({top:0,behavior:'smooth'});
+        }
+
+        // ==========================================
+        // CARGA HOME
+        // ==========================================
+        function cargarHome(){
+            var rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[], viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[], vehiculos=JSON.parse(localStorage.getItem(K.VEHICULOS))||[];
+            var hoy=new Date().toISOString().split('T')[0];
+            var container=document.getElementById('home-contenido');
+            if(rutas.length===0){ container.innerHTML='<p style="text-align:center;color:var(--texto-claro);padding:40px;">No hay rutas disponibles.</p>'; return; }
+            var html='';
+            rutas.forEach(function(r,rutaIndex){
+                var viajesRuta=viajes.filter(function(v){ return v.rutaIndex===rutaIndex&&v.fecha>=hoy; }).sort(function(a,b){ return a.fecha.localeCompare(b.fecha); });
+                var proximo=viajesRuta.length>0?viajesRuta[0]:null;
+                var ve=proximo?(vehiculos[proximo.vehiculoIndex]||{}):{};
+                var viajeCancelado=proximo&&proximo.estado==='cancelado';
+                var rutaVisual='<div class="ruta-nodo"><div class="punto-ciudad"></div><div class="nombre-ciudad">'+r.origen+'<small>Origen</small></div></div>';
+                if(r.paradas) r.paradas.forEach(function(p){ rutaVisual+='<div class="ruta-conector"></div><div class="ruta-nodo parada"><div class="punto-ciudad"></div><div class="nombre-ciudad">'+p.ciudad+'<small>Parada</small></div></div>'; });
+                rutaVisual+='<div class="ruta-conector"></div><div class="ruta-nodo"><div class="punto-ciudad"></div><div class="nombre-ciudad">'+r.destino+'<small>Destino</small></div></div>';
+                var hpStr='';
+                if(proximo&&proximo.horariosParadas) hpStr=' · 🕐 '+proximo.horariosParadas.map(function(h){ return h.ciudad+': '+h.hora; }).join(' | ');
+                var badgeUltimos=(proximo&&proximo.asientosDisponibles<=5&&proximo.asientosDisponibles>0&&!viajeCancelado)?' <span class="badge-ultimos">¡Últimos '+proximo.asientosDisponibles+'!</span>':'';
+                var badgePago=(proximo&&proximo.pagoAdelantado)?' <span class="badge-pago-adelantado">💰 Pago adelantado</span>':'';
+                html+='<div class="ruta-card-grande'+(viajeCancelado?' cancelada':'')+'"><div class="ruta-header-visual"><div class="ruta-emoji-grande">🚍</div><div class="ruta-info-header"><h3>'+r.nombre+'</h3><div class="subtitulo">⏱ '+r.duracion+'h · '+(r.tipo||'Regular')+'</div></div></div><div class="ruta-visual">'+rutaVisual+'</div>';
+                if(viajeCancelado) html+='<div class="cancelacion-aviso">⚠️ <strong>Viaje Cancelado</strong>'+(proximo.mensajeCancelacion?' - '+proximo.mensajeCancelacion:'')+'</div>';
+                if(proximo&&!viajeCancelado){
+                    html+='<div class="proximo-viaje-box"><div class="info-viaje"><div class="fecha-hora">📅 '+proximo.fecha+' · 🕐 '+proximo.hora+'</div><div class="detalles">🚌 '+(ve.tipo||'')+' '+(ve.matricula||'')+' · 💺 '+proximo.asientosDisponibles+'/'+(ve.capacidad||'?')+' asientos'+badgeUltimos+badgePago+hpStr+' · 💰 <strong>$'+proximo.precio+'</strong></div></div><div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="btn btn-primario" onclick="abrirReserva('+viajes.indexOf(proximo)+')">🎫 Reservar</button>'+(viajesRuta.length>1?'<button class="btn btn-outline btn-sm" onclick="verDetalleRuta('+rutaIndex+')">📅 Calendario ('+viajesRuta.length+')</button>':'')+'</div></div>';
+                } else if(!proximo) html+='<div class="sin-viajes">Sin viajes programados próximamente</div>';
+                html+='</div>';
+            });
+            container.innerHTML=html;
+        }
+
+        function verDetalleRuta(rutaIndex){
+            calRutaIndex=rutaIndex; calDate=new Date(); calDiaSel=null;
+            document.querySelectorAll('[id^="seccion-"]').forEach(function(s){ s.style.display='none'; });
+            document.getElementById('seccion-ruta-detalle').style.display='block';
+            document.getElementById('heroe-info-bar').style.display='none';
+            mostrarPortadaYCarrusel(false);
+            document.getElementById('ruta-detalle-container').innerHTML='<button class="btn btn-outline btn-sm" onclick="navegar(\'home\')" style="margin-bottom:14px;">← Volver</button><div class="cal-card"><div class="cal-nav"><button class="btn btn-outline btn-sm" onclick="cambiarMesCal(-1)">◀</button><h3 id="cal-titulo"></h3><button class="btn btn-outline btn-sm" onclick="cambiarMesCal(1)">▶</button></div><div class="cal-dias-semana"><span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span></div><div class="cal-grid" id="cal-grid"></div><div class="viajes-lista" id="cal-viajes"></div></div>';
+            renderCalendario();
+        }
+
+        function cambiarMesCal(delta){ calDate.setMonth(calDate.getMonth()+delta); calDiaSel=null; renderCalendario(); }
+        function renderCalendario(){
+            var year=calDate.getFullYear(),month=calDate.getMonth();
+            document.getElementById('cal-titulo').textContent=new Date(year,month).toLocaleDateString('es-ES',{month:'long',year:'numeric'});
+            var viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[],vehiculos=JSON.parse(localStorage.getItem(K.VEHICULOS))||[];
+            var viajesRuta=viajes.filter(function(v){ return v.rutaIndex===calRutaIndex; });
+            var fechas={};
+            viajesRuta.forEach(function(v){ var cap=(vehiculos[v.vehiculoIndex]||{}).capacidad||40; if(v.estado==='cancelado'){ fechas[v.fecha]='baja'; return; } var pct=(v.asientosDisponibles/cap)*100; fechas[v.fecha]=pct>50?'alta':pct>0?'media':'baja'; });
+            var hoy=new Date().toISOString().split('T')[0];
+            var firstDay=new Date(year,month,1).getDay(),daysInMonth=new Date(year,month+1,0).getDate();
+            var html='';
+            for(var i=0;i<firstDay;i++) html+='<div class="cal-dia otro"></div>';
+            for(var d=1;d<=daysInMonth;d++){ var fechaStr=year+'-'+String(month+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'); var estado=fechas[fechaStr],clases='cal-dia'+(fechaStr===hoy?' hoy':'')+(estado?' '+estado:'')+(calDiaSel===fechaStr?' sel':''); html+='<div class="'+clases+'" '+(estado?'onclick="mostrarViajesDia(\''+fechaStr+'\')"':'')+'>'+d+(estado?'<div class="dot"></div>':'')+'</div>'; }
+            document.getElementById('cal-grid').innerHTML=html;
+            document.getElementById('cal-viajes').innerHTML=''; calDiaSel=null;
+        }
+
+        function mostrarViajesDia(fechaStr){
+            calDiaSel=fechaStr; renderCalendario();
+            var viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[],vehiculos=JSON.parse(localStorage.getItem(K.VEHICULOS))||[];
+            var delDia=viajes.filter(function(v){ return v.rutaIndex===calRutaIndex&&v.fecha===fechaStr; });
+            var container=document.getElementById('cal-viajes');
+            if(!delDia.length){ container.innerHTML='<p style="color:var(--texto-claro);text-align:center;">Sin viajes.</p>'; return; }
+            container.innerHTML=delDia.map(function(v){ var ve=vehiculos[v.vehiculoIndex]||{}; if(v.estado==='cancelado') return '<div class="viaje-item cancelado"><div><strong>🕐 '+v.hora+'</strong> · 🚫 Cancelado</div></div>'; return '<div class="viaje-item" onclick="abrirReserva('+viajes.indexOf(v)+')"><div><strong>🕐 '+v.hora+'</strong> · 🚌 '+ve.tipo+' '+ve.matricula+'</div><div>💺 '+v.asientosDisponibles+'/'+ve.capacidad+' · <strong>$'+v.precio+'</strong> <button class="btn btn-primario btn-sm">Reservar</button></div></div>'; }).join('');
+        }
+
+        // ==========================================
+        // RESERVA
+        // ==========================================
+        function abrirReserva(viajeIndex){ abrirReservaDirecto(viajeIndex); }
+
+        function abrirReservaDirecto(viajeIndex){
+            var viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[],rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[],vehiculos=JSON.parse(localStorage.getItem(K.VEHICULOS))||[],reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[];
+            viajeSeleccionado=viajeIndex; asientosElegidos=[]; modalReservaTeniaDatos=false;
+            var v=viajes[viajeIndex],r=rutas[v.rutaIndex]||{},ve=vehiculos[v.vehiculoIndex]||{};
+            document.getElementById('modal-viaje-info').textContent=(r.nombre||(r.origen+' → '+r.destino))+' · '+v.fecha+' · '+v.hora+' · $'+v.precio+' c/u';
+            var pd=document.getElementById('modal-paradas-info');
+            var hp=v.horariosParadas||[];
+            if(hp.length>0) pd.innerHTML='<strong>🕐 Horarios:</strong> '+hp.map(function(h){ return h.ciudad+': '+h.hora; }).join(' | ');
+            else if(r.paradas) pd.innerHTML='<strong>🛑 Paradas:</strong> '+r.paradas.map(function(p){ return p.ciudad; }).join(' → ');
+            else pd.innerHTML='';
+            
+            // Resetear lugar de recogida
+            document.getElementById('res-lugar-recogida-tipo').value='oficial';
+            document.getElementById('res-lugar-recogida-container').style.display='none';
+            document.getElementById('res-municipio-recogida').value='';
+            document.getElementById('res-descripcion-recogida').value='';
+            
+            var sel=document.getElementById('res-parada-destino');
+            sel.innerHTML='<option value="destino_final">Destino final: '+r.destino+' - $'+v.precio+'</option>';
+            if(r.paradas) r.paradas.forEach(function(p,i){ sel.innerHTML+='<option value="parada_'+i+'">Parada: '+p.ciudad+' - $'+v.precio+'</option>'; });
+            document.getElementById('res-tipo-parada').value='en_parada';
+            document.getElementById('res-lugar-especifico').value='';
+            reservasOcupadas=reservas.filter(function(rr){ return rr.viajeIndex===viajeIndex&&rr.estado!=='cancelada'; }).flatMap(function(rr){ return (rr.pasajeros||[]).map(function(p){ return p.asiento; }); });
+            var left=document.getElementById('seats-left'),right=document.getElementById('seats-right');
+            left.innerHTML=''; right.innerHTML='';
+            for(var i=1;i<=ve.capacidad;i++){ var seat=document.createElement('div'); seat.className='asiento'; seat.textContent=i; if(reservasOcupadas.includes(i)){ seat.classList.add('ocupado'); } else { seat.addEventListener('click',(function(num,el){ return function(){ toggleAsiento(num,el); }; })(i,seat)); } if(i%4===1||i%4===2) left.appendChild(seat); else right.appendChild(seat); }
+            actualizarInfoAsientos();
+            document.getElementById('res-telefono').value=(localStorage.getItem(K.ULTIMO_TEL)||'').replace('53','');
+            document.getElementById('mismo-tel').checked=true;
+            document.getElementById('modal-error').textContent='';
+            document.getElementById('modal-reserva').classList.add('activo');
+        }
+
+        function toggleAsiento(numero,elemento){
+            var index=asientosElegidos.indexOf(numero);
+            if(index!==-1){ asientosElegidos.splice(index,1); elemento.classList.remove('sel'); }
+            else { if(asientosElegidos.length>=6){ mostrarToast('Máximo 6 asientos','error'); return; } asientosElegidos.push(numero); asientosElegidos.sort(function(a,b){ return a-b; }); elemento.classList.add('sel'); modalReservaTeniaDatos=true; setTimeout(function(){ var pc=document.getElementById('pasajeros-container'); if(pc) pc.scrollIntoView({behavior:'smooth',block:'center'}); },200); }
+            actualizarInfoAsientos();
+        }
+
+        function actualizarInfoAsientos(){
+            var info=document.getElementById('asientos-info'),precioInfo=document.getElementById('precio-total-info');
+            if(asientosElegidos.length===0){ info.textContent='Ninguno seleccionado'; precioInfo.textContent=''; }
+            else { info.textContent='Asientos: #'+asientosElegidos.join(', #')+' ('+asientosElegidos.length+' pasajeros)'; var v=(JSON.parse(localStorage.getItem(K.VIAJES))||[])[viajeSeleccionado]||{}; precioInfo.textContent='💰 Total: $'+(v.precio*asientosElegidos.length).toFixed(2); }
+            var mismoTel=document.getElementById('mismo-tel').checked;
+            document.getElementById('pasajeros-container').innerHTML=asientosElegidos.map(function(num,i){ return '<div class="pasajero-box"><h4>🧑 Pasajero #'+num+'</h4><div class="form-grupo"><label>Nombre completo</label><input id="pax-nombre-'+i+'" placeholder="Nombre"></div><div class="form-grupo"><label>Carnet / CI (11 dígitos)</label><input id="pax-ci-'+i+'" placeholder="04041860300" maxlength="11" oninput="validarCI(this)"></div>'+(mismoTel?'':'<div class="form-grupo"><label>Teléfono (8 dígitos)</label><input id="pax-tel-'+i+'" type="tel" placeholder="51234567" maxlength="8" oninput="validarTelefonoSimple(this)"></div>')+'</div>'; }).join('');
+        }
+
+        function confirmarReserva(){
+            var telPrincipal=document.getElementById('res-telefono').value.trim(),errorEl=document.getElementById('modal-error');
+            if(telPrincipal.length!==8||!/^\d{8}$/.test(telPrincipal)){ errorEl.textContent='Teléfono inválido (8 dígitos).'; return; }
+            if(asientosElegidos.length===0){ errorEl.textContent='Selecciona al menos un asiento.'; return; }
+            for(var i=0;i<asientosElegidos.length;i++){ var ciInput=document.getElementById('pax-ci-'+i); if(ciInput&&!validarCI(ciInput)){ errorEl.textContent='CI inválido del pasajero #'+asientosElegidos[i]; return; } }
+            var telCompleto='53'+telPrincipal;
+            localStorage.setItem(K.ULTIMO_TEL,telCompleto);
+            var mismoTel=document.getElementById('mismo-tel').checked,pasajeros=[];
+            for(var i=0;i<asientosElegidos.length;i++){ var nombre=(document.getElementById('pax-nombre-'+i)||{}).value||''; nombre=nombre.trim(); var ci=(document.getElementById('pax-ci-'+i)||{}).value||''; ci=ci.trim(); var tel=mismoTel?telCompleto:'53'+(((document.getElementById('pax-tel-'+i)||{}).value||'').trim()||telPrincipal); if(!nombre){ errorEl.textContent='Nombre del pasajero #'+asientosElegidos[i]; return; } pasajeros.push({asiento:asientosElegidos[i],nombre:nombre,ci:ci,telefono:tel}); }
+            var viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[],rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[],v=viajes[viajeSeleccionado];
+            if(v.asientosDisponibles<asientosElegidos.length){ errorEl.textContent='No hay suficientes asientos.'; return; }
+
+            // Obtener tipo de parada y lugar específico
+            var ps=document.getElementById('res-parada-destino').value;
+            var r=rutas[v.rutaIndex]||{};
+            var destinoFinal=r.destino;
+            if(ps.startsWith('parada_')){ var pi=parseInt(ps.split('_')[1]); if(r.paradas&&r.paradas[pi]) destinoFinal=r.paradas[pi].ciudad; }
+            var tipoParada=document.getElementById('res-tipo-parada').value;
+            var lugarEspecifico=document.getElementById('res-lugar-especifico').value.trim();
+
+            // 🚉 LUGAR DE RECOGIDA (NUEVO)
+            var lrTipo=document.getElementById('res-lugar-recogida-tipo').value;
+            var lrMunicipio='';
+            var lrDescripcion='';
+            if(lrTipo==='personalizado'){
+                lrMunicipio=document.getElementById('res-municipio-recogida').value.trim();
+                lrDescripcion=document.getElementById('res-descripcion-recogida').value.trim();
+            }
+            var lugarRecogida=lrTipo==='personalizado'?(lrMunicipio+(lrDescripcion?' - '+lrDescripcion:'')):'Lugar oficial';
+
+            var reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[];
+            var codigoUnico='TKT-'+Math.random().toString(36).substring(2,6).toUpperCase();
+            var ve=(JSON.parse(localStorage.getItem(K.VEHICULOS))||[])[v.vehiculoIndex]||{};
+            var hpStr=(v.horariosParadas||[]).map(function(h){ return h.ciudad+': '+h.hora; }).join(' | ');
+            var fechaLimite=new Date(); fechaLimite.setHours(fechaLimite.getHours()+24);
+            var ticketsGenerados=[];
+            pasajeros.forEach(function(p){
+                ticketsGenerados.push({codigo:codigoUnico,nombre:p.nombre,asiento:p.asiento,ci:p.ci,telefono:p.telefono,lugarRecogida:lugarRecogida,paradaDescenso:destinoFinal,tipoParada:tipoParada,lugarEspecifico:lugarEspecifico,precio:v.precio,vehiculo:ve,horariosParadas:hpStr,esGrupo:pasajeros.length>1,totalPasajeros:pasajeros.length});
+                var nuevaReserva={id:Date.now()+Math.random(),codigo:codigoUnico,viajeIndex:viajeSeleccionado,pasajeros:[p],telefono:p.telefono,fechaReserva:new Date().toISOString().split('T')[0],fechaHoraReserva:new Date().toISOString(),precioTotal:v.precio,precioUnitario:v.precio,estado:v.pagoAdelantado?'pendiente_pago':'confirmada',paradaDescenso:destinoFinal,tipoParada:tipoParada,lugarEspecifico:lugarEspecifico,lugarRecogida:lugarRecogida,lugarRecogidaTipo:lrTipo,lugarRecogidaMunicipio:lrMunicipio,lugarRecogidaDescripcion:lrDescripcion,rutaNombre:r.nombre||(r.origen+' → '+r.destino),viajeFecha:v.fecha,viajeHora:v.hora,vehiculoInfo:(ve.tipo||'')+' '+(ve.matricula||''),fechaCancelacion:null,fechaLimiteConfirmacion:v.pagoAdelantado?fechaLimite.toISOString():null,montoPendiente:v.pagoAdelantado?(v.montoAdelantado||0):0,esGrupo:pasajeros.length>1};
+                reservas.push(nuevaReserva);
+                if(!clienteActual){ clienteActual={telefono:telCompleto,reservas:[nuevaReserva.id]}; } else { if(!clienteActual.reservas) clienteActual.reservas=[]; clienteActual.reservas.push(nuevaReserva.id); }
+            });
+            try { localStorage.setItem(K.RESERVAS,JSON.stringify(reservas)); localStorage.setItem(K.CLIENTES,JSON.stringify(clienteActual)); v.asientosDisponibles-=pasajeros.length; viajes[viajeSeleccionado]=v; localStorage.setItem(K.VIAJES,JSON.stringify(viajes)); } catch(e){ errorEl.textContent='Error al guardar.'; return; }
+            ultimosTickets=ticketsGenerados; cerrarModal();
+            var esGrupo=pasajeros.length>1;
+            document.getElementById('tickets-generados').innerHTML='<div style="background:#fef2f2;border-radius:12px;padding:16px;margin:12px 0;border:3px dashed #ef4444;"><div style="font-size:10px;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:1px;">'+(esGrupo?'Código del Grupo':'Código de Reserva')+'</div><div style="font-size:26px;font-weight:900;color:#ef4444;letter-spacing:4px;">'+codigoUnico+'</div><div style="font-size:11px;color:#991b1b;margin-top:4px;">'+(esGrupo?'Todos los pasajeros comparten este código':'Guarda este código para consultar tu ticket')+'</div></div>'+ticketsGenerados.map(function(t){ var tipoStr=t.tipoParada==='antes_de'?'⬆️ Antes de ':t.tipoParada==='despues_de'?'⬇️ Después de ':''; var lugarStr=t.lugarEspecifico?' ('+t.lugarEspecifico+')':''; return '<div class="ticket"><div class="ticket-header"><h3>🎫 '+t.nombre+'</h3></div><div class="ticket-body"><p><strong>🚉 Aborda en:</strong> '+t.lugarRecogida+'</p><p><strong>🪪 CI:</strong> '+(t.ci||'—')+'</p><p><strong>💺 Asiento:</strong> #'+t.asiento+'</p><p><strong>📞 Tel:</strong> '+t.telefono+'</p><p><strong>🛑 Baja en:</strong> '+tipoStr+t.paradaDescenso+lugarStr+'</p><p><strong>🚌 Vehículo:</strong> '+(t.vehiculo.tipo||'')+' '+(t.vehiculo.matricula||'')+'</p>'+(t.horariosParadas?'<p><strong>🕐 Horarios:</strong> '+t.horariosParadas+'</p>':'')+'<p><strong>💰 Precio:</strong> $'+t.precio.toFixed(2)+'</p></div></div>'; }).join('');
+            if(v.pagoAdelantado){ document.getElementById('tickets-generados').innerHTML+='<div style="background:#fef3c7;border-radius:12px;padding:14px;margin:12px 0;border:2px solid #f59e0b;text-align:left;font-size:12px;"><strong>⚠️ ¡Importante!</strong> Esta reserva requiere confirmación de pago.<br><br><strong>📋 Proceso:</strong><br>1. Ve a la sección <strong>"Mis Reservas"</strong><br>2. Busca tu reserva con código <strong>'+codigoUnico+'</strong><br>3. Haz clic en <strong>"Confirmar pago"</strong><br>4. Tienes <strong>24 horas</strong> para confirmar<br><br><strong style="color:#ef4444;">⏰ Si no confirmas en 24 horas, los asientos se liberarán.</strong></div>'; }
+            var cfg2=obtenerConfig();
+            var msg=encodeURIComponent('🚌 *Reserva Realizada*\n\nCódigo: '+codigoUnico+'\n'+ticketsGenerados.map(function(t){ return '🎫 '+t.nombre+' | #'+t.asiento; }).join('\n')+'\n\nRuta: '+(r.nombre||(r.origen+' → '+r.destino))+'\nFecha: '+v.fecha+' '+v.hora+(v.pagoAdelantado?'\n\n⚠️ Debes confirmar el pago en "Mis Reservas" antes de 24h.':''));
+            document.getElementById('btn-whatsapp-confirmar').href='https://wa.me/'+(cfg2.whatsapp||'').replace(/\+/g,'')+'?text='+msg;
+            document.getElementById('modal-confirmacion').classList.add('activo');
+            setTimeout(function(){ actualizarContadorReservas(); },100);
+            lanzarConfeti(); actualizarContadorReservas();
+        }
+
+        function intentarCerrarModalReserva(){ if(asientosElegidos.length>0||modalReservaTeniaDatos) document.getElementById('modal-descartar').classList.add('activo'); else cerrarModal(); }
+        function confirmarDescartar(){ document.getElementById('modal-descartar').classList.remove('activo'); cerrarModal(); }
+        function cancelarDescartar(){ document.getElementById('modal-descartar').classList.remove('activo'); }
+        function cerrarModal(){ document.getElementById('modal-reserva').classList.remove('activo'); asientosElegidos=[]; modalReservaTeniaDatos=false; }
+        function cerrarConfirmacion(){ document.getElementById('modal-confirmacion').classList.remove('activo'); }
+        function cerrarModalCancelar(){ document.getElementById('modal-cancelar').classList.remove('activo'); reservaACancelar=null; }
+        function cerrarModalBorrar(){ document.getElementById('modal-borrar').classList.remove('activo'); reservaABorrar=null; }
+
+        function copiarCodigos(){ var codigo=(ultimosTickets[0]||{}).codigo||''; if(navigator.clipboard) navigator.clipboard.writeText(codigo).then(function(){ var btn=document.getElementById('btn-copiar'); btn.textContent='✅ ¡Copiado!'; btn.classList.add('copiado'); setTimeout(function(){ btn.textContent='📋 Copiar código'; btn.classList.remove('copiado'); },2000); }); }
+        function descargarTickets(){ var container=document.getElementById('tickets-generados'); if(!container||!container.children.length) return; var clon=container.cloneNode(true); clon.style.padding='20px'; clon.style.background='#fff'; clon.style.position='absolute'; clon.style.left='-9999px'; clon.style.width='500px'; document.body.appendChild(clon); html2canvas(clon,{scale:3,backgroundColor:'#ffffff'}).then(function(canvas){ document.body.removeChild(clon); var a=document.createElement('a'); a.download='tickets.png'; a.href=canvas.toDataURL('image/png'); a.click(); }); }
+
+        function abrirFormularioPagoDesdeReserva(codigo){ codigoReservaPendiente=codigo; document.getElementById('pago-nombre').value=''; document.getElementById('pago-telefono').value=''; document.getElementById('pago-id-transferencia').value=''; document.getElementById('pago-captura').value=''; document.getElementById('modal-formulario-pago').classList.add('activo'); }
+        function cerrarModalFormularioPago(){ document.getElementById('modal-formulario-pago').classList.remove('activo'); codigoReservaPendiente=null; }
+
+        function enviarConfirmacionPago(){
+            var nombre=document.getElementById('pago-nombre').value.trim(),telefono=document.getElementById('pago-telefono').value.trim(),idTransf=document.getElementById('pago-id-transferencia').value.trim();
+            if(!nombre||!telefono||!idTransf){ mostrarToast('Completa todos los campos obligatorios.','error'); return; }
+            if(telefono.length!==8||!/^\d{8}$/.test(telefono)){ mostrarToast('Teléfono inválido (8 dígitos).','error'); return; }
+            var telCompleto='53'+telefono;
+            var archivo=document.getElementById('pago-captura').files[0];
+            var guardar=function(capturaData){
+                var confirmaciones=JSON.parse(localStorage.getItem(K.CONFIRMACIONES))||[];
+                var reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[];
+                var res=reservas.find(function(r){ return r.codigo===codigoReservaPendiente; });
+                confirmaciones.push({id:Date.now(),viajeIndex:res?res.viajeIndex:null,codigoReserva:codigoReservaPendiente,nombre:nombre,telefono:telCompleto,idTransferencia:idTransf,captura:capturaData||'',estado:'pendiente',fecha:new Date().toISOString().split('T')[0],monto:res?(res.montoPendiente||0):0});
+                localStorage.setItem(K.CONFIRMACIONES,JSON.stringify(confirmaciones));
+                // NO cambiar estado aquí - esperar a que admin confirme
+                document.getElementById('modal-formulario-pago').classList.remove('activo');
+                mostrarToast('✅ Confirmación enviada. El administrador revisará tu pago.','success');
+                codigoReservaPendiente=null;
+                if(document.getElementById('seccion-mis-reservas').style.display!=='none') cargarMisReservas();
+            };
+            if(archivo){ var reader=new FileReader(); reader.onload=function(ev){ guardar(ev.target.result); }; reader.readAsDataURL(archivo); } else { guardar(''); }
+        }
+
+        // ==========================================
+        // MIS TICKETS
+        // ==========================================
+        function buscarMisTickets(){
+            var codigo=document.getElementById('ticket-codigo').value.trim().toUpperCase(),verificacion=document.getElementById('ticket-verificacion').value.trim();
+            var resultado=document.getElementById('mis-tickets-resultado'),sin=document.getElementById('sin-tickets');
+            if(!codigo||!verificacion){ mostrarToast('Ingresa código y CI/teléfono.','error'); return; }
+            var reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[];
+            var reservasEncontradas=reservas.filter(function(r){ return r.codigo===codigo; });
+            if(reservasEncontradas.length===0){ resultado.innerHTML=''; sin.style.display='block'; sin.textContent='No se encontraron reservas con ese código.'; return; }
+            var verificacionNormalizada=normalizarTelefono(verificacion);
+            var autorizado=reservasEncontradas.some(function(r){ return (r.pasajeros||[]).some(function(p){ return p.ci===verificacion||p.telefono===verificacion||normalizarTelefono(p.telefono||r.telefono||'')===verificacionNormalizada||p.telefono===verificacionNormalizada; }); });
+            if(!autorizado){ resultado.innerHTML=''; sin.style.display='block'; sin.textContent='Los datos no coinciden.'; return; }
+            sin.style.display='none';
+            var viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[],rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[];
+            var esGrupo=reservasEncontradas.length>1;
+            resultado.innerHTML=(esGrupo?'<div class="info-rapida">👥 Grupo de '+reservasEncontradas.length+' pasajeros - Código: <strong>'+codigo+'</strong></div>':'')+reservasEncontradas.map(function(r){
+                var v=viajes[r.viajeIndex]||{},rt=rutas[v.rutaIndex]||{},p=(r.pasajeros||[])[0]||{};
+                var tipoStr=r.tipoParada==='antes_de'?'⬆️ Antes de ':r.tipoParada==='despues_de'?'⬇️ Después de ':'';
+                var lugarStr=r.lugarEspecifico?' ('+r.lugarEspecifico+')':'';
+                var recogidaStr=r.lugarRecogida||'Lugar oficial';
+                return '<div class="ticket"><div class="ticket-header"><h3>🎫 '+p.nombre+'</h3></div><div class="ticket-body"><p><strong>🚉 Aborda:</strong> '+recogidaStr+'</p><p><strong>🪪 CI:</strong> '+(p.ci||'—')+'</p><p><strong>💺 Asiento:</strong> #'+p.asiento+'</p><p><strong>🚌 Ruta:</strong> '+(r.rutaNombre||rt.nombre||'—')+'</p><p><strong>📅 Fecha:</strong> '+(r.viajeFecha||'—')+' · '+(r.viajeHora||'—')+'</p><p><strong>🛑 Baja en:</strong> '+tipoStr+(r.paradaDescenso||'—')+lugarStr+'</p><p><strong>🚌 Vehículo:</strong> '+(r.vehiculoInfo||'—')+'</p><p><strong>💰 Precio:</strong> $'+((r.precioTotal||0).toFixed(2))+'</p><p><strong>📊 Estado:</strong> <span class="badge-estado" style="background:'+(r.estado==='confirmada'?'#d1fae5':r.estado==='cancelada'?'#fee2e2':'#fef3c7')+';color:'+(r.estado==='confirmada'?'#065f46':r.estado==='cancelada'?'#991b1b':'#92400e')+';">'+r.estado+'</span></p></div></div>';
+            }).join('')+'<button class="btn btn-outline btn-sm" onclick="descargarMisTickets()" style="width:100%;margin-top:12px;">📥 Descargar todos</button>';
+        }
+
+        function descargarMisTickets(){ var resultado=document.getElementById('mis-tickets-resultado'); if(!resultado||!resultado.innerHTML) return; var clon=resultado.cloneNode(true); clon.style.padding='20px'; clon.style.background='#fff'; clon.style.position='absolute'; clon.style.left='-9999px'; clon.style.width='500px'; document.body.appendChild(clon); html2canvas(clon,{scale:3,backgroundColor:'#ffffff'}).then(function(canvas){ document.body.removeChild(clon); var a=document.createElement('a'); a.download='mis-tickets.png'; a.href=canvas.toDataURL('image/png'); a.click(); }); }
+
+        // ==========================================
+        // MIS RESERVAS
+        // ==========================================
+        function cargarMisReservas(){
+            for(var key in intervalosCountdown){ clearInterval(intervalosCountdown[key]); }
+            intervalosCountdown={};
+            var reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[],lista=document.getElementById('mis-reservas-lista'),sin=document.getElementById('sin-reservas');
+            var misIds=clienteActual?(clienteActual.reservas||[]):[];
+            var misReservas=reservas.filter(function(r){ return misIds.indexOf(r.id)!==-1; });
+            var codigosVistos={},reservasUnicas=[];
+            misReservas.forEach(function(r){ if(!codigosVistos[r.codigo]){ codigosVistos[r.codigo]=true; reservasUnicas.push(r); } });
+            reservasUnicas.sort(function(a,b){ return b.id-a.id; });
+            var filtro=(document.getElementById('filtro-mis-reservas')?.value||'').toLowerCase();
+            if(filtro) reservasUnicas=reservasUnicas.filter(function(r){ return (r.codigo||'').toLowerCase().includes(filtro)||(r.rutaNombre||'').toLowerCase().includes(filtro)||(r.viajeFecha||'').includes(filtro); });
+            if(reservasUnicas.length===0){ lista.innerHTML=''; sin.style.display='block'; return; }
+            sin.style.display='none'; var hoy=new Date();
+            lista.innerHTML=reservasUnicas.map(function(r){
+                var p=(r.pasajeros||[])[0]||{},fv=new Date(r.viajeFecha+'T'+(r.viajeHora||'00:00'));
+                var badge='';
+                if(r.estado==='cancelada') badge='<span class="badge-estado" style="background:#fee2e2;color:#991b1b;">Cancelado</span>';
+                else if(fv<hoy) badge='<span class="badge-estado" style="background:#e2e8f0;color:#64748b;">Completado</span>';
+                else if((fv-hoy)/3600000<=24) badge='<span class="badge-estado" style="background:#fef3c7;color:#92400e;">Próximo</span>';
+                var viaje=(JSON.parse(localStorage.getItem(K.VIAJES))||[])[r.viajeIndex]||{};
+                var totalPasajeros=reservas.filter(function(rr){ return rr.codigo===r.codigo; }).length;
+                var tipoStr=r.tipoParada==='antes_de'?' ⬆️ Antes':r.tipoParada==='despues_de'?' ⬇️ Después':'';
+                var botones='';
+                if(r.estado==='pendiente_pago'&&r.fechaLimiteConfirmacion){ var idCountdown='cd-'+r.id; botones+='<button class="btn btn-warning btn-sm" onclick="abrirFormularioPagoDesdeReserva(\''+r.codigo+'\')" style="font-size:9px;background:#f59e0b;color:#000;">💰 Confirmar pago</button>'; botones+='<div class="countdown-reserva" id="'+idCountdown+'">⏰ <span class="cd-num"></span></div>'; setTimeout(function(){ iniciarCountdownReserva(r.fechaLimiteConfirmacion,idCountdown,r.id); },100); }
+                botones+='<button class="btn btn-outline btn-sm" onclick="verTicketIndividual(\''+r.codigo+'\')" style="font-size:9px;">🎫 Ver ticket</button>';
+                var puedeCanc=r.estado!=='cancelada'&&fv>hoy&&(fv-hoy)/3600000>24;
+                if(puedeCanc) botones+='<button class="btn btn-peligro btn-sm" onclick="abrirCancelar(\''+r.codigo+'\')" style="font-size:9px;">🗑️ Cancelar</button>';
+                return '<div class="reserva-card"><div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:8px;"><div><h3 style="font-size:14px;">'+(r.rutaNombre||'Reserva')+' '+badge+(totalPasajeros>1?' <small>('+totalPasajeros+' pasajeros)</small>':'')+'</h3><div style="font-size:11px;color:var(--texto-claro);">📅 '+(r.viajeFecha||'—')+' · 🕐 '+(r.viajeHora||'—')+' · 💺 #'+(p.asiento||'—')+'</div><div style="font-size:11px;color:var(--texto-claro);">🧑 '+(p.nombre||'—')+' · 💰 $'+((r.precioTotal||0).toFixed(2))+'</div></div></div><div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;"><span style="font-size:10px;color:var(--texto-claro);">'+r.codigo+'</span>'+botones+'</div></div>';
+            }).join('');
+        }
+
+        function iniciarCountdownReserva(fechaLimite,elementId,reservaId){ var el=document.getElementById(elementId); if(!el) return; function actualizar(){ var ahora=new Date().getTime(),limite=new Date(fechaLimite).getTime(),diff=limite-ahora; if(diff<=0){ el.innerHTML='<span style="color:#ef4444;">⏰ ¡Tiempo agotado!</span>'; clearInterval(intervalosCountdown[reservaId]); liberarAsientosReserva(reservaId); return; } var horas=Math.floor(diff/3600000),minutos=Math.floor((diff%3600000)/60000),segundos=Math.floor((diff%60000)/1000); el.innerHTML='⏰ <span class="cd-num">'+String(horas).padStart(2,'0')+':'+String(minutos).padStart(2,'0')+':'+String(segundos).padStart(2,'0')+'</span> para confirmar'; } actualizar(); intervalosCountdown[reservaId]=setInterval(actualizar,1000); }
+        function liberarAsientosReserva(reservaId){ var reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[],res=reservas.find(function(r){ return r.id===reservaId; }); if(!res||res.estado!=='pendiente_pago') return; var codigo=res.codigo; reservas.forEach(function(r){ if(r.codigo===codigo){ r.estado='cancelada'; r.fechaCancelacion=new Date().toISOString(); } }); localStorage.setItem(K.RESERVAS,JSON.stringify(reservas)); var viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[]; if(viajes[res.viajeIndex]){ viajes[res.viajeIndex].asientosDisponibles+=(res.pasajeros||[]).length||1; localStorage.setItem(K.VIAJES,JSON.stringify(viajes)); } if(document.getElementById('seccion-mis-reservas').style.display!=='none') cargarMisReservas(); }
+        function verTicketIndividual(codigo){ document.getElementById('ticket-codigo').value=codigo; document.getElementById('ticket-verificacion').value=''; navegar('mis-tickets'); document.getElementById('ticket-verificacion').focus(); }
+
+        function actualizarContadorReservas(){ var reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[],misIds=clienteActual?(clienteActual.reservas||[]):[]; var codigosUnicos={}; reservas.filter(function(r){ return misIds.indexOf(r.id)!==-1; }).forEach(function(r){ codigosUnicos[r.codigo]=true; }); var count=Object.keys(codigosUnicos).length; var badge=document.getElementById('reservas-count'); if(count>0){ badge.textContent=count; badge.style.display='flex'; } else { badge.style.display='none'; } }
+
+        function abrirCancelar(codigo){ var reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[],res=reservas.find(function(r){ return r.codigo===codigo; }); if(!res) return; var fv=new Date(res.viajeFecha+'T'+(res.viajeHora||'00:00')),diff=(fv-new Date())/3600000; if(diff<=24&&diff>0){ mostrarToast('Solo 24h antes','error'); return; } if(diff<=0){ mostrarToast('Viaje ya pasó','error'); return; } reservaACancelar=res; document.getElementById('cancelar-info').textContent='Reserva: '+res.codigo; document.getElementById('modal-cancelar').classList.add('activo'); }
+        function confirmarCancelacion(){ if(!reservaACancelar) return; var codigo=reservaACancelar.codigo,reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[],totalLiberados=0; reservas.forEach(function(r){ if(r.codigo===codigo&&r.estado!=='cancelada'){ r.estado='cancelada'; r.fechaCancelacion=new Date().toISOString(); totalLiberados+=(r.pasajeros||[]).length||1; } }); localStorage.setItem(K.RESERVAS,JSON.stringify(reservas)); var viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[]; if(viajes[reservaACancelar.viajeIndex]){ viajes[reservaACancelar.viajeIndex].asientosDisponibles+=totalLiberados; localStorage.setItem(K.VIAJES,JSON.stringify(viajes)); } mostrarToast('Cancelada','success'); cerrarModalCancelar(); actualizarContadorReservas(); if(document.getElementById('seccion-mis-reservas').style.display!=='none') cargarMisReservas(); }
+        function abrirBorrar(codigo){ var reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[],res=reservas.find(function(r){ return r.codigo===codigo; }); if(!res) return; reservaABorrar=res; document.getElementById('borrar-info').textContent='Reserva: '+res.codigo; document.getElementById('modal-borrar').classList.add('activo'); }
+        function confirmarBorrado(){ if(!reservaABorrar) return; var codigo=reservaABorrar.codigo,reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[]; reservas.forEach(function(r){ if(r.codigo===codigo&&r.estado==='cancelada'){ var viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[]; if(viajes[r.viajeIndex]){ viajes[r.viajeIndex].asientosDisponibles+=(r.pasajeros||[]).length||1; localStorage.setItem(K.VIAJES,JSON.stringify(viajes)); } } }); reservas=reservas.filter(function(r){ return r.codigo!==codigo; }); localStorage.setItem(K.RESERVAS,JSON.stringify(reservas)); if(clienteActual&&clienteActual.reservas){ clienteActual.reservas=clienteActual.reservas.filter(function(id){ return !reservas.find(function(r){ return r.id===id; }); }); localStorage.setItem(K.CLIENTES,JSON.stringify(clienteActual)); } mostrarToast('Eliminada','success'); cerrarModalBorrar(); actualizarContadorReservas(); if(document.getElementById('seccion-mis-reservas').style.display!=='none') cargarMisReservas(); }
+
+        document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ if(document.getElementById('modal-confirmacion').classList.contains('activo')) cerrarConfirmacion(); else if(document.getElementById('modal-cancelar').classList.contains('activo')) cerrarModalCancelar(); else if(document.getElementById('modal-borrar').classList.contains('activo')) cerrarModalBorrar(); else if(document.getElementById('modal-descartar').classList.contains('activo')) cancelarDescartar(); else if(document.getElementById('modal-reserva').classList.contains('activo')) intentarCerrarModalReserva(); else if(document.getElementById('modal-formulario-pago').classList.contains('activo')) cerrarModalFormularioPago(); } });
+        ['modal-reserva','modal-confirmacion','modal-cancelar','modal-borrar','modal-descartar','modal-formulario-pago'].forEach(function(id){ document.getElementById(id).addEventListener('click',function(e){ if(e.target===this){ if(id==='modal-reserva') intentarCerrarModalReserva(); else if(id==='modal-confirmacion') cerrarConfirmacion(); else if(id==='modal-cancelar') cerrarModalCancelar(); else if(id==='modal-borrar') cerrarModalBorrar(); else if(id==='modal-descartar') cancelarDescartar(); else if(id==='modal-formulario-pago') cerrarModalFormularioPago(); }}); });
+
+        aplicarConfiguracion(); cargarHome(); actualizarContadorReservas();
+        mostrarPortadaYCarrusel(true);
+    </script>
+</body>
+</html>

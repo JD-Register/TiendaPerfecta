@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Panel Admin | Agencia de Viajes</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"
+            onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js';">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.25/dist/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #f1f5f9;
+            --surface: #ffffff;
+            --sidebar-bg: #0f172a;
+            --sidebar-hover: #1e293b;
+            --primary: #e63946;
+            --primary-dark: #c1121f;
+            --primary-light: #fef2f2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text: #0f172a;
+            --text-secondary: #64748b;
+            --text-sidebar: #cbd5e1;
+            --border: #e2e8f0;
+            --radius: 16px;
+            --radius-sm: 8px;
+            --transition: 0.2s ease;
+        }
+
+        .dark-mode {
+            --bg: #1a1a2e;
+            --surface: #16213e;
+            --text: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --primary-light: #2d1a1a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; }
+        .sidebar-overlay.active { display: block; }
+
+        .sidebar {
+            position: fixed; top: 0; left: 0; width: 260px; height: 100vh;
+            background: var(--sidebar-bg); padding: 20px 14px; z-index: 100;
+            display: flex; flex-direction: column; transition: transform 0.3s; overflow-y: auto;
+        }
+
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 6px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 16px; }
+        .sidebar-logo .logo-icon { width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary), #c1121f); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; }
+        .sidebar-logo h2 { font-size: 17px; font-weight: 700; color: #fff; }
+        .sidebar-logo span { color: #fca5a5; }
+
+        .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; color: var(--text-sidebar); text-decoration: none; font-weight: 600; font-size: 13px; transition: var(--transition); cursor: pointer; position: relative; }
+        .sidebar-nav a:hover, .sidebar-nav a.active { background: var(--sidebar-hover); color: #fff; }
+        .sidebar-nav a svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+        .sidebar-badge { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: #ef4444; color: #fff; min-width: 18px; height: 18px; border-radius: 50%; font-size: 9px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+
+        .sidebar-footer { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; display: flex; flex-direction: column; gap: 4px; }
+        .btn-sidebar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; background: none; border: none; color: var(--text-sidebar); cursor: pointer; font-weight: 600; font-size: 12px; transition: var(--transition); width: 100%; text-align: left; font-family: inherit; }
+        .btn-sidebar:hover { background: var(--sidebar-hover); color: #fff; }
+        .btn-sidebar.danger:hover { background: rgba(239,68,68,0.2); color: #fca5a5; }
+
+        .btn-hamburger { display: none; position: fixed; top: 14px; left: 14px; z-index: 110; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; width: 40px; height: 40px; cursor: pointer; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .btn-hamburger svg { width: 22px; height: 22px; }
+
+        .main { margin-left: 260px; flex: 1; padding: 24px; transition: margin 0.3s; width: calc(100% - 260px); min-width: 0; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+        .topbar h1 { font-size: 22px; font-weight: 800; }
+        .topbar .fecha { font-size: 13px; color: var(--text-secondary); }
+        .topbar-actions { display: flex; align-items: center; gap: 8px; }
+        #contenido-principal { width: 100%; }
+
+        .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .card { background: var(--surface); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border); transition: var(--transition); }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.04); }
+        .card .icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
+        .card .number { font-size: 28px; font-weight: 900; }
+        .card .label { font-size: 10px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .section { background: var(--surface); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; border: 1px solid var(--border); width: 100%; }
+        .section h2 { font-size: 17px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .section .desc { color: var(--text-secondary); font-size: 13px; margin-bottom: 16px; }
+
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; align-items: end; margin-bottom: 12px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; letter-spacing: 0.5px; }
+        .form-group input, .form-group select, .form-group textarea { padding: 9px 11px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; background: #f8fafc; transition: var(--transition); font-family: inherit; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(230,57,70,0.06); background: #fff; }
+        .form-group input[type="checkbox"] { width: auto; padding: 0; margin-right: 6px; }
+        .form-group input[type="file"] { padding: 8px; border: 2px dashed var(--border); cursor: pointer; background: #f8fafc; }
+        .form-group-check { display: flex; align-items: center; gap: 8px; padding-top: 20px; }
+        .form-group-check label { font-size: 11px; font-weight: 600; cursor: pointer; text-transform: none; color: var(--text); }
+
+        .btn { padding: 9px 16px; border-radius: var(--radius-sm); font-weight: 700; font-size: 11px; cursor: pointer; border: none; transition: var(--transition); white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; font-family: inherit; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-success:hover { background: #059669; }
+        .btn-warning { background: var(--warning); color: #000; }
+        .btn-warning:hover { background: #d97706; }
+        .btn-sm { padding: 4px 8px; font-size: 9px; border-radius: 20px; }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary-light); }
+        .btn-outline-success { background: transparent; border: 2px solid var(--success); color: var(--success); }
+        .btn-outline-success:hover { background: #d1fae5; }
+        .btn-outline-danger { background: transparent; border: 2px solid var(--danger); color: var(--danger); }
+        .btn-outline-danger:hover { background: #fee2e2; }
+        .btn-export { background: #7c3aed; color: #fff; font-size: 10px; padding: 5px 10px; }
+        .btn-duplicar { background: #8b5cf6; color: #fff; }
+        .btn-copiar { background: #f1f5f9; color: var(--text); border: 1px solid var(--border); }
+        .btn-copiar:hover { background: #e2e8f0; }
+        .btn-gestionar { background: #6366f1; color: #fff; font-size: 10px; padding: 5px 10px; }
+        .btn-toggle-activo { background: var(--success) !important; color: #fff !important; border-color: var(--success) !important; }
+        .btn-logout-top { background: none; border: 2px solid var(--danger); color: var(--danger); padding: 6px 12px; border-radius: 20px; font-size: 10px; cursor: pointer; }
+        .btn-notificar { background: #25d366; color: #fff; }
+
+        .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: auto; }
+        th { text-align: left; padding: 9px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); background: #f8fafc; border-bottom: 2px solid var(--border); white-space: nowrap; cursor: pointer; }
+        th:hover { color: var(--primary); }
+        td { padding: 9px 10px; border-bottom: 1px solid var(--border); }
+        tr.cancelada { background: #fef2f2; opacity: 0.7; }
+
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 9px; font-weight: 700; }
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+        .badge-tipo-parada { background: #ede9fe; color: #5b21b6; font-size: 8px; padding: 2px 6px; border-radius: 10px; }
+
+        .search-box { position: relative; margin-bottom: 12px; }
+        .search-box input { width: 100%; padding: 9px 12px 9px 36px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; }
+
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px 22px; border-radius: 40px; font-weight: 700; font-size: 12px; z-index: 2000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        .toast.show { opacity: 1; }
+        .toast.success { background: var(--success); color: #fff; }
+        .toast.error { background: var(--danger); color: #fff; }
+
+        .modal-admin { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 800; align-items: center; justify-content: center; padding: 16px; }
+        .modal-admin.activo { display: flex; }
+        .modal-admin .modal-content { background: #fff; border-radius: var(--radius); padding: 22px; max-width: 550px; width: 100%; max-height: 80vh; overflow-y: auto; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .countdown-container { background: linear-gradient(135deg, #1a1a2e, #2d1a1a); border-radius: var(--radius); padding: 24px; text-align: center; color: #fff; margin-bottom: 20px; }
+        .countdown-timer { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+        .countdown-item .countdown-value { font-size: 36px; font-weight: 900; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 12px 16px; min-width: 70px; }
+
+        .bus-simulador { background: #f8fafc; border-radius: var(--radius-sm); padding: 20px; border: 2px solid #cbd5e1; max-width: 350px; margin: 0 auto; }
+        .bus-grid-sim { display: grid; grid-template-columns: 1fr 30px 1fr; gap: 4px; }
+        .bus-col-sim { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        .asiento-sim { aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 10px; border: 2px solid var(--border); background: #fff; }
+        .asiento-sim.libre { background: #d1fae5; border-color: #10b981; color: #065f46; }
+        .asiento-sim.ocupado { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+        .asiento-sim.pendiente { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
+
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .btn-hamburger { display: flex; }
+            .main { margin-left: 0; width: 100%; padding: 16px 10px; padding-top: 60px; }
+            .cards { grid-template-columns: repeat(2, 1fr); }
+            table { font-size: 10px; }
+            th, td { padding: 6px 4px; font-size: 8px; }
+        }
+        @media (max-width: 500px) {
+            .cards { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            th, td { padding: 4px 3px; font-size: 7px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+    <button class="btn-hamburger" id="btn-hamburger" onclick="toggleSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo"><div class="logo-icon">🚌</div><h2>Agencia<span>Admin</span></h2></div>
+        <nav class="sidebar-nav">
+            <a class="active" onclick="navegar('dashboard', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> Panel</a>
+            <a onclick="navegar('rutas', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6"/><path d="M21 19v-6a2 2 0 00-2-2h-2a2 2 0 00-2 2v6"/><rect x="9" y="5" width="6" height="14" rx="1"/></svg> Rutas</a>
+            <a onclick="navegar('viajes', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Viajes</a>
+            <a onclick="navegar('vehiculos', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="22" height="12" rx="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><line x1="8" y1="6" x2="16" y2="6"/></svg> Vehículos</a>
+            <a onclick="navegar('reservas', this)" id="nav-reservas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Reservas<span class="sidebar-badge" id="sidebar-badge-reservas" style="display:none;">0</span></a>
+            <a onclick="navegar('confirmaciones', this)" id="nav-confirmaciones"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Confirmaciones<span class="sidebar-badge" id="sidebar-badge-confirmaciones" style="display:none;">0</span></a>
+            <a onclick="navegar('gestion-viaje', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Gestión Viaje</a>
+            <a onclick="navegar('viajes-futuros', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Viajes Futuros</a>
+            <a onclick="navegar('config', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg> Configuración</a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="btn-sidebar" id="btn-toggle-dark" onclick="toggleDarkMode()">🌓 Modo Oscuro</button>
+            <button class="btn-sidebar" onclick="backupDatos()">📥 Backup</button>
+            <button class="btn-sidebar" onclick="window.open('agencia.html','_blank')">🌐 Ver Tienda</button>
+            <button class="btn-sidebar danger" onclick="cerrarSesion()">🚪 Salir</button>
+        </div>
+    </aside>
+
+    <div class="main">
+        <div class="topbar">
+            <h1 id="titulo-seccion">📊 Panel</h1>
+            <div class="topbar-actions">
+                <span class="fecha" id="fecha-actual"></span>
+                <button class="btn-logout-top" onclick="cerrarSesion()">🚪 Salir</button>
+            </div>
+        </div>
+        <div id="contenido-principal"></div>
+    </div>
+
+    <!-- MODAL CONFIRMAR (verde para confirmar, rojo para borrar) -->
+    <div class="modal-admin" id="modal-confirmar">
+        <div class="modal-content" style="max-width:450px;text-align:center;">
+            <div style="font-size:40px;margin-bottom:8px;" id="modal-icono">⚠️</div>
+            <h3 id="modal-confirmar-titulo">¿Estás seguro?</h3>
+            <p id="modal-confirmar-texto" style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;"></p>
+            <div class="modal-actions" style="justify-content:center;">
+                <button class="btn btn-danger" id="modal-confirmar-btn-si">Confirmar</button>
+                <button class="btn btn-outline btn-sm" onclick="cerrarModalConfirmar()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-admin" id="modal-editar-viaje"><div class="modal-content" id="modal-editar-viaje-contenido"></div></div>
+    <div class="modal-admin" id="modal-editar-vehiculo"><div class="modal-content" id="modal-editar-vehiculo-contenido"></div></div>
+    <div class="modal-admin" id="modal-detalle-reserva"><div class="modal-content" id="modal-detalle-reserva-contenido"></div></div>
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 
+
+        var K = { VEHICULOS:'vp_v', RUTAS:'vp_r', VIAJES:'vp_vj', RESERVAS:'vp_rs', CONFIG:'vp_cf', LOGS:'vp_logs', CONFIRMACIONES:'vp_conf' };
+        if(!localStorage.getItem(K.VEHICULOS)) localStorage.setItem(K.VEHICULOS, '[]');
+        if(!localStorage.getItem(K.RUTAS)) localStorage.setItem(K.RUTAS, '[]');
+        if(!localStorage.getItem(K.VIAJES)) localStorage.setItem(K.VIAJES, '[]');
+        if(!localStorage.getItem(K.RESERVAS)) localStorage.setItem(K.RESERVAS, '[]');
+        if(!localStorage.getItem(K.LOGS)) localStorage.setItem(K.LOGS, '[]');
+        if(!localStorage.getItem(K.CONFIRMACIONES)) localStorage.setItem(K.CONFIRMACIONES, '[]');
+        if(!localStorage.getItem(K.CONFIG)) { localStorage.setItem(K.CONFIG, JSON.stringify({ nombre:'Agencia de Viajes', telefono:'', whatsapp:'', email:'', direccion:'', horario:'Lun-Dom 8AM-8PM', color:'#e63946', emoji:'🚌', usarPrecioPorParada:false, portada:'', carrusel:[], logo:'' })); }
+        document.getElementById('fecha-actual').textContent = new Date().toLocaleDateString('es-ES', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+        var chart=null, tmpParadas=[], editandoRutaIdx=-1, callbackConfirmar=null, editandoViajeIdx=-1, editandoVehiculoIdx=-1, countdownInterval=null;
+
+        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('adminDarkMode', document.body.classList.contains('dark-mode')); document.getElementById('btn-toggle-dark').textContent = document.body.classList.contains('dark-mode') ? '☀️ Modo Claro' : '🌓 Modo Oscuro'; }
+        if(localStorage.getItem('adminDarkMode') === 'true') document.body.classList.add('dark-mode');
+        (function(){ document.getElementById('btn-toggle-dark').textContent = document.body.classList.contains('dark-mode') ? '☀️ Modo Claro' : '🌓 Modo Oscuro'; })();
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('active'); }
+        function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('active'); }
+        function toast(m,t){ var el=document.getElementById('toast'); el.textContent=m; el.className='toast '+t+' show'; setTimeout(()=>el.classList.remove('show'),2500); }
+        function cerrarSesion(){ sessionStorage.removeItem('clienteSesion'); window.location.href='login-cliente.html'; }
+
+        // ==========================================
+        // NAVEGACIÓN
+        // ==========================================
+        function navegar(seccion, el) {
+            closeSidebar(); document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('mostrar'));
+            if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+            var botones = document.querySelectorAll('.sidebar-nav a'); botones.forEach(function(a) { a.classList.remove('active'); }); if (el) el.classList.add('active');
+            var c = document.getElementById('contenido-principal'); c.innerHTML = '';
+            var titulos = { dashboard: '📊 Panel', rutas: '🗺️ Rutas', viajes: '📅 Viajes', vehiculos: '🚌 Vehículos', reservas: '🎫 Reservas', confirmaciones: '✅ Confirmaciones', 'gestion-viaje': '📊 Gestión de Viaje', 'viajes-futuros': '🔮 Viajes Futuros', config: '⚙️ Configuración' };
+            document.getElementById('titulo-seccion').textContent = titulos[seccion] || 'Panel';
+            switch (seccion) { case 'dashboard': renderDashboard(c); break; case 'rutas': renderRutas(c); break; case 'viajes': renderViajes(c); break; case 'vehiculos': renderVehiculos(c); break; case 'reservas': renderReservas(c); break; case 'confirmaciones': renderConfirmaciones(c); break; case 'gestion-viaje': renderGestionViaje(c); break; case 'viajes-futuros': renderViajesFuturos(c); break; case 'config': renderConfig(c); break; }
+            actualizarBadges();
+        }
+        document.querySelectorAll('.sidebar-nav a').forEach(function(link) { link.addEventListener('click', function() { closeSidebar(); }); });
+
+        function actualizarBadges(){
+            var res=JSON.parse(localStorage.getItem(K.RESERVAS))||[], conf=JSON.parse(localStorage.getItem(K.CONFIRMACIONES))||[];
+            var p=res.filter(r=>r.estado==='pendiente'||r.estado==='pendiente_pago').length;
+            var b1=document.getElementById('sidebar-badge-reservas'); if(p>0){b1.textContent=p;b1.style.display='flex';}else{b1.style.display='none';}
+            var pc=conf.filter(c=>c.estado==='pendiente').length;
+            var b2=document.getElementById('sidebar-badge-confirmaciones'); if(pc>0){b2.textContent=pc;b2.style.display='flex';}else{b2.style.display='none';}
+        }
+
+        // ==========================================
+        // MODAL CONFIRMACIÓN (COLORES SEGÚN TIPO)
+        // ==========================================
+        function abrirModalConfirmar(titulo, texto, callback, tipoConfirmacion) {
+            document.getElementById('modal-confirmar-titulo').textContent = titulo;
+            document.getElementById('modal-confirmar-texto').textContent = texto;
+            callbackConfirmar = callback;
+            
+            var btnSi = document.getElementById('modal-confirmar-btn-si');
+            var icono = document.getElementById('modal-icono');
+            
+            if (tipoConfirmacion === 'confirmar' || tipoConfirmacion === 'verde') {
+                // Verde para confirmar
+                btnSi.className = 'btn btn-success';
+                icono.textContent = '✅';
+            } else if (tipoConfirmacion === 'borrar' || tipoConfirmacion === 'rojo') {
+                // Rojo para borrar
+                btnSi.className = 'btn btn-danger';
+                icono.textContent = '⚠️';
+            } else {
+                // Por defecto rojo
+                btnSi.className = 'btn btn-danger';
+                icono.textContent = '⚠️';
+            }
+            
+            document.getElementById('modal-confirmar').classList.add('activo');
+        }
+        function cerrarModalConfirmar() { document.getElementById('modal-confirmar').classList.remove('activo'); callbackConfirmar = null; }
+        document.getElementById('modal-confirmar-btn-si').addEventListener('click', () => { if (callbackConfirmar) callbackConfirmar(); cerrarModalConfirmar(); });
+        document.getElementById('modal-confirmar').addEventListener('click', function(e) { if (e.target === this) cerrarModalConfirmar(); });
+
+        // ==========================================
+        // DASHBOARD
+        // ==========================================
+        function renderDashboard(c){ /* ... SIN CAMBIOS ... */ var v=JSON.parse(localStorage.getItem(K.VEHICULOS))||[], r=JSON.parse(localStorage.getItem(K.RUTAS))||[], vj=JSON.parse(localStorage.getItem(K.VIAJES))||[], rs=JSON.parse(localStorage.getItem(K.RESERVAS))||[]; var hoy=new Date().toISOString().split('T')[0]; var ingresosHoy=rs.filter(x=>x.fechaReserva===hoy&&x.estado==='confirmada').reduce((s,x)=>s+(x.precioTotal||0),0); var pendientes=rs.filter(x=>x.estado==='pendiente'||x.estado==='pendiente_pago').length; var viajesHoy=vj.filter(x=>x.fecha===hoy&&x.estado==='activo'); var html=`<div class="cards"><div class="card"><div class="icon" style="background:#dbeafe;color:#2563eb;">🚌</div><div class="number">${v.length}</div><div class="label">Vehículos</div></div><div class="card"><div class="icon" style="background:#d1fae5;color:#10b981;">🗺️</div><div class="number">${r.length}</div><div class="label">Rutas</div></div><div class="card"><div class="icon" style="background:#fef3c7;color:#f59e0b;">📅</div><div class="number">${vj.filter(x=>x.estado==='activo').length}</div><div class="label">Viajes Activos</div></div><div class="card"><div class="icon" style="background:#ede9fe;color:#7c3aed;">💰</div><div class="number">$${ingresosHoy.toLocaleString()}</div><div class="label">Ingresos Hoy</div></div></div>`; if(viajesHoy.length){ html+='<div class="section"><h2>🟢 Viajes de Hoy</h2>'; viajesHoy.forEach(v=>{ let rt=(JSON.parse(localStorage.getItem(K.RUTAS))||[])[v.rutaIndex]||{}, ve=(JSON.parse(localStorage.getItem(K.VEHICULOS))||[])[v.vehiculoIndex]||{}; let cap=ve.capacidad||40, ocup=cap-v.asientosDisponibles, pct=Math.round((ocup/cap)*100); html+=`<div class="viaje-dashboard-card"><div><strong>${rt.nombre||'?'}</strong><br><small>${v.hora} · ${ve.tipo||''} ${ve.matricula||''}</small></div><div style="text-align:center;"><small>${ocup}/${cap} (${pct}%)</small><div class="ocupacion-bar"><div class="ocupacion-fill" style="width:${pct}%;background:${pct>80?'#10b981':pct>40?'#f59e0b':'#ef4444'};"></div></div></div><div><strong>$${v.precio}</strong></div><button class="btn btn-gestionar btn-sm" onclick="abrirGestionViaje(${vj.indexOf(v)})">📊 Gestionar</button></div>`; }); html+='</div>'; } if(pendientes) html+=`<div class="section"><h2>📋 Pendientes</h2><p style="font-size:24px;font-weight:900;color:var(--warning);">${pendientes} reservas</p></div>`; html+='<div class="section"><h2>📈 Ingresos 7 días</h2><div class="chart-container"><canvas id="chart-ingresos"></canvas></div></div>'; c.innerHTML=html; drawChart(); }
+        function drawChart(){ /* ... SIN CAMBIOS ... */ var rs=JSON.parse(localStorage.getItem(K.RESERVAS))||[], dias=[], ingresos=[]; for(var i=6;i>=0;i--){ var d=new Date(); d.setDate(d.getDate()-i); var f=d.toISOString().split('T')[0]; dias.push(d.toLocaleDateString('es-ES',{weekday:'short',day:'numeric'})); ingresos.push(rs.filter(r=>r.fechaReserva===f&&r.estado==='confirmada').reduce((s,r)=>s+(r.precioTotal||0),0)); } var canvas=document.getElementById('chart-ingresos'); if(!canvas) return; if(chart) chart.destroy(); chart=new Chart(canvas.getContext('2d'),{type:'bar',data:{labels:dias,datasets:[{label:'$',data:ingresos,backgroundColor:'#e63946',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}}); }
+
+        // ==========================================
+        // RUTAS
+        // ==========================================
+        function renderRutas(c){ /* ... SIN CAMBIOS ... */ tmpParadas=[]; editandoRutaIdx=-1; c.innerHTML=`<div class="section"><h2>🗺️ Rutas</h2><div class="form-row"><div class="form-group"><label>Nombre</label><input id="r-nombre"></div><div class="form-group"><label>Origen</label><input id="r-origen"></div><div class="form-group"><label>Destino</label><input id="r-destino"></div><div class="form-group"><label>Duración (h)</label><input type="number" id="r-dur" value="8" step="0.5"></div><div class="form-group"><label>Tipo</label><select id="r-tipo"><option>Regular</option><option>Express</option><option>Turístico</option></select></div></div><div class="paradas-dynamic"><h4>🛑 CIUDADES DE PARADA</h4><div id="paradas-lista"></div><button class="btn btn-outline btn-sm" onclick="addParada()">+ Agregar</button></div><button class="btn btn-primary" onclick="saveRuta()">💾 Guardar Ruta</button><div class="search-box" style="margin-top:12px;"><input id="buscar-ruta" placeholder="Buscar..." oninput="loadRutas()"></div><div class="table-wrapper"><table><thead><tr><th>Nombre</th><th>Origen</th><th>Paradas</th><th>Destino</th><th>Dur.</th><th>Tipo</th><th>Acciones</th></tr></thead><tbody id="tabla-rutas"></tbody></table></div></div>`; loadRutas(); }
+        function todasLasRutas(){ return JSON.parse(localStorage.getItem(K.RUTAS))||[]; }
+        function renderFilasRutas(datos){ return datos.map(r=>{ let idx=(JSON.parse(localStorage.getItem(K.RUTAS))||[]).findIndex(item=>item.id===r.id); let ps=(r.paradas||[]).map(p=>`<span class="parada-badge">${p.ciudad}</span>`).join(' ')||'Directo'; return `<tr><td><strong>${r.nombre}</strong></td><td>${r.origen}</td><td>${ps}</td><td>${r.destino}</td><td>${r.duracion}h</td><td><span class="badge badge-info">${r.tipo}</span></td><td><button class="btn btn-warning btn-sm" onclick="editarRuta(${idx})">✏️</button> <button class="btn btn-danger btn-sm" onclick="confirmarDelRuta(${idx})">🗑</button></td></tr>`; }).join(''); }
+        function addParada(){ var i=tmpParadas.length; tmpParadas.push(''); var d=document.createElement('div'); d.className='parada-row'; d.id='pr-'+i; d.innerHTML=`<input placeholder="Ciudad" id="pc-${i}"><button class="btn btn-danger btn-sm" onclick="delParada(${i})">🗑</button>`; document.getElementById('paradas-lista').appendChild(d); }
+        function delParada(i){ tmpParadas.splice(i,1); var lista=document.getElementById('paradas-lista'); lista.innerHTML=''; tmpParadas.forEach((p,idx)=>{ var d=document.createElement('div'); d.className='parada-row'; d.id='pr-'+idx; d.innerHTML=`<input placeholder="Ciudad" id="pc-${idx}" value="${p}"><button class="btn btn-danger btn-sm" onclick="delParada(${idx})">🗑</button>`; lista.appendChild(d); }); }
+        function saveRuta(){ var nombre=document.getElementById('r-nombre').value.trim(), origen=document.getElementById('r-origen').value.trim(), destino=document.getElementById('r-destino').value.trim(), duracion=parseFloat(document.getElementById('r-dur').value), tipo=document.getElementById('r-tipo').value; if(!nombre||!origen||!destino) return toast('Completa nombre, origen y destino','error'); var paradas=[]; tmpParadas.forEach((_,i)=>{ var ce=document.getElementById('pc-'+i); if(ce&&ce.value.trim()) paradas.push({ciudad:ce.value.trim()}); }); var rutas=JSON.parse(localStorage.getItem(K.RUTAS)); if(editandoRutaIdx>=0&&editandoRutaIdx<rutas.length){ rutas[editandoRutaIdx]={id:rutas[editandoRutaIdx].id,nombre,origen,destino,duracion,tipo,paradas}; toast('Ruta actualizada','success'); } else { rutas.push({id:Date.now(),nombre,origen,destino,duracion,tipo,paradas}); toast('Ruta guardada','success'); } localStorage.setItem(K.RUTAS,JSON.stringify(rutas)); loadRutas(); editandoRutaIdx=-1; document.getElementById('r-nombre').value=''; document.getElementById('r-origen').value=''; document.getElementById('r-destino').value=''; document.getElementById('paradas-lista').innerHTML=''; tmpParadas=[]; }
+        function loadRutas(){ var rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[]; var filtro=(document.getElementById('buscar-ruta')?.value||'').toLowerCase(); var f=filtro?rutas.filter(r=>r.nombre.toLowerCase().includes(filtro)||r.origen.toLowerCase().includes(filtro)||r.destino.toLowerCase().includes(filtro)):rutas; document.getElementById('tabla-rutas').innerHTML=renderFilasRutas(f); }
+        function editarRuta(i){ var rutas=JSON.parse(localStorage.getItem(K.RUTAS)); if(i<0||i>=rutas.length) return; var r=rutas[i]; editandoRutaIdx=i; document.getElementById('r-nombre').value=r.nombre; document.getElementById('r-origen').value=r.origen; document.getElementById('r-destino').value=r.destino; document.getElementById('r-dur').value=r.duracion; document.getElementById('r-tipo').value=r.tipo; tmpParadas=(r.paradas||[]).map(p=>p.ciudad); var lista=document.getElementById('paradas-lista'); lista.innerHTML=''; tmpParadas.forEach((p,idx)=>{ var d=document.createElement('div'); d.className='parada-row'; d.id='pr-'+idx; d.innerHTML=`<input placeholder="Ciudad" id="pc-${idx}" value="${p}"><button class="btn btn-danger btn-sm" onclick="delParada(${idx})">🗑</button>`; lista.appendChild(d); }); window.scrollTo({top:0,behavior:'smooth'}); toast('Editando: '+r.nombre,'success'); }
+        function confirmarDelRuta(i){ var rutas=JSON.parse(localStorage.getItem(K.RUTAS)); if(i<0||i>=rutas.length) return; abrirModalConfirmar('¿Eliminar ruta?',`Se eliminará "${rutas[i].nombre}" permanentemente.`,()=>{ delRuta(i); },'borrar'); }
+        function delRuta(i){ var rutas=JSON.parse(localStorage.getItem(K.RUTAS)); if(i<0||i>=rutas.length) return; rutas.splice(i,1); localStorage.setItem(K.RUTAS,JSON.stringify(rutas)); loadRutas(); toast('Ruta eliminada','success'); }
+
+        // ==========================================
+        // VIAJES
+        // ==========================================
+        function renderViajes(c){ /* ... SIN CAMBIOS ... */ var rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[], vehiculos=JSON.parse(localStorage.getItem(K.VEHICULOS))||[]; if(!rutas.length){ c.innerHTML='<div class="section"><h2>⚠️</h2><p>Primero crea una Ruta.</p></div>'; return; } if(!vehiculos.length){ c.innerHTML='<div class="section"><h2>⚠️</h2><p>Primero agrega un Vehículo.</p></div>'; return; } c.innerHTML=`<div class="section"><h2>📅 Programar Viajes</h2><div class="form-row"><div class="form-group"><label>Ruta</label><select id="vj-ruta" onchange="cargarParadasViaje()">${rutas.map((r,i)=>`<option value="${i}">${r.nombre}</option>`).join('')}</select></div><div class="form-group"><label>Vehículo</label><select id="vj-veh">${vehiculos.map((v,i)=>`<option value="${i}">${v.tipo} ${v.matricula} (${v.capacidad})</option>`).join('')}</select></div><div class="form-group"><label>Fecha</label><input type="date" id="vj-fecha"></div><div class="form-group"><label>Hora</label><input type="time" id="vj-hora"></div><div class="form-group"><label>Precio $</label><input type="number" id="vj-precio" value="500" step="0.01"></div><div class="form-group"><label>Lugar de Salida Oficial (máx. 60)</label><input id="vj-lugar-salida" placeholder="Terminal de Ómnibus Nacionales" maxlength="60"></div></div><div class="form-group-check"><input type="checkbox" id="vj-pago-adelantado" onchange="togglePagoAdelantado()"><label>💰 ¿Requiere pago adelantado?</label></div><div id="pago-adelantado-campos" style="display:none;margin-top:8px;"><div class="form-group"><label>Monto ($)</label><input type="number" id="vj-monto-adelantado" value="2000" step="100"></div></div><div class="paradas-dynamic" id="paradas-viaje-container"><h4>🕐 HORARIOS DE PASO</h4><div id="paradas-viaje-lista"></div></div><button class="btn btn-primary" onclick="saveViaje()">➕ Programar Viaje</button><div class="search-box" style="margin-top:12px;"><input id="buscar-viaje" placeholder="Buscar..." oninput="loadViajes()"></div><div class="table-wrapper"><table><thead><tr><th>Ruta</th><th>Vehículo</th><th>Fecha</th><th>Hora</th><th>Precio</th><th>Reservas</th><th>Estado</th><th>Pago Ant.</th><th>Acciones</th></tr></thead><tbody id="tabla-viajes"></tbody></table></div></div>`; cargarParadasViaje(); loadViajes(); }
+        function togglePagoAdelantado(){ document.getElementById('pago-adelantado-campos').style.display=document.getElementById('vj-pago-adelantado').checked?'block':'none'; }
+        function cargarParadasViaje(){ var ri=parseInt(document.getElementById('vj-ruta').value); var rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[]; var r=rutas[ri]||{}; var paradas=r.paradas||[]; var container=document.getElementById('paradas-viaje-container'); var lista=document.getElementById('paradas-viaje-lista'); if(paradas.length===0){container.style.display='none';return;} container.style.display='block'; lista.innerHTML=paradas.map((p,i)=>`<div class="parada-row"><span>${p.ciudad}</span><input type="time" id="vp-hora-${i}"></div>`).join(''); }
+        function saveViaje(){ var ri=parseInt(document.getElementById('vj-ruta').value), vi=parseInt(document.getElementById('vj-veh').value), fecha=document.getElementById('vj-fecha').value, hora=document.getElementById('vj-hora').value, precio=parseFloat(document.getElementById('vj-precio').value); var pago=document.getElementById('vj-pago-adelantado').checked, monto=pago?parseFloat(document.getElementById('vj-monto-adelantado').value)||0:0; var lugarSalida=document.getElementById('vj-lugar-salida').value.trim()||'Terminal de Ómnibus'; if(!fecha||!hora) return toast('Completa fecha y hora','error'); var rutas=JSON.parse(localStorage.getItem(K.RUTAS)), r=rutas[ri]||{}, paradasRuta=r.paradas||[], horarios=[]; paradasRuta.forEach((_,i)=>{ var he=document.getElementById('vp-hora-'+i); horarios.push({ciudad:paradasRuta[i].ciudad,hora:he?he.value:'--'}); }); var vehiculos=JSON.parse(localStorage.getItem(K.VEHICULOS)), cap=vehiculos[vi].capacidad, viajes=JSON.parse(localStorage.getItem(K.VIAJES)); viajes.push({id:Date.now(),rutaIndex:ri,vehiculoIndex:vi,fecha,hora,precio,asientosDisponibles:cap,estado:'activo',horariosParadas:horarios,mensajeCancelacion:'',pagoAdelantado:pago,montoAdelantado:monto,lugarSalida:lugarSalida}); localStorage.setItem(K.VIAJES,JSON.stringify(viajes)); loadViajes(); toast('Viaje programado','success'); document.getElementById('vj-fecha').value=''; document.getElementById('vj-hora').value=''; }
+        function loadViajes(){ var viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[], rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[], vehiculos=JSON.parse(localStorage.getItem(K.VEHICULOS))||[], reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[]; var filtro=(document.getElementById('buscar-viaje')?.value||'').toLowerCase(); var f=filtro?viajes.filter(v=>{var r=rutas[v.rutaIndex]||{};return r.nombre?.toLowerCase().includes(filtro)||v.fecha.includes(filtro);}):viajes; f.sort((a,b)=>b.fecha.localeCompare(a.fecha)||b.hora.localeCompare(a.hora)); var tbody=document.getElementById('tabla-viajes'); if(!tbody) return; tbody.innerHTML=f.map(v=>{ var idx=viajes.indexOf(v), r=rutas[v.rutaIndex]||{}, ve=vehiculos[v.vehiculoIndex]||{}; var total=reservas.filter(rr=>rr.viajeIndex===idx&&rr.estado!=='cancelada').reduce((s,rr)=>s+(rr.pasajeros||[]).length,0); return `<tr><td><strong>${r.nombre||'?'}</strong></td><td>${ve.tipo||''} ${ve.matricula||''}</td><td>${v.fecha}</td><td>${v.hora}</td><td>$${v.precio}</td><td>${total}/${ve.capacidad||40}</td><td><span class="badge badge-${v.estado==='activo'?'success':'danger'}">${v.estado}</span></td><td>${v.pagoAdelantado?'💰 $'+(v.montoAdelantado||0):'—'}</td><td><button class="btn btn-warning btn-sm" onclick="editarViaje(${v.id})">✏️</button> <button class="btn btn-duplicar btn-sm" onclick="duplicarViaje(${v.id})">📋</button> <button class="btn btn-gestionar btn-sm" onclick="abrirGestionViaje(${idx})">📊</button> <button class="btn btn-danger btn-sm" onclick="confirmarDelViaje(${v.id})">🗑</button></td></tr>`; }).join(''); }
+        function encontrarViajePorId(id){ return (JSON.parse(localStorage.getItem(K.VIAJES))||[]).find(v=>v.id===id); }
+        function encontrarIndexViajePorId(id){ return (JSON.parse(localStorage.getItem(K.VIAJES))||[]).findIndex(v=>v.id===id); }
+        function editarViaje(id){ var idx=encontrarIndexViajePorId(id); if(idx===-1) return; var viajes=JSON.parse(localStorage.getItem(K.VIAJES)), v=viajes[idx]; editandoViajeIdx=idx; var rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[], vehiculos=JSON.parse(localStorage.getItem(K.VEHICULOS))||[]; var modal=document.getElementById('modal-editar-viaje'), contenido=document.getElementById('modal-editar-viaje-contenido'); contenido.innerHTML=`<h3>✏️ Editar Viaje</h3><div class="form-row"><div class="form-group"><label>Ruta</label><select id="edit-vj-ruta">${rutas.map((rr,i)=>`<option value="${i}" ${i===v.rutaIndex?'selected':''}>${rr.nombre}</option>`).join('')}</select></div><div class="form-group"><label>Vehículo</label><select id="edit-vj-veh">${vehiculos.map((vv,i)=>`<option value="${i}" ${i===v.vehiculoIndex?'selected':''}>${vv.tipo} ${vv.matricula} (${vv.capacidad})</option>`).join('')}</select></div><div class="form-group"><label>Fecha</label><input type="date" id="edit-vj-fecha" value="${v.fecha}"></div><div class="form-group"><label>Hora</label><input type="time" id="edit-vj-hora" value="${v.hora}"></div><div class="form-group"><label>Precio $</label><input type="number" id="edit-vj-precio" value="${v.precio}" step="0.01"></div><div class="form-group"><label>Lugar de Salida (máx. 60)</label><input id="edit-vj-lugar-salida" value="${v.lugarSalida||''}" maxlength="60"></div></div><div class="form-group-check"><input type="checkbox" id="edit-vj-pago-adelantado" ${v.pagoAdelantado?'checked':''} onchange="toggleEditPagoAdelantado()"><label>💰 ¿Requiere pago adelantado?</label></div><div id="edit-pago-adelantado-campos" style="display:${v.pagoAdelantado?'block':'none'};margin-top:8px;"><div class="form-group"><label>Monto ($)</label><input type="number" id="edit-vj-monto-adelantado" value="${v.montoAdelantado||2000}" step="100"></div></div><div class="modal-actions"><button class="btn btn-primary" onclick="guardarEdicionViaje()">💾 Guardar</button><button class="btn btn-outline btn-sm" onclick="cerrarModalEditarViaje()">Cancelar</button></div>`; modal.classList.add('activo'); }
+        function toggleEditPagoAdelantado(){ document.getElementById('edit-pago-adelantado-campos').style.display=document.getElementById('edit-vj-pago-adelantado').checked?'block':'none'; }
+        function guardarEdicionViaje(){ var viajes=JSON.parse(localStorage.getItem(K.VIAJES)), v=viajes[editandoViajeIdx]; v.rutaIndex=parseInt(document.getElementById('edit-vj-ruta').value); v.vehiculoIndex=parseInt(document.getElementById('edit-vj-veh').value); v.fecha=document.getElementById('edit-vj-fecha').value; v.hora=document.getElementById('edit-vj-hora').value; v.precio=parseFloat(document.getElementById('edit-vj-precio').value); v.pagoAdelantado=document.getElementById('edit-vj-pago-adelantado').checked; v.montoAdelantado=v.pagoAdelantado?parseFloat(document.getElementById('edit-vj-monto-adelantado').value)||0:0; v.lugarSalida=document.getElementById('edit-vj-lugar-salida').value.trim(); if(!v.fecha||!v.hora) return toast('Completa fecha y hora','error'); localStorage.setItem(K.VIAJES,JSON.stringify(viajes)); cerrarModalEditarViaje(); loadViajes(); toast('Viaje actualizado','success'); }
+        function cerrarModalEditarViaje(){ document.getElementById('modal-editar-viaje').classList.remove('activo'); }
+        document.getElementById('modal-editar-viaje').addEventListener('click',function(e){ if(e.target===this) cerrarModalEditarViaje(); });
+        function duplicarViaje(id){ var v=encontrarViajePorId(id); if(!v) return; var viajes=JSON.parse(localStorage.getItem(K.VIAJES)), nuevo=JSON.parse(JSON.stringify(v)); nuevo.id=Date.now(); nuevo.fecha=''; nuevo.asientosDisponibles=(JSON.parse(localStorage.getItem(K.VEHICULOS))||[])[v.vehiculoIndex]?.capacidad||40; nuevo.estado='activo'; viajes.push(nuevo); localStorage.setItem(K.VIAJES,JSON.stringify(viajes)); loadViajes(); toast('Viaje duplicado','success'); setTimeout(()=>editarViaje(nuevo.id),300); }
+        function confirmarDelViaje(id){ abrirModalConfirmar('¿Eliminar viaje?','Se eliminará permanentemente.',()=>{ delViaje(id); },'borrar'); }
+        function delViaje(id){ var idx=encontrarIndexViajePorId(id); if(idx===-1) return; var viajes=JSON.parse(localStorage.getItem(K.VIAJES)); viajes.splice(idx,1); localStorage.setItem(K.VIAJES,JSON.stringify(viajes)); loadViajes(); toast('Viaje eliminado','success'); }
+
+        // ==========================================
+        // VEHÍCULOS
+        // ==========================================
+        function renderVehiculos(c){ /* ... SIN CAMBIOS ... */ c.innerHTML=`<div class="section"><h2>🚌 Vehículos</h2><div class="form-row"><div class="form-group"><label>Tipo</label><select id="vh-tipo"><option>Ómnibus</option><option>Microbús</option><option>Particular</option></select></div><div class="form-group"><label>Matrícula</label><input id="vh-mat"></div><div class="form-group"><label>Modelo</label><input id="vh-mod"></div><div class="form-group"><label>Capacidad</label><input type="number" id="vh-cap" value="40" min="1" max="100"></div><button class="btn btn-primary" onclick="saveVehiculo()">➕ Agregar</button></div><div class="search-box"><input id="buscar-veh" placeholder="Buscar..." oninput="loadVehiculos()"></div><div class="table-wrapper"><table><thead><tr><th>Tipo</th><th>Matrícula</th><th>Modelo</th><th>Cap.</th><th>Acciones</th></tr></thead><tbody id="tabla-vehiculos"></tbody></table></div></div>`; loadVehiculos(); }
+        function loadVehiculos(){ var v=JSON.parse(localStorage.getItem(K.VEHICULOS))||[], filtro=(document.getElementById('buscar-veh')?.value||'').toLowerCase(); var f=filtro?v.filter(x=>x.matricula.toLowerCase().includes(filtro)||x.modelo.toLowerCase().includes(filtro)):v; document.getElementById('tabla-vehiculos').innerHTML=f.map(x=>`<tr><td>${x.tipo}</td><td>${x.matricula}</td><td>${x.modelo}</td><td>${x.capacidad}</td><td><button class="btn btn-warning btn-sm" onclick="editarVehiculo(${v.indexOf(x)})">✏️</button> <button class="btn btn-danger btn-sm" onclick="confirmarDelVehiculo(${v.indexOf(x)})">🗑</button></td></tr>`).join(''); }
+        function saveVehiculo(){ var tipo=document.getElementById('vh-tipo').value, mat=document.getElementById('vh-mat').value.trim(), mod=document.getElementById('vh-mod').value.trim(), cap=parseInt(document.getElementById('vh-cap').value); if(!mat||!mod) return toast('Completa los campos','error'); var v=JSON.parse(localStorage.getItem(K.VEHICULOS)); v.push({tipo,matricula:mat,modelo:mod,capacidad:cap}); localStorage.setItem(K.VEHICULOS,JSON.stringify(v)); loadVehiculos(); toast('Vehículo agregado','success'); }
+        function editarVehiculo(i){ var vehiculos=JSON.parse(localStorage.getItem(K.VEHICULOS)), v=vehiculos[i]; editandoVehiculoIdx=i; var modal=document.getElementById('modal-editar-vehiculo'), contenido=document.getElementById('modal-editar-vehiculo-contenido'); contenido.innerHTML=`<h3>✏️ Editar Vehículo</h3><div class="form-row"><div class="form-group"><label>Tipo</label><select id="edit-vh-tipo"><option ${v.tipo==='Ómnibus'?'selected':''}>Ómnibus</option><option ${v.tipo==='Microbús'?'selected':''}>Microbús</option><option ${v.tipo==='Particular'?'selected':''}>Particular</option></select></div><div class="form-group"><label>Matrícula</label><input id="edit-vh-mat" value="${v.matricula}"></div><div class="form-group"><label>Modelo</label><input id="edit-vh-mod" value="${v.modelo}"></div><div class="form-group"><label>Capacidad</label><input type="number" id="edit-vh-cap" value="${v.capacidad}" min="1" max="100"></div></div><div class="modal-actions"><button class="btn btn-primary" onclick="guardarEdicionVehiculo()">💾 Guardar</button><button class="btn btn-outline btn-sm" onclick="cerrarModalEditarVehiculo()">Cancelar</button></div>`; modal.classList.add('activo'); }
+        function guardarEdicionVehiculo(){ var vehiculos=JSON.parse(localStorage.getItem(K.VEHICULOS)), v=vehiculos[editandoVehiculoIdx]; v.tipo=document.getElementById('edit-vh-tipo').value; v.matricula=document.getElementById('edit-vh-mat').value.trim(); v.modelo=document.getElementById('edit-vh-mod').value.trim(); v.capacidad=parseInt(document.getElementById('edit-vh-cap').value); if(!v.matricula||!v.modelo) return toast('Completa los campos','error'); localStorage.setItem(K.VEHICULOS,JSON.stringify(vehiculos)); cerrarModalEditarVehiculo(); loadVehiculos(); toast('Vehículo actualizado','success'); }
+        function cerrarModalEditarVehiculo(){ document.getElementById('modal-editar-vehiculo').classList.remove('activo'); }
+        document.getElementById('modal-editar-vehiculo').addEventListener('click',function(e){ if(e.target===this) cerrarModalEditarVehiculo(); });
+        function confirmarDelVehiculo(i){ var vehiculos=JSON.parse(localStorage.getItem(K.VEHICULOS)); abrirModalConfirmar('¿Eliminar vehículo?',`Se eliminará "${vehiculos[i].tipo} ${vehiculos[i].matricula}" permanentemente.`,()=>{ delVehiculo(i); },'borrar'); }
+        function delVehiculo(i){ var v=JSON.parse(localStorage.getItem(K.VEHICULOS)); v.splice(i,1); localStorage.setItem(K.VEHICULOS,JSON.stringify(v)); loadVehiculos(); toast('Vehículo eliminado','success'); }
+
+        // ==========================================
+        // RESERVAS (CORREGIDO)
+        // ==========================================
+        function renderReservas(c){ var viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[], rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[]; c.innerHTML=`<div class="section"><h2>🎫 Reservas</h2><div class="form-row"><div class="form-group"><label>Viaje</label><select id="filtro-viaje" onchange="loadReservas()"><option value="">Todos</option>${viajes.map((v,i)=>{var r=rutas[v.rutaIndex]||{};return`<option value="${i}">${r.nombre||'?'} ${v.fecha}</option>`;}).join('')}</select></div><div class="form-group"><label>Estado</label><select id="filtro-estado" onchange="loadReservas()"><option value="">Todos</option><option value="pendiente">Pendientes</option><option value="pendiente_pago">Pendientes pago</option><option value="confirmada">Confirmadas</option><option value="cancelada">Canceladas</option></select></div><div class="form-group"><label>Fecha</label><input type="date" id="filtro-fecha-reserva" onchange="loadReservas()"></div></div><button class="btn btn-export" onclick="exportCSV()">📥 Exportar CSV</button><button class="btn btn-danger btn-sm" onclick="limpiarHistorialReservas()" style="margin-left:4px;">🗑️ Limpiar historial</button><div class="search-box"><input id="buscar-reserva" placeholder="Buscar..." oninput="loadReservas()"></div><div class="table-wrapper"><table><thead><tr><th>Código</th><th>Viaje</th><th>Pasajero</th><th>CI</th><th>Asiento</th><th>Baja en</th><th>Recogida</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="tabla-reservas"></tbody></table></div></div>`; loadReservas(); }
+        function loadReservas(){ var reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[], viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[], rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[]; var fv=document.getElementById('filtro-viaje')?.value||'', fe=document.getElementById('filtro-estado')?.value||'', ff=document.getElementById('filtro-fecha-reserva')?.value||'', ft=(document.getElementById('buscar-reserva')?.value||'').toLowerCase(); var f=fv?reservas.filter(r=>r.viajeIndex==fv):reservas; if(fe) f=f.filter(r=>r.estado===fe); if(ff) f=f.filter(r=>r.fechaReserva===ff||r.viajeFecha===ff); if(ft) f=f.filter(r=>r.codigo.toLowerCase().includes(ft)||(r.pasajeros||[]).some(p=>p.nombre.toLowerCase().includes(ft)||(p.ci||'').toLowerCase().includes(ft))); f.sort((a,b)=>b.id-a.id); var tbody=document.getElementById('tabla-reservas'); if(!tbody) return; tbody.innerHTML=f.map(r=>{ var v=viajes[r.viajeIndex]||{}, rt=rutas[v.rutaIndex]||{}, p=(r.pasajeros||[])[0]||{}; var estadoBadge=r.estado==='confirmada'?'<span class="badge badge-success">✅ Confirmada</span>':r.estado==='cancelada'?'<span class="badge badge-danger">❌ Cancelada</span>':r.estado==='pendiente_pago'?'<span class="badge badge-warning">💰 Pend. Pago</span>':'<span class="badge badge-warning">⏳ Pendiente</span>'; var tipoParadaStr=''; if(r.tipoParada==='antes_de') tipoParadaStr=' ⬆️ Antes'; else if(r.tipoParada==='despues_de') tipoParadaStr=' ⬇️ Después'; var lugarStr=r.lugarEspecifico?' - '+r.lugarEspecifico:''; var recogidaStr=r.lugarRecogida||'Lugar oficial'; return `<tr class="${r.estado==='cancelada'?'cancelada':''}"><td><strong>${r.codigo}</strong></td><td>${rt.nombre||'?'} ${v.fecha||''}</td><td>${p.nombre||'—'}</td><td>${p.ci||'—'}</td><td>#${p.asiento||'—'}</td><td>${r.paradaDescenso||rt.destino||'?'}${tipoParadaStr}${lugarStr}</td><td>${recogidaStr}</td><td>${estadoBadge}</td><td><button class="btn btn-outline btn-sm" onclick="verDetalleReserva(${r.id})">👁️</button> ${(r.estado==='pendiente'||r.estado==='pendiente_pago')?`<button class="btn btn-success btn-sm" onclick="confirmarCambiarEstado('${r.codigo}','confirmada')">✅</button>`:''} ${r.estado!=='cancelada'?`<button class="btn btn-danger btn-sm" onclick="confirmarCambiarEstado('${r.codigo}','cancelada')">❌</button>`:''} <button class="btn btn-danger btn-sm" onclick="confirmarEliminarReserva('${r.codigo}')" style="background:#94a3b8;">🗑️</button></td></tr>`; }).join(''); }
+
+        function confirmarCambiarEstado(codigo,nuevoEstado){
+            var titulo = nuevoEstado === 'confirmada' ? '✅ Confirmar reserva' : '❌ Cancelar reserva';
+            var texto = nuevoEstado === 'confirmada' ? `Se confirmarán todas las reservas con código ${codigo}.` : `Se cancelarán todas las reservas con código ${codigo}.`;
+            var tipoModal = nuevoEstado === 'confirmada' ? 'confirmar' : 'borrar';
+            abrirModalConfirmar(titulo, texto, ()=>{ cambiarEstadoReserva(codigo, nuevoEstado); }, tipoModal);
+        }
+
+        function cambiarEstadoReserva(codigo, nuevoEstado){
+            var reservas = JSON.parse(localStorage.getItem(K.RESERVAS));
+            var telefonoCliente = '', nombreCliente = '', rutaNombre = '', fechaViaje = '', horaViaje = '';
+            reservas.forEach(r => {
+                if(r.codigo === codigo){
+                    if(nuevoEstado === 'cancelada' && r.estado === 'confirmada'){
+                        var viajes = JSON.parse(localStorage.getItem(K.VIAJES));
+                        if(viajes[r.viajeIndex]) viajes[r.viajeIndex].asientosDisponibles += (r.pasajeros || []).length || 1;
+                        localStorage.setItem(K.VIAJES, JSON.stringify(viajes));
+                    }
+                    if(nuevoEstado === 'confirmada' && r.estado !== 'confirmada'){
+                        var confirmaciones = JSON.parse(localStorage.getItem(K.CONFIRMACIONES)) || [];
+                        var p = (r.pasajeros || [])[0] || {};
+                        var confIdx = confirmaciones.findIndex(function(c) { return c.codigoReserva === codigo && c.estado === 'pendiente'; });
+                        if(confIdx !== -1){
+                            confirmaciones[confIdx].estado = 'completado';
+                            confirmaciones[confIdx].fechaConfirmacion = new Date().toISOString();
+                        } else {
+                            confirmaciones.push({ id: Date.now() + Math.random(), viajeIndex: r.viajeIndex, codigoReserva: r.codigo, nombre: p.nombre || '—', telefono: r.telefono || p.telefono || '—', idTransferencia: 'CONF-' + Date.now().toString(36).toUpperCase(), captura: '', estado: 'completado', fecha: new Date().toISOString().split('T')[0], monto: r.precioTotal || 0 });
+                        }
+                        localStorage.setItem(K.CONFIRMACIONES, JSON.stringify(confirmaciones));
+                        telefonoCliente = r.telefono || (p.telefono || '');
+                        nombreCliente = p.nombre || 'Cliente';
+                        var viajes = JSON.parse(localStorage.getItem(K.VIAJES)) || [], rutas = JSON.parse(localStorage.getItem(K.RUTAS)) || [];
+                        var v = viajes[r.viajeIndex] || {}, rt = rutas[v.rutaIndex] || {};
+                        rutaNombre = rt.nombre || 'su viaje'; fechaViaje = v.fecha || ''; horaViaje = v.hora || '';
+                    }
+                    if(nuevoEstado === 'cancelada'){
+                        var confirmaciones = JSON.parse(localStorage.getItem(K.CONFIRMACIONES)) || [];
+                        confirmaciones = confirmaciones.filter(function(c) { return !(c.codigoReserva === codigo && c.estado === 'pendiente'); });
+                        localStorage.setItem(K.CONFIRMACIONES, JSON.stringify(confirmaciones));
+                    }
+                    r.estado = nuevoEstado;
+                    if(nuevoEstado === 'cancelada') r.fechaCancelacion = new Date().toISOString();
+                }
+            });
+            localStorage.setItem(K.RESERVAS, JSON.stringify(reservas));
+            loadReservas(); actualizarBadges();
+            toast('Estado actualizado: ' + nuevoEstado, 'success');
+            if(nuevoEstado === 'confirmada' && telefonoCliente){
+                mostrarNotificacionWhatsApp(codigo, nombreCliente, telefonoCliente, rutaNombre, fechaViaje, horaViaje);
+            }
+        }
+
+        function mostrarNotificacionWhatsApp(codigo, nombre, telefono, ruta, fecha, hora){
+            var toastEl = document.createElement('div');
+            toastEl.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;border-radius:16px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:3000;text-align:center;max-width:350px;width:90%;';
+            toastEl.innerHTML = '<p style="font-weight:700;margin-bottom:8px;color:#065f46;">✅ Reserva confirmada: ' + codigo + '</p>';
+            var btnW = document.createElement('button'); btnW.className = 'btn btn-notificar btn-sm'; btnW.textContent = '📢 Notificar por WhatsApp'; btnW.style.cssText = 'width:100%;margin-bottom:4px;';
+            btnW.onclick = function(){
+                var mensaje = encodeURIComponent('✅ *Reserva Confirmada*\n\nHola ' + nombre + ',\n\nTu reserva ha sido *CONFIRMADA*.\n\n📋 Código: ' + codigo + '\n🚌 Ruta: ' + ruta + '\n📅 Fecha: ' + fecha + ' ' + hora + '\n\n¡Gracias por viajar con nosotros! 🚌');
+                window.open('https://wa.me/' + telefono.replace(/\+/g, '').replace(/\s/g, '') + '?text=' + mensaje, '_blank');
+            };
+            toastEl.appendChild(btnW);
+            var btnCerrar = document.createElement('button'); btnCerrar.className = 'btn btn-outline btn-sm'; btnCerrar.textContent = 'Cerrar'; btnCerrar.style.cssText = 'width:100%;';
+            btnCerrar.onclick = function(){ toastEl.remove(); };
+            toastEl.appendChild(btnCerrar);
+            document.body.appendChild(toastEl);
+            setTimeout(function() { if(toastEl.parentNode) toastEl.remove(); }, 20000);
+        }
+
+        function confirmarEliminarReserva(codigo){
+            abrirModalConfirmar('¿Eliminar reserva?', `Se eliminarán todas las reservas con código ${codigo}.`, ()=>{ eliminarReserva(codigo); }, 'borrar');
+        }
+        function eliminarReserva(codigo){
+            var reservas = JSON.parse(localStorage.getItem(K.RESERVAS)) || [];
+            reservas.filter(r => r.codigo === codigo && r.estado !== 'cancelada').forEach(r => { var viajes = JSON.parse(localStorage.getItem(K.VIAJES)) || []; if(viajes[r.viajeIndex]) viajes[r.viajeIndex].asientosDisponibles += (r.pasajeros || []).length || 1; localStorage.setItem(K.VIAJES, JSON.stringify(viajes)); });
+            reservas = reservas.filter(r => r.codigo !== codigo);
+            localStorage.setItem(K.RESERVAS, JSON.stringify(reservas));
+            var confirmaciones = JSON.parse(localStorage.getItem(K.CONFIRMACIONES)) || [];
+            confirmaciones = confirmaciones.filter(c => c.codigoReserva !== codigo);
+            localStorage.setItem(K.CONFIRMACIONES, JSON.stringify(confirmaciones));
+            loadReservas(); actualizarBadges(); toast('Reserva eliminada', 'success');
+        }
+        function limpiarHistorialReservas(){
+            abrirModalConfirmar('Limpiar historial', 'Se eliminarán canceladas y viajes pasados (>7 días).', () => {
+                var reservas = JSON.parse(localStorage.getItem(K.RESERVAS)) || [], viajes = JSON.parse(localStorage.getItem(K.VIAJES)) || [], limite = new Date(); limite.setDate(limite.getDate() - 7);
+                var aEliminar = reservas.filter(r => r.estado === 'cancelada' || (viajes[r.viajeIndex] && new Date(viajes[r.viajeIndex].fecha + 'T23:59:59') < limite));
+                var codigos = aEliminar.map(r => r.codigo);
+                reservas = reservas.filter(r => codigos.indexOf(r.codigo) === -1);
+                localStorage.setItem(K.RESERVAS, JSON.stringify(reservas));
+                var confirmaciones = JSON.parse(localStorage.getItem(K.CONFIRMACIONES)) || [];
+                confirmaciones = confirmaciones.filter(c => codigos.indexOf(c.codigoReserva) === -1);
+                localStorage.setItem(K.CONFIRMACIONES, JSON.stringify(confirmaciones));
+                loadReservas(); actualizarBadges(); toast('Historial limpiado', 'success');
+            }, 'borrar');
+        }
+        function verDetalleReserva(id){ var reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[], r=reservas.find(r=>r.id===id); if(!r) return; var viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[], rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[], v=viajes[r.viajeIndex]||{}, rt=rutas[v.rutaIndex]||{}, pasajeros=r.pasajeros||[], modal=document.getElementById('modal-detalle-reserva'), contenido=document.getElementById('modal-detalle-reserva-contenido'); contenido.innerHTML=`<h3>👁️ Detalle</h3><div style="font-size:13px;"><p><strong>Código:</strong> ${r.codigo}</p><p><strong>Ruta:</strong> ${rt.nombre||'—'}</p><p><strong>Fecha:</strong> ${v.fecha||'—'} · ${v.hora||'—'}</p><p><strong>Recogida:</strong> ${r.lugarRecogida||'Lugar oficial'}</p><p><strong>Pasajeros:</strong></p>${pasajeros.map(p=>`<p>🧑 ${p.nombre} | #${p.asiento} | CI: ${p.ci||'—'}</p>`).join('')}<p><strong>Total:</strong> $${((r.precioTotal||0).toFixed(2))}</p></div><div class="modal-actions"><button class="btn btn-outline btn-sm" onclick="cerrarModalDetalleReserva()">Cerrar</button></div>`; modal.classList.add('activo'); }
+        function cerrarModalDetalleReserva(){ document.getElementById('modal-detalle-reserva').classList.remove('activo'); }
+        document.getElementById('modal-detalle-reserva').addEventListener('click',function(e){ if(e.target===this) cerrarModalDetalleReserva(); });
+        function exportCSV(){ var reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[]; if(!reservas.length) return toast('Sin datos','error'); var csv=['Código,Fecha,Pasajero,CI,Asiento,Estado'].concat(reservas.map(r=>{var p=(r.pasajeros||[])[0]||{};return[r.codigo,r.viajeFecha||'',p.nombre||'',p.ci||'',p.asiento||'',r.estado].join(',');})).join('\n'); var blob=new Blob([csv],{type:'text/csv'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='reservas.csv'; a.click(); toast('📥 Exportado','success'); }
+
+        // ==========================================
+        // CONFIRMACIONES (PENDIENTES POR DEFECTO)
+        // ==========================================
+        function renderConfirmaciones(c){
+            var confirmaciones=JSON.parse(localStorage.getItem(K.CONFIRMACIONES))||[], viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[], rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[];
+            c.innerHTML=`<div class="section"><h2>✅ Confirmaciones</h2>
+                <div class="form-row"><div class="form-group"><label>Viaje</label><select id="filtro-conf-viaje" onchange="cargarConfirmaciones()"><option value="">Todos</option>${viajes.map((v,i)=>{var r=rutas[v.rutaIndex]||{};return`<option value="${i}">${r.nombre||'?'} ${v.fecha}</option>`;}).join('')}</select></div>
+                <div class="form-group"><label>Estado</label><select id="filtro-conf-estado" onchange="cargarConfirmaciones()">
+                    <option value="pendiente" selected>⏳ Pendientes</option>
+                    <option value="completado">✅ Completadas</option>
+                    <option value="">📋 Todos</option>
+                </select></div></div>
+                <button class="btn btn-copiar btn-sm" onclick="copiarTablaConfirmaciones()">📋 Copiar</button>
+                <button class="btn btn-export btn-sm" onclick="exportarConfirmacionesCSV()">📥 CSV</button>
+                <button class="btn btn-export btn-sm" onclick="exportarConfirmacionesImagen()" style="background:#2563eb;">📸 Imagen</button>
+                <div class="table-wrapper" id="tabla-confirmaciones-wrapper"><table id="tabla-confirmaciones"><thead><tr><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Viaje</th><th>ID Transf.</th><th>Monto</th><th>Estado</th></tr></thead><tbody id="tbody-confirmaciones"></tbody></table></div></div>`;
+            cargarConfirmaciones();
+        }
+
+        function cargarConfirmaciones(){
+            var confirmaciones=JSON.parse(localStorage.getItem(K.CONFIRMACIONES))||[], viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[], rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[];
+            var fv=document.getElementById('filtro-conf-viaje')?.value||'', fe=document.getElementById('filtro-conf-estado')?.value||'pendiente';
+            var f=fv?confirmaciones.filter(c=>c.viajeIndex==fv):confirmaciones;
+            if(fe) f=f.filter(c=>c.estado===fe);
+            f.sort((a,b)=>b.id-a.id);
+            var tbody=document.getElementById('tbody-confirmaciones'); if(!tbody) return;
+            
+            if(f.length === 0){
+                var mensaje = fe === 'pendiente' ? '✅ No hay confirmaciones pendientes por revisar' : 'No se encontraron resultados';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-secondary);">' + mensaje + '</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML=f.map(c=>{
+                var v=viajes[c.viajeIndex]||{}, rt=rutas[v.rutaIndex]||{};
+                var estadoBadge=c.estado==='pendiente'?'<span class="badge badge-warning">⏳ Pendiente</span>':'<span class="badge badge-success">✅ Completado</span>';
+                return `<tr><td>${c.fecha||'—'}</td><td><strong>${c.nombre}</strong></td><td>${c.telefono}</td><td>${rt.nombre||'?'} ${v.fecha||''}</td><td><code>${c.idTransferencia||'—'}</code></td><td>$${(c.monto||0).toFixed(2)}</td><td>${estadoBadge}</td></tr>`;
+            }).join('');
+        }
+
+        function copiarTablaConfirmaciones(){ var tabla=document.getElementById('tabla-confirmaciones'); if(!tabla) return; var texto=''; tabla.querySelectorAll('tr').forEach(tr=>{ var fila=[]; tr.querySelectorAll('th,td').forEach(td=>fila.push(td.textContent.trim())); texto+=fila.join('\t')+'\n'; }); if(navigator.clipboard) navigator.clipboard.writeText(texto).then(()=>toast('📋 Copiado','success')); }
+        function exportarConfirmacionesCSV(){ var tabla=document.getElementById('tabla-confirmaciones'); if(!tabla) return; var csv=[]; tabla.querySelectorAll('tr').forEach(tr=>{ var fila=[]; tr.querySelectorAll('th,td').forEach(td=>fila.push('"'+td.textContent.trim()+'"')); csv.push(fila.join(',')); }); var blob=new Blob([csv.join('\n')],{type:'text/csv'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='confirmaciones.csv'; a.click(); toast('📥 Exportado','success'); }
+        function exportarConfirmacionesImagen(){ var wrapper=document.getElementById('tabla-confirmaciones-wrapper'); if(!wrapper) return; html2canvas(wrapper,{scale:2,backgroundColor:'#ffffff'}).then(canvas=>{ var a=document.createElement('a'); a.download='confirmaciones.png'; a.href=canvas.toDataURL('image/png'); a.click(); toast('📸 Exportado','success'); }); }
+
+        // ==========================================
+        // GESTIÓN DE VIAJE
+        // ==========================================
+        function abrirGestionViaje(idx){ sessionStorage.setItem('gestionViajeIdx',idx); navegar('gestion-viaje',document.querySelector('.sidebar-nav a[onclick*="gestion-viaje"]')); }
+        function renderGestionViaje(c){ /* ... CON LUGAR DE RECOGIDA ... */ var idx=parseInt(sessionStorage.getItem('gestionViajeIdx')||'0'); var viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[], rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[], vehiculos=JSON.parse(localStorage.getItem(K.VEHICULOS))||[], reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[]; var v=viajes[idx]; if(!v){ c.innerHTML='<div class="section"><h2>⚠️</h2><p>Viaje no encontrado.</p></div>'; return; } var r=rutas[v.rutaIndex]||{}, ve=vehiculos[v.vehiculoIndex]||{}, cap=ve.capacidad||40; var ordenParadas=[r.origen]; if(r.paradas) r.paradas.forEach(p=>ordenParadas.push(p.ciudad)); ordenParadas.push(r.destino); var todas=reservas.filter(rr=>rr.viajeIndex===idx&&rr.estado!=='cancelada'); var ocupadosSet={}; todas.forEach(rr=>{(rr.pasajeros||[]).forEach(p=>ocupadosSet[p.asiento]=rr.estado);}); var confirmados=reservas.filter(rr=>rr.viajeIndex===idx&&rr.estado==='confirmada'); var pasajerosConfirmados=[]; confirmados.forEach(rr=>{(rr.pasajeros||[]).forEach(p=>{ pasajerosConfirmados.push({asiento:p.asiento,nombre:p.nombre,ci:p.ci||'—',telefono:p.telefono||rr.telefono||'—',parada:rr.paradaDescenso||r.destino||'—',tipoParada:rr.tipoParada||'en_parada',lugarEspecifico:rr.lugarEspecifico||'',estado:rr.estado,codigo:rr.codigo,lugarRecogida:rr.lugarRecogida||'Lugar oficial'}); }); }); pasajerosConfirmados.sort((a,b)=>a.asiento-b.asiento); var fechaViaje=new Date(v.fecha+'T'+(v.hora||'00:00')); var html=`<button class="btn btn-outline btn-sm" onclick="navegar('viajes-futuros',document.querySelector('.sidebar-nav a[onclick*=\\'viajes-futuros\\']))">← Volver</button><div class="countdown-container"><div class="countdown-title">⏱️ ${v.fecha} · ${v.hora} | ${r.nombre||'Viaje'}</div><div class="countdown-timer" id="countdown-timer"><div class="countdown-item"><div class="countdown-value" id="cd-dias">00</div><div class="countdown-label">Días</div></div><div class="countdown-item"><div class="countdown-value" id="cd-horas">00</div><div class="countdown-label">Horas</div></div><div class="countdown-item"><div class="countdown-value" id="cd-minutos">00</div><div class="countdown-label">Min</div></div><div class="countdown-item"><div class="countdown-value" id="cd-segundos">00</div><div class="countdown-label">Seg</div></div></div></div><div class="section"><h2>🚌 Simulador</h2><div style="text-align:center;font-size:10px;margin-bottom:8px;"><span style="color:#10b981;">🟢 Libre</span> <span style="color:#f59e0b;">🟡 Pendiente</span> <span style="color:#ef4444;">🔴 Confirmado</span></div><div class="bus-simulador"><div class="bus-frente">⬆️ Conductor</div><div class="bus-grid-sim"><div class="bus-col-sim">`; for(var i=1;i<=cap;i++){ var clase='libre'; if(ocupadosSet[i]==='confirmada') clase='ocupado'; else if(ocupadosSet[i]) clase='pendiente'; if(i%4===1||i%4===2) html+=`<div class="asiento-sim ${clase}">${i}</div>`; } html+=`</div><div class="bus-pasillo-sim"></div><div class="bus-col-sim">`; for(var j=1;j<=cap;j++){ var clase2='libre'; if(ocupadosSet[j]==='confirmada') clase2='ocupado'; else if(ocupadosSet[j]) clase2='pendiente'; if(j%4===3||j%4===0) html+=`<div class="asiento-sim ${clase2}">${j}</div>`; } html+=`</div></div><div class="bus-frente" style="margin-top:10px;">⬇️ Trasera</div></div><button class="btn btn-export btn-sm" onclick="exportarSimulador()">📸 Exportar</button></div><div class="section"><h2>📋 Pasajeros Confirmados</h2><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"><button class="btn btn-outline btn-sm" id="btn-toggle-asientos" onclick="toggleTablaGestion('tabla-asientos',this)">📋 Por Asiento</button><button class="btn btn-outline btn-sm" id="btn-toggle-paradas" onclick="toggleTablaGestion('tabla-paradas',this)">🛑 Por Parada</button><button class="btn btn-outline btn-sm" id="btn-toggle-recogida" onclick="toggleTablaGestion('tabla-recogida',this)">📍 Por Recogida</button></div>`;
+            var asientosOcupados={}; pasajerosConfirmados.forEach(p=>asientosOcupados[p.asiento]=p.nombre);
+            html+=`<div id="tabla-asientos" style="display:none;"><h4>📋 Por Asiento</h4><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;"><button class="btn btn-copiar btn-sm" onclick="copiarTablaGestion('tabla-asientos')">📋 Copiar</button><button class="btn btn-export btn-sm" onclick="exportarTablaCSV('tabla-asientos-table')">📥 CSV</button><button class="btn btn-export btn-sm" onclick="generarImagenTabla('tabla-asientos','📋 Pasajeros por Asiento')">📸 Imagen</button><button class="btn btn-export btn-sm" onclick="generarPDFTabla('tabla-asientos','Pasajeros por Asiento')" style="background:#dc2626;">📄 PDF</button></div><div class="table-wrapper"><table id="tabla-asientos-table"><thead><tr><th># Asiento</th><th>Cliente</th></tr></thead><tbody>`; for(var k=1;k<=cap;k++) html+=`<tr><td><strong>#${k}</strong></td><td>${asientosOcupados[k]||'<span style="color:#94a3b8;">—</span>'}</td></tr>`; html+=`</tbody></table></div></div>`;
+            var porParada={}; ordenParadas.forEach(function(parada){ porParada[parada]=[]; }); pasajerosConfirmados.forEach(function(p){ var key=p.parada; if(!porParada[key]) porParada[key]=[]; porParada[key].push(p); });
+            html+=`<div id="tabla-paradas" style="display:none;"><h4>🛑 Por Parada (Orden de Ruta)</h4><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;"><button class="btn btn-copiar btn-sm" onclick="copiarTablaGestion('tabla-paradas')">📋 Copiar</button><button class="btn btn-export btn-sm" onclick="exportarTablaCSV('tabla-paradas-table')">📥 CSV</button><button class="btn btn-export btn-sm" onclick="generarImagenTabla('tabla-paradas','🛑 Pasajeros por Parada')">📸 Imagen</button><button class="btn btn-export btn-sm" onclick="generarPDFTabla('tabla-paradas','Pasajeros por Parada')" style="background:#dc2626;">📄 PDF</button></div><div class="table-wrapper"><table id="tabla-paradas-table"><thead><tr><th>Parada</th><th>Tipo</th><th># Asiento</th><th>Cliente</th><th>Referencia</th></tr></thead><tbody>`; var hayDatos=false; ordenParadas.forEach(function(parada){ if(porParada[parada]&&porParada[parada].length>0){ hayDatos=true; porParada[parada].forEach(function(p,i){ var tipoIcono=p.tipoParada==='antes_de'?'⬆️ Antes':p.tipoParada==='despues_de'?'⬇️ Después':'🔽 En'; html+=`<tr><td>${i===0?'<strong>'+parada+'</strong>':''}</td><td><span class="badge-tipo-parada">${tipoIcono}</span></td><td>#${p.asiento}</td><td>${p.nombre}</td><td>${p.lugarEspecifico||'—'}</td></tr>`; }); } }); if(!hayDatos) html+='<tr><td colspan="5">No hay pasajeros confirmados</td></tr>'; html+='</tbody></table></div></div>';
+            var porLugarRecogida={}; pasajerosConfirmados.forEach(function(p){ var key=p.lugarRecogida||'Lugar oficial'; if(!porLugarRecogida[key]) porLugarRecogida[key]=[]; porLugarRecogida[key].push(p); });
+            html+=`<div id="tabla-recogida" style="display:none;"><h4>📍 Por Lugar de Recogida</h4><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;"><button class="btn btn-copiar btn-sm" onclick="copiarTablaGestion('tabla-recogida')">📋 Copiar</button><button class="btn btn-export btn-sm" onclick="exportarTablaCSV('tabla-recogida-table')">📥 CSV</button><button class="btn btn-export btn-sm" onclick="generarImagenTabla('tabla-recogida','📍 Por Lugar de Recogida')">📸 Imagen</button><button class="btn btn-export btn-sm" onclick="generarPDFTabla('tabla-recogida','Por Lugar de Recogida')" style="background:#dc2626;">📄 PDF</button></div><div class="table-wrapper"><table id="tabla-recogida-table"><thead><tr><th>Lugar de Recogida</th><th># Asiento</th><th>Cliente</th><th>Teléfono</th></tr></thead><tbody>`; var lugaresRecogida=Object.keys(porLugarRecogida).sort(); if(lugaresRecogida.length===0){ html+='<tr><td colspan="4">No hay pasajeros confirmados</td></tr>'; } else { lugaresRecogida.forEach(function(lugar){ porLugarRecogida[lugar].forEach(function(p,i){ html+=`<tr><td>${i===0?'<strong>'+lugar+'</strong>':''}</td><td>#${p.asiento}</td><td>${p.nombre}</td><td>${p.telefono}</td></tr>`; }); }); } html+='</tbody></table></div></div></div>'; c.innerHTML=html; iniciarCountdown(fechaViaje); }
+
+        // ==========================================
+        // FUNCIONES DE EXPORTACIÓN
+        // ==========================================
+        function toggleTablaGestion(id,btn){ var el=document.getElementById(id); if(!el) return; var visible=el.style.display==='block'; el.style.display=visible?'none':'block'; if(btn) btn.classList.toggle('btn-toggle-activo',!visible); if(!visible) el.scrollIntoView({behavior:'smooth',block:'center'}); }
+        function copiarTablaGestion(idDiv){ var el=document.getElementById(idDiv); if(!el) return; var tabla=el.querySelector('table'); if(!tabla) return; var titulo=idDiv==='tabla-asientos'?'PASAJEROS POR ASIENTO':idDiv==='tabla-recogida'?'POR LUGAR DE RECOGIDA':'PASAJEROS POR PARADA'; var texto=titulo+'\n'+'═'.repeat(50)+'\n\n'; var anchos=[]; tabla.querySelectorAll('th').forEach(function(th){ anchos.push(th.textContent.length); }); tabla.querySelectorAll('tr').forEach(function(tr,rowIdx){ var celdas=tr.querySelectorAll('th,td'); var fila=''; celdas.forEach(function(td,colIdx){ var contenido=td.textContent.trim(); var ancho=Math.max(anchos[colIdx]||10,contenido.length)+3; fila+=contenido.padEnd(ancho,' '); }); texto+=fila+'\n'; if(rowIdx===0) texto+='─'.repeat(60)+'\n'; }); if(navigator.clipboard){ navigator.clipboard.writeText(texto).then(function(){ toast('📋 Copiado al portapapeles','success'); }); } }
+        function exportarTablaCSV(idTabla){ var tabla=document.getElementById(idTabla); if(!tabla) return; var csv=[]; tabla.querySelectorAll('tr').forEach(tr=>{ var fila=[]; tr.querySelectorAll('th,td').forEach(td=>fila.push('"'+td.textContent.trim().replace(/"/g,'""')+'"')); csv.push(fila.join(',')); }); var blob=new Blob(['\uFEFF'+csv.join('\n')],{type:'text/csv;charset=utf-8;'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='datos.csv'; a.click(); toast('📥 CSV exportado','success'); }
+        function generarImagenTabla(idDiv,titulo){ var el=document.getElementById(idDiv); if(!el) return; var tempDiv=document.createElement('div'); tempDiv.style.cssText='position:absolute;left:-9999px;top:0;background:#fff;padding:20px;font-family:Inter,sans-serif;'; tempDiv.innerHTML='<h3 style="margin-bottom:10px;font-size:16px;color:#e63946;">'+titulo+'</h3>'; var tablaClon=el.querySelector('table').cloneNode(true); tablaClon.style.width='100%'; tablaClon.style.borderCollapse='collapse'; tablaClon.style.fontSize='12px'; tablaClon.querySelectorAll('th').forEach(function(th){ th.style.cssText='padding:8px 10px;text-align:left;background:#f8fafc;border-bottom:2px solid #e2e8f0;font-weight:700;font-size:10px;text-transform:uppercase;color:#64748b;'; }); tablaClon.querySelectorAll('td').forEach(function(td){ td.style.cssText='padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:11px;'; }); tempDiv.appendChild(tablaClon); document.body.appendChild(tempDiv); html2canvas(tempDiv,{scale:3,backgroundColor:'#ffffff',logging:false}).then(function(canvas){ document.body.removeChild(tempDiv); var a=document.createElement('a'); a.download=titulo.replace(/\s/g,'_').toLowerCase()+'.png'; a.href=canvas.toDataURL('image/png'); a.click(); toast('📸 Imagen exportada','success'); }).catch(function(){ document.body.removeChild(tempDiv); toast('Error al generar imagen','error'); }); }
+        function generarPDFTabla(idDiv,titulo){ var el=document.getElementById(idDiv); if(!el) return; var doc=new jspdf.jsPDF('p','mm','a4'); doc.setFontSize(14); doc.setTextColor(230,57,70); doc.text(titulo,10,15); var tabla=el.querySelector('table'); var data=[]; tabla.querySelectorAll('tr').forEach(function(tr){ var fila=[]; tr.querySelectorAll('th,td').forEach(function(td){ fila.push(td.textContent.trim()); }); data.push(fila); }); if(data.length===0) return; doc.autoTable({startY:20,head:[data[0]],body:data.slice(1),theme:'grid',headStyles:{fillColor:[248,250,252],textColor:[100,116,139],fontStyle:'bold',fontSize:8},bodyStyles:{fontSize:9,textColor:[15,23,42]},margin:{top:10}}); doc.save(titulo.replace(/\s/g,'_').toLowerCase()+'.pdf'); toast('📄 PDF exportado','success'); }
+        function iniciarCountdown(fechaObjetivo){ if(countdownInterval) clearInterval(countdownInterval); function actualizar(){ var ahora=new Date().getTime(), diff=fechaObjetivo.getTime()-ahora; if(diff<=0){ ['cd-dias','cd-horas','cd-minutos','cd-segundos'].forEach(id=>{ var el=document.getElementById(id); if(el) el.textContent='00'; }); if(countdownInterval) clearInterval(countdownInterval); return; } var dias=Math.floor(diff/(1000*60*60*24)), horas=Math.floor((diff%(1000*60*60*24))/(1000*60*60)), minutos=Math.floor((diff%(1000*60*60))/(1000*60)), segundos=Math.floor((diff%(1000*60))/1000); ['cd-dias','cd-horas','cd-minutos','cd-segundos'].forEach((id,i)=>{ var el=document.getElementById(id), val=[dias,horas,minutos,segundos][i]; if(el) el.textContent=String(val).padStart(2,'0'); }); } actualizar(); countdownInterval=setInterval(actualizar,1000); }
+        function exportarSimulador(){ var el=document.querySelector('.bus-simulador'); if(!el) return; html2canvas(el,{scale:2,backgroundColor:'#ffffff'}).then(canvas=>{ var a=document.createElement('a'); a.download='asientos.png'; a.href=canvas.toDataURL('image/png'); a.click(); toast('📸 Exportado','success'); }); }
+
+        // ==========================================
+        // VIAJES FUTUROS
+        // ==========================================
+        function renderViajesFuturos(c){ var viajes=JSON.parse(localStorage.getItem(K.VIAJES))||[], rutas=JSON.parse(localStorage.getItem(K.RUTAS))||[], vehiculos=JSON.parse(localStorage.getItem(K.VEHICULOS))||[], reservas=JSON.parse(localStorage.getItem(K.RESERVAS))||[]; var hoy=new Date().toISOString().split('T')[0]; var futuros=viajes.filter(v=>v.fecha>=hoy&&v.estado==='activo').sort((a,b)=>a.fecha.localeCompare(b.fecha)||a.hora.localeCompare(b.hora)); var html='<div class="section"><h2>🔮 Viajes Futuros</h2>'; if(!futuros.length) html+='<p style="text-align:center;color:var(--text-secondary);">No hay viajes programados.</p>'; else { html+='<p class="desc">Capacidad de llenado de los próximos viajes.</p>'; futuros.forEach(v=>{ var idx=viajes.indexOf(v), r=rutas[v.rutaIndex]||{}, ve=vehiculos[v.vehiculoIndex]||{}, cap=ve.capacidad||40; var ocup=cap-v.asientosDisponibles, pct=Math.round((ocup/cap)*100); html+=`<div class="viaje-dashboard-card"><div><strong>${r.nombre||'?'}</strong><br><small>${v.fecha} · ${v.hora} · ${ve.tipo||''} ${ve.matricula||''}</small></div><div style="text-align:center;"><small>${ocup}/${cap} (${pct}%)</small><div class="ocupacion-bar"><div class="ocupacion-fill" style="width:${pct}%;background:${pct>80?'#10b981':pct>40?'#f59e0b':'#ef4444'};"></div></div></div><div><strong>$${v.precio}</strong></div><button class="btn btn-gestionar btn-sm" onclick="abrirGestionViaje(${idx})">📊 Ver Simulador</button></div>`; }); } html+='</div>'; c.innerHTML=html; }
+
+        // ==========================================
+        // CONFIGURACIÓN
+        // ==========================================
+        function renderConfig(c){ var cfg=JSON.parse(localStorage.getItem(K.CONFIG)); if(!cfg.portada) cfg.portada=''; if(!cfg.carrusel) cfg.carrusel=[]; if(!cfg.logo) cfg.logo=''; var carruselHTML=''; cfg.carrusel.forEach((f,i)=>{ carruselHTML+=`<div class="parada-row" style="align-items:center;margin-bottom:8px;">${f.imagen?`<img src="${f.imagen}" style="width:50px;height:35px;object-fit:cover;border-radius:4px;margin-right:6px;">`:''}<input placeholder="Nombre/Descripción" id="carrusel-nombre-${i}" value="${f.nombre||''}" style="flex:1;"><input type="file" id="carrusel-img-${i}" accept="image/*" style="flex:1;"><button class="btn btn-danger btn-sm" onclick="eliminarFotoCarrusel(${i})">🗑</button></div>`; }); c.innerHTML=`<div class="section"><h2>⚙️ Configuración</h2><div class="form-row"><div class="form-group"><label>Nombre</label><input id="cfg-nombre" value="${cfg.nombre||''}"></div><div class="form-group"><label>Teléfono</label><input id="cfg-tel" value="${cfg.telefono||''}"></div><div class="form-group"><label>WhatsApp</label><input id="cfg-wa" value="${cfg.whatsapp||''}"></div><div class="form-group"><label>Email</label><input id="cfg-email" value="${cfg.email||''}"></div><div class="form-group"><label>Dirección</label><input id="cfg-dir" value="${cfg.direccion||''}"></div><div class="form-group"><label>Horario</label><input id="cfg-horario" value="${cfg.horario||''}"></div><div class="form-group"><label>Color</label><input type="color" id="cfg-color" value="${cfg.color||'#e63946'}"></div><div class="form-group"><label>Emoji</label><input id="cfg-emoji" value="${cfg.emoji||'🚌'}"></div></div><div class="form-group"><label>Logo (tienda)</label>${cfg.logo?`<div style="margin-bottom:6px;"><img src="${cfg.logo}" style="max-width:120px;max-height:60px;border-radius:8px;border:1px solid var(--border);"><br><button class="btn btn-danger btn-sm" onclick="eliminarImagen('logo')">🗑️ Eliminar</button></div>`:'<small>Sin logo</small>'}<input type="file" id="cfg-logo" accept="image/*"></div><div class="form-group"><label>Portada</label>${cfg.portada?`<div style="margin-bottom:6px;"><img src="${cfg.portada}" style="max-width:200px;max-height:80px;border-radius:8px;border:1px solid var(--border);"><br><button class="btn btn-danger btn-sm" onclick="eliminarImagen('portada')">🗑️ Eliminar</button></div>`:'<small>Sin portada</small>'}<input type="file" id="cfg-portada" accept="image/*"></div><div class="form-group"><label>Carrusel (máx. 6)</label><div id="carrusel-lista">${carruselHTML}</div><button class="btn btn-outline btn-sm" onclick="agregarFotoCarrusel()">+ Agregar Foto</button></div><div class="form-group-check"><input type="checkbox" id="cfg-precio-parada" ${cfg.usarPrecioPorParada?'checked':''}><label>Activar precio por parada</label></div><button class="btn btn-primary" onclick="saveConfig()">💾 Guardar</button></div>`; }
+        function agregarFotoCarrusel(){ var cfg=JSON.parse(localStorage.getItem(K.CONFIG)); if(!cfg.carrusel) cfg.carrusel=[]; if(cfg.carrusel.length>=6){ toast('Máximo 6 fotos','error'); return; } cfg.carrusel.push({nombre:'',imagen:''}); localStorage.setItem(K.CONFIG,JSON.stringify(cfg)); renderConfig(document.getElementById('contenido-principal')); }
+        function eliminarFotoCarrusel(i){ var cfg=JSON.parse(localStorage.getItem(K.CONFIG)); cfg.carrusel.splice(i,1); localStorage.setItem(K.CONFIG,JSON.stringify(cfg)); renderConfig(document.getElementById('contenido-principal')); }
+        function eliminarImagen(tipo){ var cfg=JSON.parse(localStorage.getItem(K.CONFIG)); if(tipo==='logo') cfg.logo=''; else if(tipo==='portada') cfg.portada=''; localStorage.setItem(K.CONFIG,JSON.stringify(cfg)); toast('Imagen eliminada','success'); renderConfig(document.getElementById('contenido-principal')); }
+        async function saveConfig(){ var cfg=JSON.parse(localStorage.getItem(K.CONFIG)); cfg.nombre=document.getElementById('cfg-nombre').value.trim(); cfg.telefono=document.getElementById('cfg-tel').value.trim(); cfg.whatsapp=document.getElementById('cfg-wa').value.trim(); cfg.email=document.getElementById('cfg-email').value.trim(); cfg.direccion=document.getElementById('cfg-dir').value.trim(); cfg.horario=document.getElementById('cfg-horario').value.trim(); cfg.color=document.getElementById('cfg-color').value; cfg.emoji=document.getElementById('cfg-emoji').value.trim()||'🚌'; cfg.usarPrecioPorParada=document.getElementById('cfg-precio-parada').checked; var promesas=[]; var logoFile=document.getElementById('cfg-logo').files[0]; if(logoFile) promesas.push(new Promise(res=>{ var r=new FileReader(); r.onload=ev=>{ cfg.logo=ev.target.result; res(); }; r.readAsDataURL(logoFile); })); var portadaFile=document.getElementById('cfg-portada').files[0]; if(portadaFile) promesas.push(new Promise(res=>{ var r=new FileReader(); r.onload=ev=>{ cfg.portada=ev.target.result; res(); }; r.readAsDataURL(portadaFile); })); if(cfg.carrusel) cfg.carrusel.forEach((f,i)=>{ var nombreEl=document.getElementById('carrusel-nombre-'+i); if(nombreEl) f.nombre=nombreEl.value.trim(); var imgEl=document.getElementById('carrusel-img-'+i); if(imgEl&&imgEl.files[0]) promesas.push(new Promise(res=>{ var r=new FileReader(); r.onload=ev=>{ f.imagen=ev.target.result; res(); }; r.readAsDataURL(imgEl.files[0]); })); }); await Promise.all(promesas); localStorage.setItem(K.CONFIG,JSON.stringify(cfg)); toast('✅ Configuración guardada','success'); renderConfig(document.getElementById('contenido-principal')); }
+        function backupDatos(){ var data={vehiculos:JSON.parse(localStorage.getItem(K.VEHICULOS)),rutas:JSON.parse(localStorage.getItem(K.RUTAS)),viajes:JSON.parse(localStorage.getItem(K.VIAJES)),reservas:JSON.parse(localStorage.getItem(K.RESERVAS)),config:JSON.parse(localStorage.getItem(K.CONFIG)),logs:JSON.parse(localStorage.getItem(K.LOGS))}; var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='backup_agencia.json'; a.click(); toast('📥 Backup descargado','success'); }
+
+        document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ cerrarModalConfirmar(); cerrarModalEditarViaje(); cerrarModalEditarVehiculo(); cerrarModalDetalleReserva(); } });
+        navegar('dashboard',document.querySelector('.sidebar-nav a.active')); actualizarBadges();
+    </script>
+</body>
+</html>
