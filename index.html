@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>TiendaPerfecta | Mapa del Sistema</title>
-    <meta name="description" content="Mapa completo del ecosistema TiendaPerfecta. Plataforma de alquiler de tiendas online." />
+    <title>IslaMarket | Mapa del Sistema</title>
+    <meta name="description" content="Mapa completo del ecosistema IslaMarket. Plataforma de alquiler de tiendas online." />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -63,9 +63,7 @@
         .badge-row { display: flex; justify-content: center; gap: 14px; margin-top: 12px; flex-wrap: wrap; }
         .badge-row span { font-size: 11px; opacity: 0.85; background: rgba(255,255,255,0.1); padding: 4px 14px; border-radius: 20px; }
 
-        /* ==========================================
-           SECCIÓN: ¿CÓMO FUNCIONA?
-           ========================================== */
+        /* Sección explicativa (cómo funciona) */
         .como-funciona {
             max-width: 900px;
             margin: 0 auto;
@@ -80,9 +78,7 @@
             font-weight: 800;
             margin-bottom: 8px;
         }
-        .como-funciona .cf-titulo h2 span {
-            color: var(--primary);
-        }
+        .como-funciona .cf-titulo h2 span { color: var(--primary); }
         .como-funciona .cf-titulo p {
             color: var(--text-secondary);
             font-size: 14px;
@@ -120,20 +116,9 @@
             line-height: 40px;
             margin-bottom: 14px;
         }
-        .cf-paso .cf-icono {
-            font-size: 44px;
-            margin-bottom: 10px;
-        }
-        .cf-paso h4 {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-        .cf-paso p {
-            font-size: 12px;
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
+        .cf-paso .cf-icono { font-size: 44px; margin-bottom: 10px; }
+        .cf-paso h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+        .cf-paso p { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
         .cf-aviso {
             background: #fef3c7;
             border: 2px solid #fde68a;
@@ -146,14 +131,8 @@
             color: #92400e;
             line-height: 1.6;
         }
-        .cf-aviso .cf-aviso-icono {
-            font-size: 28px;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-        .cf-aviso strong {
-            color: #d97706;
-        }
+        .cf-aviso .cf-aviso-icono { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+        .cf-aviso strong { color: #d97706; }
 
         .organigrama {
             max-width: 1000px;
@@ -243,6 +222,9 @@
         }
         footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
 
+        /* ==========================================
+           TOUR MODAL – CORREGIDO
+           ========================================== */
         .tour-overlay {
             display: none;
             position: fixed;
@@ -255,21 +237,27 @@
             padding: 16px;
         }
         .tour-overlay.activo { display: flex; }
+
         .tour-modal {
             background: var(--surface);
             border-radius: var(--radius);
-            max-width: 560px;
             width: 100%;
+            max-width: 600px;
+            height: 520px;                    /* Altura fija estándar */
             max-height: 85vh;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             animation: modalIn 0.35s ease;
-            position: relative;
+            position: relative;              /* Para posicionar botones laterales */
+            overflow: hidden;
         }
+
         @keyframes modalIn {
             from { opacity: 0; transform: translateY(30px) scale(0.95); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
+
         .tour-close {
             position: absolute;
             top: 12px; right: 14px;
@@ -288,40 +276,111 @@
             font-family: inherit;
         }
         .tour-close:hover { background: rgba(255,255,255,0.35); }
+
         .tour-header {
             background: linear-gradient(135deg, var(--primary), #8b5cf6);
             color: #fff;
             padding: 28px 24px 20px;
             text-align: center;
+            flex-shrink: 0;                  /* No se encoge */
             border-radius: var(--radius) var(--radius) 0 0;
         }
         .tour-header .tour-step-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8; }
         .tour-header .tour-icon { font-size: 48px; margin: 8px 0; }
         .tour-header h2 { font-size: 19px; font-weight: 800; }
-        .tour-body { padding: 22px 20px; }
+
+        .tour-body {
+            padding: 22px 20px;
+            flex: 1;                          /* Ocupa el espacio restante */
+            overflow-y: auto;                /* Scroll solo en el contenido */
+            min-height: 0;                   /* Permite que flex funcione correctamente */
+        }
         .tour-body p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 14px; }
         .tour-body ul { list-style: none; }
         .tour-body ul li { padding: 5px 0; font-size: 12px; display: flex; align-items: flex-start; gap: 8px; }
         .tour-body ul li .check { color: var(--success); font-weight: 700; flex-shrink: 0; }
-        .tour-progress { display: flex; justify-content: center; gap: 6px; padding: 0 20px 6px; }
+
+        .tour-progress {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            padding: 0 20px 12px;
+            flex-shrink: 0;
+        }
         .tour-progress .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: var(--transition); }
         .tour-progress .dot.activo { background: var(--primary); width: 24px; border-radius: 10px; }
         .tour-progress .dot.completado { background: var(--success); }
-        .tour-nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px 18px; gap: 10px; }
-        .btn-tour { padding: 10px 20px; border-radius: 50px; font-weight: 700; font-size: 12px; cursor: pointer; border: none; transition: var(--transition); font-family: inherit; }
-        .btn-tour-prev { background: var(--bg); color: var(--text-secondary); }
-        .btn-tour-prev:hover { background: #e2e8f0; }
-        .btn-tour-next { background: var(--primary); color: #fff; }
-        .btn-tour-next:hover { background: var(--primary-dark); }
-        .btn-tour-finish { background: var(--success); color: #fff; }
-        .btn-tour-salir { background: none; border: none; color: var(--text-secondary); font-weight: 600; font-size: 12px; cursor: pointer; font-family: inherit; }
+
+        /* Botones flotantes a los lados */
+        .tour-nav {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            transform: translateY(-50%);
+            pointer-events: none;            /* Permite clics en los botones pero no bloquea el contenido */
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+
+        .btn-tour {
+            pointer-events: auto;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .btn-tour:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .btn-tour-prev { }
+        .btn-tour-next { }
+
+        .btn-tour-finish {
+            background: var(--success);
+            color: #fff;
+            border-color: var(--success);
+        }
+        .btn-tour-finish:hover {
+            background: #059669;
+            border-color: #059669;
+        }
+
+        /* Botón salir (X) ya está en la esquina */
 
         @media (max-width: 768px) {
             .cf-pasos { grid-template-columns: 1fr; }
             .org-row { flex-direction: column; }
             .org-box { max-width: 100%; width: 100%; }
             .org-arrow-right { transform: rotate(90deg); }
-            .tour-modal { max-width: 100%; margin: 8px; }
+            .tour-modal {
+                height: 480px;
+                max-width: 95%;
+            }
+            .tour-nav {
+                padding: 0 4px;
+            }
+            .btn-tour {
+                width: 38px;
+                height: 38px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
@@ -332,7 +391,7 @@
     </div>
 
     <div class="header">
-        <h1>🧭 Mapa del Sistema <span>TiendaPerfecta</span></h1>
+        <h1>🧭 Mapa del Sistema <span>IslaMarket</span></h1>
         <p>Ecosistema de 8 archivos · 2 tiendas demo · 4 paneles de administración</p>
         <div class="badge-row">
             <span>📁 8 archivos</span>
@@ -342,9 +401,7 @@
         </div>
     </div>
 
-    <!-- ==========================================
-    SECCIÓN: ¿CÓMO FUNCIONA ESTO? (NUEVA)
-    ========================================== -->
+    <!-- Sección: ¿Cómo funciona? -->
     <div class="como-funciona">
         <div class="cf-titulo">
             <h2>⚠️ Antes de explorar, <span>lee esto</span></h2>
@@ -356,21 +413,19 @@
                 <div class="cf-numero">1</div>
                 <div class="cf-icono">🔧</div>
                 <h4>Todo se controla desde el Panel de Administración</h4>
-                <p>Cada tienda tiene su propio panel donde el administrador agrega productos, viajes, precios y toda la información. Hasta que él no lo haga, la tienda aparece vacía. Esto es normal y forma parte del funcionamiento.</p>
+                <p>Cada tienda tiene su propio panel donde el administrador agrega productos, viajes, precios y toda la información. Hasta que él no lo haga, la tienda aparece vacía.</p>
             </div>
-
             <div class="cf-paso">
                 <div class="cf-numero">2</div>
                 <div class="cf-icono">💻</div>
                 <h4>Los datos se guardan en tu navegador</h4>
-                <p>En esta versión de prueba todo se almacena en el navegador de quien está usando el sistema. Si abres la tienda sin haber creado productos desde el panel, no verás nada porque aún no se ha guardado nada.</p>
+                <p>En esta versión de prueba todo se almacena en el navegador. Si abres la tienda sin crear productos, no verás nada.</p>
             </div>
-
             <div class="cf-paso">
                 <div class="cf-numero">3</div>
                 <div class="cf-icono">👁️</div>
                 <h4>Solo tú ves lo que está en tu navegador</h4>
-                <p>Los datos que guardas en tu computadora o celular solo los ves tú. Otra persona que abra la misma página desde otro dispositivo no verá tus datos, porque todavía no hay una base de datos compartida en la nube.</p>
+                <p>Otra persona desde otro dispositivo no verá tus datos porque aún no hay base de datos en la nube.</p>
             </div>
         </div>
 
@@ -378,18 +433,16 @@
             <span class="cf-aviso-icono">💡</span>
             <div>
                 <strong>¿Qué significa esto en la práctica?</strong><br>
-                Si entras a la tienda de la Pizzería y no ves productos, o a la Agencia de Viajes y no hay rutas, es porque nadie las ha creado todavía desde el panel de administración. Para ver el sistema funcionando con datos de ejemplo, entra primero al Panel Admin de cada tienda y agrega algunos productos o viajes. ¡Entonces verás cómo todo cobra vida!
+                Si entras a la tienda y no ves productos o rutas, es porque nadie las ha creado desde el panel de administración. Para ver el sistema funcionando, entra al Panel Admin de cada tienda y agrega algunos productos o viajes.
             </div>
         </div>
     </div>
 
-    <!-- ==========================================
-    ORGANIGRAMA
-    ========================================== -->
+    <!-- Organigrama -->
     <div class="organigrama">
         <div class="org-titulo">📊 Flujo del Sistema</div>
         <div class="org-flow">
-
+            <!-- (El mismo organigrama que antes) -->
             <div class="org-row">
                 <div class="org-box-wrapper">
                     <a href="pagina-principal.html" class="org-box vitrina">
@@ -409,9 +462,7 @@
                     <a href="login-admin.html" class="btn-ver-mas">🔐 Ir al login</a>
                 </div>
             </div>
-
             <div class="org-arrow-down">⬇</div>
-
             <div class="org-row">
                 <div class="org-box-wrapper">
                     <a href="admin-general.html" class="org-box admin">
@@ -422,9 +473,7 @@
                     <a href="admin-general.html" class="btn-ver-mas">🔧 Abrir panel</a>
                 </div>
             </div>
-
             <div class="org-arrow-down">⬇</div>
-
             <div class="org-row">
                 <div class="org-box-wrapper">
                     <a href="pizzalibre.html" class="org-box tienda">
@@ -459,9 +508,7 @@
                     <a href="admin-agencia.html" class="btn-ver-mas">🔧 Ver admin</a>
                 </div>
             </div>
-
             <div class="org-arrow-down">⬇</div>
-
             <div class="org-row">
                 <div class="org-box-wrapper">
                     <a href="login-cliente.html" class="org-box cliente">
@@ -481,9 +528,7 @@
                     <a href="cliente-panel.html" class="btn-ver-mas">👤 Abrir panel</a>
                 </div>
             </div>
-
             <div class="org-arrow-down">⬇</div>
-
             <div class="org-row">
                 <div class="org-box-wrapper">
                     <a href="index.html" class="org-box vitrina" style="border-left-color: var(--primary);">
@@ -494,7 +539,6 @@
                     <a href="index.html" class="btn-ver-mas">🗺️ Ver mapa</a>
                 </div>
             </div>
-
         </div>
 
         <div style="text-align:center; margin-top: 24px;">
@@ -503,27 +547,31 @@
     </div>
 
     <footer>
-        <p><strong>TiendaPerfecta</strong> · Plataforma de alquiler de tiendas online</p>
-        <p><a href="https://github.com/jd-register/TiendaPerfecta" target="_blank">github.com/jd-register/TiendaPerfecta</a></p>
+        <p><strong>IslaMarket</strong> · Plataforma de alquiler de tiendas online</p>
     </footer>
 
+    <!-- MODAL DEL TOUR CORREGIDO -->
     <div class="tour-overlay" id="tour-overlay">
         <div class="tour-modal" id="tour-modal">
             <button class="tour-close" onclick="cerrarTour()" title="Cerrar tour">✕</button>
+
             <div class="tour-header">
                 <div class="tour-step-label" id="tour-step-label">Paso 1 de 10</div>
                 <div class="tour-icon" id="tour-icon">🏪</div>
                 <h2 id="tour-title">Página Principal</h2>
             </div>
+
             <div class="tour-body">
                 <p id="tour-desc"></p>
                 <ul id="tour-features"></ul>
             </div>
+
             <div class="tour-progress" id="tour-progress"></div>
+
+            <!-- Botones de navegación flotantes laterales -->
             <div class="tour-nav">
-                <button class="btn-tour btn-tour-prev" id="btn-prev" onclick="pasoAnterior()">⬅ Anterior</button>
-                <button class="btn-tour btn-tour-salir" onclick="cerrarTour()">✕ Salir</button>
-                <button class="btn-tour btn-tour-next" id="btn-next" onclick="pasoSiguiente()">Siguiente ➡</button>
+                <button class="btn-tour btn-tour-prev" id="btn-prev" onclick="pasoAnterior()">←</button>
+                <button class="btn-tour btn-tour-next" id="btn-next" onclick="pasoSiguiente()">→</button>
             </div>
         </div>
     </div>
@@ -563,7 +611,7 @@
                 descripcion: 'Aquí se maneja todo el negocio. El administrador ve quiénes son sus clientes, qué pagos han hecho, qué solicitudes nuevas han llegado y puede activar o desactivar tiendas. Es como la oficina central del sistema.',
                 caracteristicas: [
                     'Ve de un vistazo cuántos clientes hay, cuántos pagaron y cuánto se ha ganado en el mes.',
-                    'Recibe las solicitudes de nuevos interesados y las va pasando por etapas: nueva, contactada, en negociación y finalmente cliente.',
+                    'Recibe las solicitudes de nuevos interesados y las va pasando por etapas.',
                     'Puede crear clientes nuevos, darles días de prueba gratis o ponerles un plan de pago.',
                     'Registra los pagos que hacen los clientes y controla las fechas de vencimiento.',
                     'Administra las plantillas de tienda: puede agregar nuevas, editarlas o desactivarlas.',
@@ -598,7 +646,7 @@
                     'Controla el inventario y avisa con un color de alerta cuando un producto está por acabarse.',
                     'Maneja las categorías del menú (pizzas, bebidas, postres, etc.).',
                     'Puede cambiar los colores, el logo, la foto de portada y hasta poner un carrusel de imágenes.',
-                    'Elige la moneda (dólares, pesos cubanos, euros, etc.) y cómo se muestran los precios.',
+                    'Elige la moneda y cómo se muestran los precios.',
                     'Configura el tipo de envío (gratis, precio fijo o por zonas).',
                     'Activa o desactiva los métodos de pago (efectivo, transferencia, etc.).',
                     'Tiene reportes para ver cuánto ha vendido y qué productos se venden más.'
@@ -611,10 +659,10 @@
                 caracteristicas: [
                     'Muestra las rutas de viaje con sus horarios y paradas.',
                     'Tiene un calendario para ver qué días hay viajes y cuántos asientos quedan.',
-                    'El cliente puede elegir sus asientos en un dibujo del bus que muestra cuáles están libres y cuáles ocupados.',
+                    'El cliente puede elegir sus asientos en un dibujo del bus.',
                     'Permite reservar para varios pasajeros a la vez, cada uno con su nombre y carnet.',
                     'Al confirmar, genera un ticket que se puede descargar como imagen.',
-                    'Si el viaje requiere pago por adelantado, aparece un contador de tiempo para hacer el pago.',
+                    'Si el viaje requiere pago por adelantado, aparece un contador de tiempo.',
                     'Valida que el número de carnet de identidad cubano sea correcto.',
                     'Al terminar la reserva, salen efectos de confeti y se puede compartir por WhatsApp.'
                 ]
@@ -630,7 +678,7 @@
                     'Ve todas las reservas que han hecho los clientes, con los datos de cada pasajero.',
                     'Puede confirmar o cancelar reservas, y al confirmar envía un aviso por WhatsApp.',
                     'Revisa las confirmaciones de pago que envían los clientes.',
-                    'Tiene un simulador visual del bus que muestra en tiempo real los asientos libres, ocupados y pendientes.',
+                    'Tiene un simulador visual del bus que muestra los asientos libres, ocupados y pendientes.',
                     'Muestra un contador en vivo de cuánto falta para la salida del viaje.',
                     'Organiza a los pasajeros en tres vistas: por número de asiento, por parada de bajada y por lugar de recogida.',
                     'Cada vista se puede copiar, descargar como imagen o guardar como PDF.'
@@ -653,7 +701,7 @@
                 caracteristicas: [
                     'Muestra el estado de la tienda: activa, en prueba o vencida.',
                     'Tiene un contador de días que muestra cuánto tiempo de prueba le queda.',
-                    'Permite subir una foto del comprobante de pago para mantener la tienda activa.',
+                    'Permite subir una foto del comprobante de pago.',
                     'Guarda el historial de todos los comprobantes que ha enviado.',
                     'Tiene botones directos para entrar a la tienda pública y al panel de administración.',
                     'Incluye botones de contacto por WhatsApp, llamada o correo electrónico.'
@@ -667,7 +715,7 @@
                     'Muestra un organigrama con todas las partes del sistema conectadas entre sí.',
                     'Cada caja del organigrama es un botón que te lleva directo a esa página.',
                     'Ofrece este tour guiado que explica qué hace cada parte, en lenguaje sencillo.',
-                    'Explica cómo se guardan los datos ahora (en el navegador) y cómo será en el futuro (en la nube).'
+                    'Explica cómo se guardan los datos ahora y cómo será en el futuro.'
                 ]
             }
         ];
@@ -710,6 +758,7 @@
                 return '<li><span class="check">•</span> ' + c + '</li>';
             }).join('');
 
+            // Actualizar dots de progreso
             var html = '';
             for (var i = 0; i < total; i++) {
                 var clase = i < pasoActual ? 'completado' : (i === pasoActual ? 'activo' : '');
@@ -717,28 +766,40 @@
             }
             document.getElementById('tour-progress').innerHTML = html;
 
-            document.getElementById('btn-prev').style.display = pasoActual === 0 ? 'none' : 'inline-flex';
+            // Mostrar/ocultar botón anterior y cambiar estilo del siguiente
+            var btnPrev = document.getElementById('btn-prev');
             var btnNext = document.getElementById('btn-next');
-            if (pasoActual === total - 1) {
-                btnNext.textContent = '✅ Finalizar';
-                btnNext.className = 'btn-tour btn-tour-finish';
+
+            if (pasoActual === 0) {
+                btnPrev.style.visibility = 'hidden';
             } else {
-                btnNext.textContent = 'Siguiente ➡';
+                btnPrev.style.visibility = 'visible';
+            }
+
+            if (pasoActual === total - 1) {
+                btnNext.textContent = '✓';
+                btnNext.className = 'btn-tour btn-tour-next btn-tour-finish';
+            } else {
+                btnNext.textContent = '→';
                 btnNext.className = 'btn-tour btn-tour-next';
             }
         }
 
+        // Gestos táctiles para cambiar de paso
         document.getElementById('tour-modal').addEventListener('touchstart', function(e) {
             touchStartX = e.changedTouches[0].screenX;
         }, { passive: true });
+
         document.getElementById('tour-modal').addEventListener('touchend', function(e) {
             touchEndX = e.changedTouches[0].screenX;
             var diff = touchStartX - touchEndX;
             if (Math.abs(diff) > 60) {
-                diff > 0 ? pasoSiguiente() : pasoAnterior();
+                if (diff > 0) pasoSiguiente();
+                else pasoAnterior();
             }
         }, { passive: true });
 
+        // Navegación por teclado
         document.addEventListener('keydown', function(e) {
             if (!document.getElementById('tour-overlay').classList.contains('activo')) return;
             if (e.key === 'Escape') cerrarTour();
@@ -746,6 +807,7 @@
             if (e.key === 'ArrowLeft') pasoAnterior();
         });
 
+        // Cerrar al hacer clic fuera del modal
         document.getElementById('tour-overlay').addEventListener('click', function(e) {
             if (e.target === this) cerrarTour();
         });
