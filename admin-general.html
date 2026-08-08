@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Panel Maestro | TiendaPerfecta</title>
+    <title>Panel Maestro | Isla Market</title>
 
     <script>
         var cdns = [
@@ -906,7 +906,7 @@
     <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
         <div class="logo-cuadro">🏢</div>
-        <h2>Tienda<span>Perfecta</span></h2>
+        <h2>Isla<span>Market</span></h2>
     </div>
     <nav class="sidebar-nav">
         <a class="activo" onclick="navegar('dashboard', this)"><span class="icono-nav">📊</span> Dashboard</a>
@@ -990,7 +990,7 @@ if (!localStorage.getItem(K.SOLICITUDES)) localStorage.setItem(K.SOLICITUDES, '[
 if (!localStorage.getItem(K.CONFIG))
 {
     localStorage.setItem(K.CONFIG, JSON.stringify({
-        nombrePlataforma: 'TiendaPerfecta',
+        nombrePlataforma: 'IslaMarket',
         emoji: '🏢',
         email: '',
         telefono: '',
@@ -1362,7 +1362,7 @@ function renderListaSolicitudes(solicitudes, plantillas, categorias, clientes)
         var fechaStr = fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
         var diasDesde = Math.round((new Date() - fecha) / (1000 * 60 * 60 * 24));
         var telefonoLimpio = s.telefono ? s.telefono.replace(/\+/g, '').replace(/\s/g, '') : '';
-        var mensajeWhatsApp = "Hola " + s.nombre + ", soy de TiendaPerfecta. Recibí tu solicitud de información sobre nuestras tiendas online. ¿Podemos conversar?";
+        var mensajeWhatsApp = "Hola " + s.nombre + ", soy de IslaMarket. Recibí tu solicitud de información sobre nuestras tiendas online. ¿Podemos conversar?";
 
         return '<div class="solicitud-item" data-id="' + s.id + '">' +
             '<div class="solicitud-info">' +
@@ -2261,7 +2261,7 @@ function actualizarUsuariosLogin()
     var clientes = JSON.parse(localStorage.getItem(K.CLIENTES)) || [];
     var usuariosLogin = {};
     clientes.forEach(function(c) { if (c.usuario && c.contrasena) { usuariosLogin[c.usuario] = { contrasena: c.contrasena, pagina: c.urlAdmin }; } });
-    localStorage.setItem('usuariosTiendaPerfecta', JSON.stringify(usuariosLogin));
+    localStorage.setItem('usuariosIslaMarket', JSON.stringify(usuariosLogin));
 }
 
 // ==========================================
@@ -2685,7 +2685,7 @@ function guardarConfigSilencioso()
 {
     var caracteristicas = document.getElementById('cfg-plan-caracteristicas')?.value || '';
     var cfg = {
-        nombrePlataforma: document.getElementById('cfg-nombre')?.value.trim() || 'TiendaPerfecta',
+        nombrePlataforma: document.getElementById('cfg-nombre')?.value.trim() || 'IslaMarket',
         emoji: document.getElementById('cfg-emoji')?.value.trim() || '🏢',
         email: document.getElementById('cfg-email')?.value.trim() || '',
         telefono: document.getElementById('cfg-telefono')?.value.trim() || '',
