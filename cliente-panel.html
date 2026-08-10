@@ -3,737 +3,549 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Mi Panel | TiendaPerfecta</title>
-    
+    <title>Mi Panel | Isla Market</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet" />
-    
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
+            --primary: #2ecc71;
+            --primary-dark: #27ae60;
+            --primary-light: #eafaf1;
+            --accent: #00cec9;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
+            --info: #3b82f6;
             --bg: #f8fafc;
             --surface: #ffffff;
             --text: #0f172a;
             --text-secondary: #64748b;
             --border: #e2e8f0;
-            --radius: 16px;
+            --radius: 18px;
             --radius-sm: 12px;
-            --shadow: 0 4px 16px rgba(0,0,0,0.08);
-            --shadow-lg: 0 12px 30px rgba(0,0,0,0.12);
+            --shadow: 0 4px 16px rgba(0,0,0,0.06);
+            --shadow-lg: 0 12px 30px rgba(0,0,0,0.1);
+            --transition: 0.25s ease;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin:0; padding:0; box-sizing:border-box; }
 
         body {
-            font-family: 'Inter', -apple-system, system-ui, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg); color: var(--text);
+            min-height: 100vh; display: flex; flex-direction: column;
+            -webkit-font-smoothing: antialiased;
         }
 
+        /* ========== NAVBAR ========== */
         .navbar {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 0 24px;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            padding: 0 24px; height: 64px; display: flex; align-items: center;
+            justify-content: space-between; position: sticky; top: 0; z-index: 100;
             box-shadow: var(--shadow);
         }
+        .navbar-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: var(--text); }
+        .brand-icon { width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
+        .navbar-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .navbar-actions span { font-weight: 600; font-size: 13px; color: var(--text-secondary); }
 
-        .navbar-brand {
-            font-weight: 800;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--text);
-        }
+        .btn-icon { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: var(--transition); position: relative; }
+        .btn-icon:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-icon .badge-notif { position: absolute; top: -4px; right: -4px; background: var(--danger); color: #fff; min-width: 18px; height: 18px; border-radius: 50%; font-size: 10px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
 
-        .navbar-brand .icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--primary), #8b5cf6);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 18px;
-        }
+        .btn-logout { padding: 8px 16px; border-radius: 50px; border: 2px solid var(--border); background: transparent; color: var(--text-secondary); font-weight: 600; font-size: 12px; cursor: pointer; transition: var(--transition); font-family: inherit; }
+        .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
 
-        .navbar-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
+        /* ========== CONTENIDO ========== */
+        .contenido { max-width: 900px; margin: 0 auto; padding: 24px 20px; flex: 1; width: 100%; }
 
-        .navbar-actions span {
-            font-weight: 600;
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
+        /* ========== TARJETAS DE RESUMEN ========== */
+        .resumen-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 24px; }
+        .resumen-card { background: var(--surface); border-radius: var(--radius); padding: 18px 20px; border: 1px solid var(--border); box-shadow: var(--shadow); transition: var(--transition); }
+        .resumen-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .resumen-card .r-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; }
+        .resumen-card .r-value { font-size: 22px; font-weight: 900; margin: 4px 0; }
+        .resumen-card .r-sub { font-size: 11px; color: var(--text-secondary); }
 
-        .btn-logout {
-            padding: 8px 18px;
-            border-radius: 50px;
-            border: 2px solid var(--border);
-            background: transparent;
-            color: var(--text-secondary);
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-            font-family: inherit;
-        }
-
-        .btn-logout:hover {
-            border-color: var(--danger);
-            color: var(--danger);
-        }
-
-        .contenido {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 24px 20px;
-            flex: 1;
-            width: 100%;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 18px;
-            margin-bottom: 28px;
-        }
-
-        .stat-card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 20px 22px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            transition: 0.2s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .stat-card .label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            letter-spacing: 0.5px;
-        }
-
-        .stat-card .value {
-            font-size: 28px;
-            font-weight: 900;
-            margin: 4px 0;
-        }
-
-        .stat-card .sub {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .badge-estado {
-            display: inline-block;
-            padding: 3px 12px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        .badge-activo { background: #d1fae5; color: #065f46; }
+        /* ========== BADGES ========== */
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; }
         .badge-prueba { background: #fef3c7; color: #92400e; }
+        .badge-activo { background: #d1fae5; color: #065f46; }
         .badge-vencido { background: #fee2e2; color: #991b1b; }
+        .badge-gracia { background: #fef3c7; color: #92400e; animation: pulseGracia 1.5s infinite; }
         .badge-suspendido { background: #e2e8f0; color: #475569; }
+        @keyframes pulseGracia { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
 
-        .seccion {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 24px 28px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-        }
+        /* ========== SECCIONES ========== */
+        .seccion { background: var(--surface); border-radius: var(--radius); padding: 24px 28px; border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 20px; }
+        .seccion h2 { font-size: 17px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .seccion h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text-secondary); }
 
-        .seccion h2 {
-            font-size: 18px;
-            font-weight: 800;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        /* ========== BARRA DE PROGRESO ========== */
+        .progress-bar { width: 100%; height: 10px; background: #e2e8f0; border-radius: 10px; overflow: hidden; margin: 8px 0; }
+        .progress-bar .progress-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
+        .progress-fill.green { background: var(--success); }
+        .progress-fill.yellow { background: var(--warning); }
+        .progress-fill.red { background: var(--danger); }
+        .progress-fill.blue { background: var(--info); }
+        .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); }
 
-        .tienda-card {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 16px 20px;
-            background: var(--bg);
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
-            flex-wrap: wrap;
-        }
+        /* ========== TIMER / CONTADOR ========== */
+        .timer-box { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: var(--radius-sm); margin: 12px 0; border: 1px solid; }
+        .timer-box.warning { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+        .timer-box.danger { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+        .timer-box.info { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+        .timer-box .timer-num { font-size: 28px; font-weight: 900; }
+        .timer-box .timer-text { font-size: 12px; }
 
-        .tienda-card .info { flex: 1; }
-        .tienda-card .info h4 { font-size: 16px; font-weight: 700; }
-        .tienda-card .info p { font-size: 12px; color: var(--text-secondary); }
+        /* ========== CALENDARIO DE PAGOS ========== */
+        .cal-pagos { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+        .cal-pago-item { flex: 1; min-width: 100px; text-align: center; padding: 14px 10px; border-radius: var(--radius-sm); border: 2px solid var(--border); background: var(--bg); }
+        .cal-pago-item.pagado { border-color: var(--success); background: #f0fdf4; }
+        .cal-pago-item.pendiente { border-color: var(--warning); background: #fffbeb; }
+        .cal-pago-item.vencido { border-color: var(--danger); background: #fef2f2; }
+        .cal-pago-item .pago-icon { font-size: 24px; margin-bottom: 4px; }
+        .cal-pago-item .pago-fecha { font-size: 13px; font-weight: 700; }
+        .cal-pago-item .pago-monto { font-size: 16px; font-weight: 900; }
+        .cal-pago-item .pago-estado { font-size: 10px; font-weight: 700; text-transform: uppercase; }
 
-        .btn-tienda {
-            padding: 9px 20px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 12px;
-            cursor: pointer;
-            border: none;
-            background: var(--primary);
-            color: #fff;
-            transition: 0.2s;
-            font-family: inherit;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
+        /* ========== LISTA DE PAGOS ========== */
+        .pago-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px; font-size: 12px; }
+        .pago-item:last-child { border-bottom: none; }
+        .pago-item .pago-info strong { display: block; font-size: 13px; }
+        .estado-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+        .estado-dot.ok { background: var(--success); }
+        .estado-dot.pend { background: var(--warning); }
+        .estado-dot.bad { background: var(--danger); }
 
-        .btn-tienda:hover {
-            background: var(--primary-dark);
-            transform: scale(1.02);
-        }
+        /* ========== NOTIFICACIONES ========== */
+        .notif-item { padding: 12px 14px; border-radius: var(--radius-sm); margin-bottom: 6px; border: 1px solid var(--border); display: flex; align-items: center; gap: 10px; cursor: pointer; transition: var(--transition); font-size: 12px; }
+        .notif-item:hover { border-color: var(--primary); background: var(--primary-light); }
+        .notif-item.no-leida { border-left: 3px solid var(--primary); background: #f8fafc; font-weight: 600; }
+        .notif-item .notif-icon { font-size: 20px; flex-shrink: 0; }
+        .notif-item .notif-fecha { font-size: 10px; color: var(--text-secondary); margin-left: auto; white-space: nowrap; }
 
-        .btn-tienda.outline {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-        }
+        /* ========== BOTONES ========== */
+        .btn { padding: 10px 20px; border-radius: 50px; font-weight: 700; font-size: 12px; cursor: pointer; border: none; transition: var(--transition); font-family: inherit; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+        .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 14px rgba(46,204,113,0.3); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .btn-warning { background: var(--warning); color: #000; }
+        .btn-warning:hover { background: #d97706; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary-light); }
+        .btn-sm { padding: 6px 14px; font-size: 10px; }
+        .btn-block { width: 100%; justify-content: center; }
 
-        .btn-tienda.outline:hover {
-            background: var(--primary);
-            color: #fff;
-        }
+        /* ========== FORMULARIOS ========== */
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-weight: 700; font-size: 10px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; letter-spacing: 0.5px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; transition: var(--transition); background: var(--bg); color: var(--text); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46,204,113,0.08); background: var(--surface); }
+        .form-group input[type="file"] { padding: 8px; border: 2px dashed var(--border); cursor: pointer; }
+        .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .form-row .form-group { flex: 1; min-width: 120px; }
 
-        .comprobante-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
-            gap: 8px;
-        }
+        /* ========== TOAST ========== */
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); padding: 12px 24px; border-radius: 50px; font-weight: 700; font-size: 13px; z-index: 500; opacity: 0; transition: all 0.4s; pointer-events: none; box-shadow: var(--shadow-lg); max-width: 90%; text-align: center; }
+        .toast.mostrar { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.exito { background: var(--success); color: #fff; }
+        .toast.error { background: var(--danger); color: #fff; }
+        .toast.info { background: var(--primary); color: #fff; }
 
-        .comprobante-item:last-child { border-bottom: none; }
-        .comprobante-item .info { font-size: 13px; }
-        .comprobante-item .info strong { display: block; }
+        /* ========== TUTORIALES ========== */
+        .tutorial-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 6px; transition: var(--transition); text-decoration: none; color: var(--text); font-size: 12px; font-weight: 600; }
+        .tutorial-item:hover { border-color: var(--primary); background: var(--primary-light); }
+        .tutorial-item .tuto-icon { font-size: 22px; flex-shrink: 0; }
 
-        .estado {
-            padding: 3px 12px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        .estado-pendiente { background: #fef3c7; color: #92400e; }
-        .estado-confirmado { background: #d1fae5; color: #065f46; }
-        .estado-rechazado { background: #fee2e2; color: #991b1b; }
-
-        .form-group {
-            margin-bottom: 14px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 700;
-            font-size: 11px;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 10px 14px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            font-size: 13px;
-            font-family: inherit;
-            transition: 0.2s;
-            background: var(--bg);
-        }
-
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99,102,241,0.06);
-            background: var(--surface);
-        }
-
-        .form-group input[type="file"] {
-            padding: 8px;
-            border: 2px dashed var(--border);
-            cursor: pointer;
-        }
-
-        .btn-submit {
-            padding: 11px 28px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            border: none;
-            background: var(--primary);
-            color: #fff;
-            transition: 0.2s;
-            font-family: inherit;
-            box-shadow: 0 4px 14px rgba(99,102,241,0.3);
-        }
-
-        .btn-submit:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-
-        .timer {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 18px;
-            background: #fef3c7;
-            border-radius: var(--radius-sm);
-            border: 1px solid #fde68a;
-            margin: 8px 0;
-        }
-
-        .timer .days {
-            font-size: 24px;
-            font-weight: 900;
-            color: #92400e;
-        }
-
-        .timer .label {
-            font-size: 12px;
-            color: #92400e;
-        }
-
-        .timer.urgente {
-            background: #fee2e2;
-            border-color: #fecaca;
-        }
-
-        .timer.urgente .days { color: #991b1b; }
-        .timer.urgente .label { color: #991b1b; }
-
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 13px;
-            background: var(--surface);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
-            opacity: 0;
-            transition: all 0.4s;
-            pointer-events: none;
-            z-index: 500;
-        }
-
-        .toast.mostrar {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .toast.exito { border-color: var(--success); color: var(--success); }
-        .toast.error { border-color: var(--danger); color: var(--danger); }
-        .toast.info { border-color: var(--primary); color: var(--primary); }
-
+        /* ========== RESPONSIVE ========== */
         @media (max-width: 768px) {
             .navbar { padding: 0 16px; height: 58px; }
             .contenido { padding: 16px 12px; }
             .seccion { padding: 18px 16px; }
-            .dashboard-grid { grid-template-columns: 1fr; }
-            .tienda-card { flex-direction: column; text-align: center; }
-            .tienda-card .btn-tienda { width: 100%; justify-content: center; }
-            .comprobante-item { flex-direction: column; align-items: stretch; text-align: center; }
+            .resumen-grid { grid-template-columns: 1fr 1fr; }
+            .cal-pagos { flex-direction: column; }
+        }
+        @media (max-width: 480px) {
+            .resumen-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
+    <!-- ========== NAVBAR ========== -->
     <nav class="navbar">
         <div class="navbar-brand">
-            <div class="icon">🏢</div>
-            <span id="brand-nombre">TiendaPerfecta</span>
+            <div class="brand-icon" id="brand-emoji">🏝️</div>
+            <span id="brand-nombre">Isla Market</span>
         </div>
         <div class="navbar-actions">
             <span id="usuario-nombre"></span>
+            <button class="btn-icon" id="btn-notificaciones" onclick="toggleNotificaciones()" title="Notificaciones">
+                🔔<span class="badge-notif" id="badge-notif" style="display:none;">0</span>
+            </button>
             <button class="btn-logout" onclick="cerrarSesion()">🚪 Salir</button>
         </div>
     </nav>
 
+    <!-- ========== CONTENIDO ========== -->
     <div class="contenido" id="contenido-principal"></div>
 
     <div class="toast" id="toast"></div>
 
     <script>
-        // ==========================================
-        // VERIFICACIÓN DE SESIÓN
-        // ==========================================
+        
+// ========== VERIFICACIÓN DE SESIÓN ==========
         (function() {
             var sesion = JSON.parse(sessionStorage.getItem('clienteSesion') || 'null');
-            
-            if (!sesion || !sesion.id || !sesion.token) {
-                window.location.href = 'login-cliente.html';
-                return;
-            }
-            
+            if (!sesion || !sesion.id || !sesion.token) { window.location.href = 'login-cliente.html'; return; }
             var ahora = new Date().getTime();
-            if (ahora >= sesion.expiracion) {
-                sessionStorage.removeItem('clienteSesion');
-                window.location.href = 'login-cliente.html?expirado=1';
-                return;
-            }
-            
-            // Renovar expiración
+            if (ahora >= sesion.expiracion) { sessionStorage.removeItem('clienteSesion'); window.location.href = 'login-cliente.html?expirado=1'; return; }
             sesion.expiracion = ahora + (480 * 60 * 1000);
             sessionStorage.setItem('clienteSesion', JSON.stringify(sesion));
         })();
 
-        // ==========================================
-        // STORAGE KEYS
-        // ==========================================
+        // ========== STORAGE KEYS ==========
         var K_CLIENTES = 'central_clientes';
         var K_PAGOS = 'central_pagos';
         var K_CONFIG = 'central_config';
         var K_PLANTILLAS = 'central_plantillas';
         var K_SOLICITUDES = 'central_solicitudes';
 
-        // ==========================================
-        // DATOS DE SESIÓN
-        // ==========================================
         var sesionActual = JSON.parse(sessionStorage.getItem('clienteSesion'));
         var clienteActual = null;
+        var notificacionesAbiertas = false;
 
+        // ========== FUNCIONES DE DATOS ==========
         function cargarClienteActual() {
             var clientes = JSON.parse(localStorage.getItem(K_CLIENTES)) || [];
             clienteActual = clientes.find(function(c) { return c.id === sesionActual.id; });
-            
-            if (!clienteActual) {
-                sessionStorage.removeItem('clienteSesion');
-                window.location.href = 'login-cliente.html';
-                return;
-            }
+            if (!clienteActual) { sessionStorage.removeItem('clienteSesion'); window.location.href = 'login-cliente.html'; }
         }
 
-        function cerrarSesion() {
-            sessionStorage.removeItem('clienteSesion');
-            window.location.href = 'index.html';
-        }
+        function cerrarSesion() { sessionStorage.removeItem('clienteSesion'); window.location.href = 'index.html'; }
 
-        // ==========================================
-        // TOAST
-        // ==========================================
-        function mostrarToast(mensaje, tipo) {
-            var toast = document.getElementById('toast');
-            toast.textContent = mensaje;
-            toast.className = 'toast mostrar ' + (tipo || 'info');
-            clearTimeout(toast._timeout);
-            toast._timeout = setTimeout(function() {
-                toast.className = 'toast';
-            }, 4000);
-        }
-
-        // ==========================================
-        // CONFIGURACIÓN
-        // ==========================================
         function obtenerConfig() {
             var cfg = JSON.parse(localStorage.getItem(K_CONFIG)) || {};
             return {
-                nombrePlataforma: cfg.nombrePlataforma || 'TiendaPerfecta',
-                emoji: cfg.emoji || '🏢',
-                diasPrueba: cfg.diasPrueba || 7,
-                moneda: cfg.moneda || 'CUP',
-                precioMensual: cfg.precioMensual || 10,
-                telefono: cfg.telefono || '',
-                whatsapp: cfg.whatsapp || '',
-                email: cfg.email || ''
+                nombrePlataforma: cfg.nombrePlataforma || 'Isla Market', emoji: cfg.emoji || '🏝️',
+                telefono: cfg.telefono || '', whatsapp: cfg.whatsapp || '', email: cfg.email || '',
+                moneda: cfg.moneda || 'CUP', diasPrueba: cfg.diasPrueba || 7, precioMensual: cfg.precioMensual || 10,
+                planPrecio: cfg.planPrecio || 16000, planDescuentoEfectivo: cfg.planDescuentoEfectivo || 15
             };
         }
 
-        // ==========================================
-        // CARGAR PANEL COMPLETO
-        // ==========================================
+        function mostrarToast(mensaje, tipo) {
+            var t = document.getElementById('toast'); t.textContent = mensaje;
+            t.className = 'toast mostrar ' + (tipo || 'info');
+            clearTimeout(t._timeout); t._timeout = setTimeout(function() { t.className = 'toast'; }, 4000);
+        }
+
+        function toggleNotificaciones() {
+            notificacionesAbiertas = !notificacionesAbiertas;
+            cargarPanel();
+        }
+
+        // ========== CARGAR PANEL COMPLETO ==========
         function cargarPanel() {
             cargarClienteActual();
             if (!clienteActual) return;
 
-            var container = document.getElementById('contenido-principal');
             var cfg = obtenerConfig();
             var plantillas = JSON.parse(localStorage.getItem(K_PLANTILLAS)) || [];
             var pagos = JSON.parse(localStorage.getItem(K_PAGOS)) || [];
             var solicitudes = JSON.parse(localStorage.getItem(K_SOLICITUDES)) || [];
             var hoy = new Date();
+            var hoyStr = hoy.toISOString().split('T')[0];
 
-            document.getElementById('usuario-nombre').textContent = '👋 ' + clienteActual.nombre;
+            document.getElementById('usuario-nombre').textContent = '👋 ' + (clienteActual.dueno || clienteActual.nombre);
             document.getElementById('brand-nombre').textContent = cfg.nombrePlataforma;
+            document.getElementById('brand-emoji').textContent = cfg.emoji;
 
-            // Datos de la plantilla
             var pl = plantillas.find(function(p) { return p.id === clienteActual.plantillaId; }) || {};
-
-            // Calcular días restantes
-            var diasRestantes = 0;
-            var esPrueba = false;
-            var esVencido = false;
-
-            if (clienteActual.fechaInicio && clienteActual.estado === 'activo') {
-                var fechaInicio = new Date(clienteActual.fechaInicio);
-                var fechaVencimiento = clienteActual.fechaVencimiento ? new Date(clienteActual.fechaVencimiento) : null;
-                
-                if (!fechaVencimiento) {
-                    var diasPrueba = cfg.diasPrueba || 7;
-                    fechaVencimiento = new Date(fechaInicio);
-                    fechaVencimiento.setDate(fechaVencimiento.getDate() + diasPrueba);
-                    esPrueba = true;
-                }
-
-                var diff = Math.ceil((fechaVencimiento - hoy) / (1000 * 60 * 60 * 24));
-                diasRestantes = diff > 0 ? diff : 0;
-                
-                if (diasRestantes === 0 && esPrueba) {
-                    esVencido = true;
-                }
-            }
-
-            // Pagos del cliente
             var pagosCliente = pagos.filter(function(p) { return p.clienteId === clienteActual.id; });
 
-            // Solicitud original del cliente
-            var solicitudOriginal = solicitudes.find(function(s) { 
-                return s.clienteId === clienteActual.id || 
-                       (s.nombre === clienteActual.nombre && s.telefono === clienteActual.telefono);
-            });
+            // ========== DETERMINAR MODO ==========
+            var tipoCliente = clienteActual.tipoCliente || 'prueba';
+            var esPrueba = (tipoCliente === 'prueba' || !tipoCliente);
+            var esAlquiler = (tipoCliente === 'alquiler');
+            var estado = clienteActual.estado || 'activo';
+            var enPeriodoGracia = clienteActual.enPeriodoGracia || false;
+            var diasGraciaRestantes = 0;
 
-            // Estado del cliente
-            var estadoBadge = '';
-            if (clienteActual.estado === 'suspendido') {
-                estadoBadge = '<span class="badge-estado badge-suspendido">⏸️ Suspendido</span>';
-            } else if (esVencido && esPrueba) {
-                estadoBadge = '<span class="badge-estado badge-vencido">⏰ Prueba vencida</span>';
-            } else if (esPrueba && diasRestantes > 0) {
-                estadoBadge = '<span class="badge-estado badge-prueba">🧪 Prueba (' + diasRestantes + ' días)</span>';
-            } else if (clienteActual.estado === 'activo') {
-                estadoBadge = '<span class="badge-estado badge-activo">✅ Activo</span>';
-            } else {
-                estadoBadge = '<span class="badge-estado badge-vencido">❌ Inactivo</span>';
+            if (enPeriodoGracia && clienteActual.fechaInicioGracia) {
+                var inicioGracia = new Date(clienteActual.fechaInicioGracia);
+                var finGracia = new Date(inicioGracia);
+                finGracia.setDate(finGracia.getDate() + 5);
+                diasGraciaRestantes = Math.ceil((finGracia - hoy) / (1000 * 60 * 60 * 24));
+                if (diasGraciaRestantes < 0) diasGraciaRestantes = 0;
             }
 
-            // === HTML DEL PANEL ===
+            // ========== Calcular días de prueba ==========
+            var diasPruebaRestantes = 0;
+            var diasPruebaTotal = cfg.diasPrueba || 7;
+            if (esPrueba && clienteActual.fechaPruebaInicio) {
+                var inicioPrueba = new Date(clienteActual.fechaPruebaInicio);
+                var finPrueba = new Date(inicioPrueba);
+                finPrueba.setDate(finPrueba.getDate() + diasPruebaTotal);
+                diasPruebaRestantes = Math.ceil((finPrueba - hoy) / (1000 * 60 * 60 * 24));
+                if (diasPruebaRestantes < 0) diasPruebaRestantes = 0;
+            }
+
+            // ========== Calcular pagos ==========
+            var metodoPago = clienteActual.metodoPago || 'unico';
+            var fechasPago = clienteActual.fechasPago || [];
+            var montosPago = clienteActual.montosPago || [];
+            var pagosRealizados = clienteActual.pagosRealizados || [];
+            if (fechasPago.length === 0 && clienteActual.fechaVencimiento) { fechasPago = [clienteActual.fechaVencimiento]; montosPago = [clienteActual.precio || cfg.planPrecio]; pagosRealizados = [false]; }
+
+            var totalPagos = fechasPago.length;
+            var pagosHechos = pagosRealizados.filter(function(p) { return p; }).length;
+            var porcentajePagos = totalPagos > 0 ? Math.round((pagosHechos / totalPagos) * 100) : 0;
+            var totalDebe = montosPago.reduce(function(s, m, i) { return pagosRealizados[i] ? s : s + m; }, 0);
+            var totalPagado = montosPago.reduce(function(s, m, i) { return pagosRealizados[i] ? s + m : s; }, 0);
+
+            // Próximo pago pendiente
+            var proximoPago = null;
+            for (var i = 0; i < fechasPago.length; i++) {
+                if (!pagosRealizados[i]) { proximoPago = { fecha: fechasPago[i], monto: montosPago[i], index: i }; break; }
+            }
+            var diasProximoPago = 0;
+            if (proximoPago) { diasProximoPago = Math.ceil((new Date(proximoPago.fecha) - hoy) / (1000 * 60 * 60 * 24)); }
+
+            // ========== NOTIFICACIONES ==========
+            var notificaciones = clienteActual.notificaciones || [];
+            var noLeidas = notificaciones.filter(function(n) { return !n.leida; });
+            var badgeNotif = document.getElementById('badge-notif');
+            if (noLeidas.length > 0) { badgeNotif.textContent = noLeidas.length; badgeNotif.style.display = 'flex'; }
+            else { badgeNotif.style.display = 'none'; }
+
+            // ========== HTML ==========
+            var container = document.getElementById('contenido-principal');
             var html = '';
 
-            // Dashboard
-            html += '<div class="dashboard-grid">' +
-                '<div class="stat-card"><div class="label">🏪 Mi Tienda</div><div class="value" style="font-size:18px;">' + clienteActual.nombre + '</div><div class="sub">' + (pl.emoji || '🏪') + ' ' + (pl.nombre || 'Sin plantilla asignada') + '</div></div>' +
-                '<div class="stat-card"><div class="label">📊 Estado</div><div style="margin:4px 0;">' + estadoBadge + '</div><div class="sub">Plan: ' + (clienteActual.plan || 'Básico') + ' · $' + (clienteActual.precio || 0) + '/mes</div></div>' +
-                '<div class="stat-card"><div class="label">📅 Información</div><div class="sub" style="font-size:12px;">Inicio: ' + (clienteActual.fechaInicio ? new Date(clienteActual.fechaInicio + 'T00:00:00').toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : '—') + '<br>Vence: ' + (clienteActual.fechaVencimiento ? new Date(clienteActual.fechaVencimiento + 'T00:00:00').toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Sin vencimiento') + '</div></div>' +
-                '<div class="stat-card"><div class="label">💰 Pagos</div><div class="value" style="font-size:18px;">' + pagosCliente.length + '</div><div class="sub">Total: $' + pagosCliente.reduce(function(s, p) { return s + p.monto; }, 0).toFixed(2) + '</div></div>' +
+            // ========== MODO: PRUEBA GRATUITA ==========
+            if (esPrueba && estado === 'activo' && diasPruebaRestantes > 0) {
+                var pctPrueba = Math.round(((diasPruebaTotal - diasPruebaRestantes) / diasPruebaTotal) * 100);
+                var barColor = diasPruebaRestantes <= 3 ? 'red' : 'yellow';
+                var timerClass = diasPruebaRestantes <= 3 ? 'danger' : 'warning';
+
+                html += '<div class="resumen-grid">' +
+                    '<div class="resumen-card"><div class="r-label">🏪 Mi Tienda</div><div class="r-value" style="font-size:16px;">' + clienteActual.nombre + '</div><div class="r-sub">' + (pl.nombre || 'Sin plantilla') + '</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">📊 Estado</div><span class="badge badge-prueba">🧪 Prueba gratuita</span><div class="r-sub">Plan: ' + (clienteActual.plan || 'Básico') + '</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">⏱️ Días restantes</div><div class="r-value">' + diasPruebaRestantes + ' / ' + diasPruebaTotal + '</div><div class="r-sub">Desde: ' + new Date(clienteActual.fechaPruebaInicio + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'short' }) + '</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">💲 Plan de alquiler</div><div class="r-value" style="font-size:16px;">$' + (cfg.planPrecio || 16000).toLocaleString() + ' ' + cfg.moneda + '</div><div class="r-sub">Por mes</div></div>' +
+                    '</div>';
+
+                html += '<div class="timer-box ' + timerClass + '"><span class="timer-num">' + diasPruebaRestantes + '</span><span class="timer-text">días de prueba gratuita restantes' + (diasPruebaRestantes <= 3 ? ' ⚠️ ¡Apresúrate!' : '') + '</span></div>';
+                html += '<div class="progress-label"><span>Progreso de prueba</span><span>' + (diasPruebaTotal - diasPruebaRestantes) + ' de ' + diasPruebaTotal + ' días usados</span></div>';
+                html += '<div class="progress-bar"><div class="progress-fill ' + barColor + '" style="width:' + pctPrueba + '%;"></div></div>';
+
+                html += '<div class="seccion"><h2>📋 Lo que tienes ahora</h2>' +
+                    '<ul style="list-style:none;font-size:13px;color:var(--text-secondary);line-height:2.2;">' +
+                    '<li>✅ 1 tienda activa por ' + diasPruebaTotal + ' días</li>' +
+                    '<li>✅ Panel de administración completo</li>' +
+                    '<li>✅ Hasta 50 productos</li>' +
+                    '<li>✅ Personaliza colores, logo y portada</li>' +
+                    '<li>✅ Sin necesidad de programación</li>' +
+                    '<li>✅ Soporte durante la prueba</li>' +
+                    '</ul></div>';
+
+                html += '<div class="seccion" style="text-align:center;">' +
+                    '<h2>💲 ¿Listo para crecer en serio?</h2>' +
+                    '<p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Contrata el plan de alquiler y olvídate de los límites.</p>' +
+                    '<button class="btn btn-warning btn-block" onclick="abrirFormularioPago()" style="font-size:14px;padding:14px;">💲 Quiero pasarme al plan de alquiler</button>' +
+                    '</div>';
+            }
+
+            // ========== MODO: PLAN ACTIVO (ALQUILER) ==========
+            else if (esAlquiler && estado === 'activo' && !enPeriodoGracia) {
+                html += '<div class="resumen-grid">' +
+                    '<div class="resumen-card"><div class="r-label">🏪 Mi Tienda</div><div class="r-value" style="font-size:16px;">' + clienteActual.nombre + '</div><div class="r-sub">' + (pl.nombre || 'Sin plantilla') + '</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">📊 Estado</div><span class="badge badge-activo">✅ Plan activo</span><div class="r-sub">Plan: ' + (clienteActual.plan || 'Básico') + '</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">💰 Pagado</div><div class="r-value" style="font-size:16px;">$' + totalPagado.toLocaleString() + '</div><div class="r-sub">' + pagosHechos + ' de ' + totalPagos + ' pagos</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">📅 Próximo pago</div><div class="r-value" style="font-size:16px;">' + (proximoPago ? new Date(proximoPago.fecha + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'short' }) : '—') + '</div><div class="r-sub">' + (proximoPago ? '$' + proximoPago.monto.toLocaleString() : 'Todo pagado') + '</div></div>' +
+                    '</div>';
+
+                if (proximoPago && diasProximoPago <= 7 && diasProximoPago > 0) {
+                    var timerClass2 = diasProximoPago <= 3 ? 'danger' : 'warning';
+                    html += '<div class="timer-box ' + timerClass2 + '"><span class="timer-num">' + diasProximoPago + '</span><span class="timer-text">días para el próximo pago</span></div>';
+                }
+
+                html += '<div class="progress-label"><span>Progreso de pagos</span><span>' + pagosHechos + ' de ' + totalPagos + ' pagos (' + porcentajePagos + '%)</span></div>';
+                html += '<div class="progress-bar"><div class="progress-fill blue" style="width:' + porcentajePagos + '%;"></div></div>';
+
+                // Calendario de pagos
+                html += '<div class="seccion"><h2>📅 Calendario de Pagos</h2><div class="cal-pagos">';
+                for (var i = 0; i < fechasPago.length; i++) {
+                    var clase = pagosRealizados[i] ? 'pagado' : (new Date(fechasPago[i]) < hoy ? 'vencido' : 'pendiente');
+                    var icono = pagosRealizados[i] ? '✅' : (new Date(fechasPago[i]) < hoy ? '⚠️' : '⏳');
+                    var estadoTexto = pagosRealizados[i] ? 'Pagado' : (new Date(fechasPago[i]) < hoy ? 'Vencido' : 'Pendiente');
+                    html += '<div class="cal-pago-item ' + clase + '"><div class="pago-icon">' + icono + '</div><div class="pago-fecha">' + new Date(fechasPago[i] + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'short' }) + '</div><div class="pago-monto">$' + montosPago[i].toLocaleString() + '</div><div class="pago-estado">' + estadoTexto + '</div></div>';
+                }
+                html += '</div></div>';
+
+                if (proximoPago && !(new Date(proximoPago.fecha) < hoy)) {
+                    html += '<div class="seccion"><h2>📤 Subir Comprobante</h2><p style="color:var(--text-secondary);font-size:12px;margin-bottom:12px;">Sube tu comprobante para el pago del ' + new Date(proximoPago.fecha + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' }) + '.</p>' +
+                        '<form id="form-comprobante" onsubmit="return subirComprobante(event)">' +
+                        '<div class="form-row"><div class="form-group"><label>Monto ($)</label><input type="number" id="comp-monto" value="' + proximoPago.monto + '" step="0.01" required></div>' +
+                        '<div class="form-group"><label>Método</label><select id="comp-metodo"><option>Efectivo</option><option>Transferencia</option><option>Tarjeta</option><option>Enzona</option><option>MLC</option></select></div></div>' +
+                        '<div class="form-group"><label>Comprobante (imagen)</label><input type="file" id="comp-archivo" accept="image/*" required></div>' +
+                        '<div class="form-group"><label>Notas (opcional)</label><input type="text" id="comp-notas" placeholder="Detalles adicionales..."></div>' +
+                        '<button type="submit" class="btn btn-primary btn-block">📨 Enviar comprobante</button></form></div>';
+                }
+            }
+
+            // ========== MODO: PERÍODO DE GRACIA ==========
+            else if (enPeriodoGracia && diasGraciaRestantes > 0) {
+                html += '<div class="resumen-grid">' +
+                    '<div class="resumen-card"><div class="r-label">🏪 Mi Tienda</div><div class="r-value" style="font-size:16px;">' + clienteActual.nombre + '</div><div class="r-sub">' + (pl.nombre || 'Sin plantilla') + '</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">📊 Estado</div><span class="badge badge-gracia">⚠️ Período de gracia</span><div class="r-sub">Tu tienda sigue activa</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">⏱️ Tiempo extra</div><div class="r-value">' + diasGraciaRestantes + ' días</div><div class="r-sub">Para ponerte al día</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">💰 Pendiente</div><div class="r-value" style="font-size:16px;">$' + totalDebe.toLocaleString() + '</div><div class="r-sub">Debes pagar</div></div>' +
+                    '</div>';
+
+                html += '<div class="timer-box danger"><span class="timer-num">' + diasGraciaRestantes + '</span><span class="timer-text">días para pagar antes de que se pause tu tienda</span></div>';
+                html += '<div class="progress-bar"><div class="progress-fill red" style="width:' + ((5 - diasGraciaRestantes) / 5 * 100) + '%;"></div></div>';
+
+                html += '<div class="seccion" style="text-align:center;">' +
+                    '<h2>⚠️ No pierdas tu tienda</h2>' +
+                    '<p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Tienes ' + diasGraciaRestantes + ' días extra para ponerte al día. Después, tu tienda se pausará.</p>' +
+                    '<button class="btn btn-danger btn-block" onclick="abrirFormularioPago()" style="font-size:14px;padding:14px;">💲 Pagar ahora</button>' +
+                    '</div>';
+            }
+
+            // ========== MODO: VENCIDO O SUSPENDIDO ==========
+            else {
+                html += '<div class="resumen-grid">' +
+                    '<div class="resumen-card"><div class="r-label">🏪 Mi Tienda</div><div class="r-value" style="font-size:16px;">' + clienteActual.nombre + '</div><div class="r-sub">' + (pl.nombre || 'Sin plantilla') + '</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">📊 Estado</div><span class="badge badge-vencido">⏰ ' + (estado === 'suspendido' ? 'Suspendido' : 'Vencido') + '</span><div class="r-sub">Tu tienda está pausada</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">💰 Adeudo</div><div class="r-value" style="font-size:16px;">$' + totalDebe.toLocaleString() + '</div><div class="r-sub">Para reactivar</div></div>' +
+                    '</div>';
+
+                html += '<div class="timer-box danger"><span>⏰</span><span style="font-weight:700;">Tu ' + (esPrueba ? 'prueba' : 'plan') + ' ha ' + (estado === 'suspendido' ? 'sido suspendido' : 'vencido') + '.</span></div>';
+                html += '<div class="seccion" style="text-align:center;">' +
+                    '<h2>💲 Reactiva tu tienda</h2>' +
+                    '<p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Contrata el plan de alquiler para volver a tener tu tienda activa.</p>' +
+                    '<button class="btn btn-warning btn-block" onclick="abrirFormularioPago()" style="font-size:14px;padding:14px;">💲 Activar mi tienda ahora</button>' +
+                    '</div>';
+            }
+
+            // ========== ACCESO A TIENDA ==========
+            html += '<div class="seccion"><h2>🌐 Acceso a mi Tienda</h2><div style="display:flex;gap:10px;flex-wrap:wrap;">';
+            if (clienteActual.urlTienda) html += '<a href="' + clienteActual.urlTienda + '" target="_blank" class="btn btn-primary">🌐 Visitar mi tienda</a>';
+            if (clienteActual.urlAdmin) html += '<a href="' + clienteActual.urlAdmin + '" target="_blank" class="btn btn-outline">🔧 Panel de administración</a>';
+            if (!clienteActual.urlTienda && !clienteActual.urlAdmin) html += '<span style="font-size:12px;color:var(--text-secondary);">El administrador está configurando tu tienda.</span>';
+            html += '</div></div>';
+
+            // ========== TUTORIALES ==========
+            html += '<div class="seccion"><h2>📚 Tutoriales rápidos</h2>' +
+                '<a class="tutorial-item" href="#" onclick="mostrarToast(\'📋 Entra a tu panel de administración y busca la sección Productos. Allí puedes agregar, editar y eliminar productos con nombre, precio e imagen.\',\'info\');return false;"><span class="tuto-icon">🍕</span> Cómo agregar productos a tu tienda</a>' +
+                '<a class="tutorial-item" href="#" onclick="mostrarToast(\'🎨 En tu panel de administración, ve a Configuración. Allí puedes cambiar colores, logo, portada y hasta poner un carrusel de imágenes.\',\'info\');return false;"><span class="tuto-icon">🎨</span> Cómo personalizar el diseño de tu tienda</a>' +
+                '<a class="tutorial-item" href="#" onclick="mostrarToast(\'📊 En tu panel de administración, ve a Reportes. Allí verás gráficos de ventas, productos más vendidos y más.\',\'info\');return false;"><span class="tuto-icon">📊</span> Cómo ver las estadísticas de tu negocio</a>' +
                 '</div>';
 
-            // Timer de prueba
-            if (esPrueba && diasRestantes > 0 && diasRestantes <= 7) {
-                var timerClass = diasRestantes <= 3 ? 'timer urgente' : 'timer';
-                html += '<div class="' + timerClass + '">' +
-                    '<span class="days">' + diasRestantes + '</span>' +
-                    '<span class="label">días de prueba gratuita restantes</span>' +
-                    (diasRestantes <= 3 ? ' ⚠️ ¡Tu prueba termina pronto! Contacta al administrador para contratar un plan.' : '') +
-                    '</div>';
-            } else if (esVencido || (esPrueba && diasRestantes === 0)) {
-                html += '<div class="timer urgente">' +
-                    '<span>⏰</span>' +
-                    '<span style="font-weight:700;color:#991b1b;">Tu prueba ha vencido.</span>' +
-                    '<span style="font-size:12px;">Contrata un plan para continuar usando tu tienda.</span>' +
-                    '</div>';
-            }
-
-            // Mi Tienda
-            html += '<div class="seccion">' +
-                '<h2>🏪 Mi Tienda</h2>' +
-                '<div class="tienda-card">' +
-                '<div class="info">' +
-                '<h4>' + clienteActual.nombre + '</h4>' +
-                '<p>' + (pl.emoji || '🏪') + ' ' + (pl.nombre || 'Sin plantilla') + ' · Plan ' + (clienteActual.plan || 'Básico') + '</p>' +
-                (clienteActual.eslogan ? '<p style="font-style:italic;color:var(--text-secondary);font-size:12px;">"' + clienteActual.eslogan + '"</p>' : '') +
-                (clienteActual.notas ? '<p style="font-size:11px;color:var(--text-secondary);margin-top:4px;">📝 ' + clienteActual.notas + '</p>' : '') +
-                '</div>' +
-                '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
-
-            if (clienteActual.urlTienda) {
-                html += '<a href="' + clienteActual.urlTienda + '" target="_blank" class="btn-tienda">🌐 Visitar mi tienda</a>';
-            }
-            if (clienteActual.urlAdmin) {
-                html += '<a href="' + clienteActual.urlAdmin + '" target="_blank" class="btn-tienda outline">🔧 Panel de administración</a>';
-            }
-            if (!clienteActual.urlTienda && !clienteActual.urlAdmin) {
-                html += '<span style="font-size:12px;color:var(--text-secondary);">El administrador está configurando tu tienda. Pronto tendrás acceso.</span>';
-            }
-
-            html += '</div></div></div>';
-
-            // Datos de la solicitud original
-            if (solicitudOriginal) {
-                html += '<div class="seccion">' +
-                    '<h2>📋 Mi Solicitud Original</h2>' +
-                    '<div style="font-size:13px;line-height:1.8;">' +
-                    '<p><strong>📅 Fecha:</strong> ' + new Date(solicitudOriginal.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' }) + '</p>' +
-                    '<p><strong>📞 Teléfono:</strong> ' + solicitudOriginal.telefono + '</p>' +
-                    (solicitudOriginal.email ? '<p><strong>✉️ Email:</strong> ' + solicitudOriginal.email + '</p>' : '') +
-                    (solicitudOriginal.mensaje ? '<p><strong>📝 Mensaje:</strong> ' + solicitudOriginal.mensaje + '</p>' : '') +
-                    '<p><strong>📊 Estado:</strong> <span class="badge-estado badge-activo">✅ Convertida en cliente</span></p>' +
-                    '</div></div>';
-            }
-
-            // Subir comprobante
-            html += '<div class="seccion">' +
-                '<h2>📤 Subir Comprobante de Pago</h2>' +
-                '<p style="color:var(--text-secondary);font-size:12px;margin-bottom:12px;">Sube tu comprobante de pago para mantener tu tienda activa.</p>' +
-                '<form id="form-comprobante" onsubmit="return subirComprobante(event)">' +
-                '<div class="form-group">' +
-                '<label>Monto ($)</label>' +
-                '<input type="number" id="comp-monto" value="' + (clienteActual.precio || 10) + '" step="0.01" required>' +
-                '</div>' +
-                '<div class="form-group">' +
-                '<label>Método de Pago</label>' +
-                '<select id="comp-metodo">' +
-                '<option value="Efectivo">💵 Efectivo</option>' +
-                '<option value="Transferencia">🏦 Transferencia</option>' +
-                '<option value="Tarjeta">💳 Tarjeta</option>' +
-                '<option value="Enzona">📱 Enzona</option>' +
-                '<option value="MLC">💳 MLC</option>' +
-                '</select>' +
-                '</div>' +
-                '<div class="form-group">' +
-                '<label>Comprobante (imagen o captura)</label>' +
-                '<input type="file" id="comp-archivo" accept="image/*" required>' +
-                '</div>' +
-                '<div class="form-group">' +
-                '<label>Notas (opcional)</label>' +
-                '<input type="text" id="comp-notas" placeholder="Detalles adicionales...">' +
-                '</div>' +
-                '<button type="submit" class="btn-submit">📨 Enviar comprobante</button>' +
-                '</form>' +
-                '</div>';
-
-            // Historial de pagos
-            html += '<div class="seccion">' +
-                '<h2>📋 Historial de Comprobantes</h2>';
-
-            if (pagosCliente.length === 0) {
-                html += '<p style="color:var(--text-secondary);font-size:13px;text-align:center;padding:20px;">No has enviado comprobantes todavía.</p>';
-            } else {
+            // ========== HISTORIAL DE PAGOS ==========
+            if (pagosCliente.length > 0) {
+                html += '<div class="seccion"><h2>📋 Historial de Comprobantes</h2>';
                 html += pagosCliente.sort(function(a, b) { return new Date(b.fecha) - new Date(a.fecha); }).map(function(p) {
-                    var estadoClase = p.estado === 'Confirmado' ? 'estado-confirmado' : 
-                                     p.estado === 'Rechazado' ? 'estado-rechazado' : 'estado-pendiente';
-                    return '<div class="comprobante-item">' +
-                        '<div class="info">' +
-                        '<strong>📅 ' + p.fecha + '</strong>' +
-                        '<span>💰 $' + p.monto.toFixed(2) + ' · ' + (p.metodoPago || '—') + '</span>' +
-                        (p.notas ? ' <span style="color:var(--text-secondary);font-size:11px;">📝 ' + p.notas + '</span>' : '') +
-                        (p.numeroComprobante ? ' <span style="color:var(--text-secondary);font-size:11px;">🔢 ' + p.numeroComprobante + '</span>' : '') +
-                        '</div>' +
-                        '<span class="estado ' + estadoClase + '">' + (p.estado || 'Pendiente') + '</span>' +
-                        '</div>';
+                    var dot = p.estado === 'Confirmado' ? 'ok' : p.estado === 'Rechazado' ? 'bad' : 'pend';
+                    return '<div class="pago-item"><div class="pago-info"><strong>' + p.fecha + '</strong><span><span class="estado-dot ' + dot + '"></span>' + (p.estado || 'Pendiente') + ' · $' + p.monto.toFixed(2) + ' · ' + (p.metodoPago || '—') + '</span></div>' + (p.notas ? '<span style="font-size:11px;color:var(--text-secondary);">📝 ' + p.notas + '</span>' : '') + '</div>';
                 }).join('');
+                html += '</div>';
             }
 
-            html += '</div>';
+            // ========== NOTIFICACIONES ==========
+            if (notificacionesAbiertas && notificaciones.length > 0) {
+                html += '<div class="seccion"><h2>🔔 Notificaciones</h2>';
+                html += notificaciones.sort(function(a, b) { return new Date(b.fecha) - new Date(a.fecha); }).map(function(n) {
+                    return '<div class="notif-item' + (n.leida ? '' : ' no-leida') + '" onclick="marcarNotificacionLeida(' + n.id + ')"><span class="notif-icon">📢</span><span>' + n.texto + '</span><span class="notif-fecha">' + new Date(n.fecha).toLocaleDateString('es-ES', { day:'2-digit', month:'short' }) + '</span></div>';
+                }).join('');
+                html += '</div>';
+            } else if (notificacionesAbiertas) {
+                html += '<div class="seccion"><h2>🔔 Notificaciones</h2><p style="color:var(--text-secondary);font-size:13px;text-align:center;">No tienes notificaciones.</p></div>';
+            }
 
-            // Contacto
-            html += '<div class="seccion" style="background:#f8fafc;border:2px dashed var(--border);">' +
-                '<h2>📞 ¿Necesitas ayuda?</h2>' +
-                '<p style="color:var(--text-secondary);font-size:13px;">Contáctanos si tienes dudas sobre tu suscripción o necesitas asistencia técnica.</p>' +
-                '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;">' +
-                (cfg.whatsapp ? '<a href="https://wa.me/' + cfg.whatsapp.replace(/\+/g, '') + '" target="_blank" class="btn-tienda" style="background:#25d366;">💬 WhatsApp</a>' : '') +
-                (cfg.telefono ? '<a href="tel:' + cfg.telefono + '" class="btn-tienda outline" style="border-color:#2563eb;color:#2563eb;">📞 Llamar</a>' : '') +
-                (cfg.email ? '<a href="mailto:' + cfg.email + '" class="btn-tienda outline" style="border-color:#64748b;color:#64748b;">✉️ Email</a>' : '') +
-                '</div>' +
-                '</div>';
+            // ========== CONTACTO ==========
+            html += '<div class="seccion" style="background:#f8fafc;border:2px dashed var(--border);text-align:center;">' +
+                '<h2>📞 ¿Necesitas ayuda?</h2><p style="color:var(--text-secondary);font-size:13px;">Contáctanos si tienes dudas sobre tu suscripción o necesitas asistencia.</p>' +
+                '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px;">' +
+                (cfg.whatsapp ? '<a href="https://wa.me/' + cfg.whatsapp.replace(/\+/g, '') + '" target="_blank" class="btn btn-primary" style="background:#25d366;">💬 WhatsApp</a>' : '') +
+                (cfg.telefono ? '<a href="tel:' + cfg.telefono + '" class="btn btn-outline" style="border-color:#2563eb;color:#2563eb;">📞 Llamar</a>' : '') +
+                (cfg.email ? '<a href="mailto:' + cfg.email + '" class="btn btn-outline">✉️ Email</a>' : '') +
+                '</div></div>';
 
             container.innerHTML = html;
         }
 
-        // ==========================================
-        // SUBIR COMPROBANTE
-        // ==========================================
+        // ========== SUBIR COMPROBANTE ==========
         function subirComprobante(e) {
             e.preventDefault();
-
             var monto = parseFloat(document.getElementById('comp-monto').value);
             var metodo = document.getElementById('comp-metodo').value;
             var archivo = document.getElementById('comp-archivo').files[0];
             var notas = document.getElementById('comp-notas').value.trim();
-
-            if (!monto || monto <= 0) {
-                mostrarToast('⚠️ Ingresa un monto válido.', 'error');
-                return false;
-            }
-
-            if (!archivo) {
-                mostrarToast('⚠️ Selecciona una imagen del comprobante.', 'error');
-                return false;
-            }
+            if (!monto || monto <= 0) { mostrarToast('⚠️ Ingresa un monto válido.', 'error'); return false; }
+            if (!archivo) { mostrarToast('⚠️ Selecciona una imagen del comprobante.', 'error'); return false; }
 
             var reader = new FileReader();
             reader.onload = function(ev) {
                 var pagos = JSON.parse(localStorage.getItem(K_PAGOS)) || [];
-
-                var nuevoPago = {
-                    id: Date.now(),
-                    clienteId: clienteActual.id,
-                    monto: monto,
-                    fecha: new Date().toISOString().split('T')[0],
-                    metodoPago: metodo,
-                    estado: 'Pendiente',
-                    comprobante: ev.target.result,
-                    notas: notas,
-                    fechaCreacion: new Date().toISOString(),
-                    numeroComprobante: 'CLI-' + clienteActual.id + '-' + Date.now().toString().slice(-6)
-                };
-
-                pagos.push(nuevoPago);
+                pagos.push({ id: Date.now(), clienteId: clienteActual.id, monto: monto, fecha: new Date().toISOString().split('T')[0], metodoPago: metodo, estado: 'Pendiente', comprobante: ev.target.result, notas: notas, fechaCreacion: new Date().toISOString(), numeroComprobante: 'CLI-' + clienteActual.id + '-' + Date.now().toString().slice(-6) });
                 localStorage.setItem(K_PAGOS, JSON.stringify(pagos));
-
-                mostrarToast('✅ Comprobante enviado correctamente. Espera la confirmación del administrador.', 'exito');
+                mostrarToast('✅ Comprobante enviado. Espera la confirmación.', 'exito');
                 document.getElementById('form-comprobante').reset();
                 cargarPanel();
             };
-
             reader.readAsDataURL(archivo);
             return false;
         }
 
-        // ==========================================
-        // INICIAR
-        // ==========================================
+        // ========== ABRIR FORMULARIO DE PAGO ==========
+        function abrirFormularioPago() {
+            var cfg = obtenerConfig();
+            var montoSugerido = totalDebe || cfg.planPrecio || 16000;
+            var html = '<div class="seccion" id="seccion-pago-rapido"><h2>💲 Activar Plan de Alquiler</h2><p style="color:var(--text-secondary);font-size:12px;margin-bottom:12px;">Completa el formulario para enviar tu comprobante.</p>' +
+                '<form id="form-pago-rapido" onsubmit="return subirComprobanteRapido(event)">' +
+                '<div class="form-row"><div class="form-group"><label>Monto ($)</label><input type="number" id="pago-monto" value="' + montoSugerido + '" step="0.01" required></div>' +
+                '<div class="form-group"><label>Método</label><select id="pago-metodo"><option>Efectivo</option><option>Transferencia</option><option>Tarjeta</option><option>Enzona</option><option>MLC</option></select></div></div>' +
+                '<div class="form-group"><label>Comprobante (imagen)</label><input type="file" id="pago-archivo" accept="image/*" required></div>' +
+                '<button type="submit" class="btn btn-warning btn-block">📨 Enviar y solicitar activación</button></form></div>';
+            var container = document.getElementById('contenido-principal');
+            container.insertAdjacentHTML('afterbegin', html);
+            document.getElementById('seccion-pago-rapido').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function subirComprobanteRapido(e) {
+            e.preventDefault();
+            var monto = parseFloat(document.getElementById('pago-monto').value);
+            var metodo = document.getElementById('pago-metodo').value;
+            var archivo = document.getElementById('pago-archivo').files[0];
+            if (!monto || !archivo) { mostrarToast('⚠️ Completa todos los campos.', 'error'); return false; }
+            var reader = new FileReader();
+            reader.onload = function(ev) {
+                var pagos = JSON.parse(localStorage.getItem(K_PAGOS)) || [];
+                pagos.push({ id: Date.now(), clienteId: clienteActual.id, monto: monto, fecha: new Date().toISOString().split('T')[0], metodoPago: metodo, estado: 'Pendiente', comprobante: ev.target.result, notas: 'Solicitud de activación de plan', fechaCreacion: new Date().toISOString(), numeroComprobante: 'ACT-' + clienteActual.id + '-' + Date.now().toString().slice(-6) });
+                localStorage.setItem(K_PAGOS, JSON.stringify(pagos));
+                mostrarToast('✅ Solicitud enviada. El administrador revisará tu pago.', 'exito');
+                var el = document.getElementById('seccion-pago-rapido');
+                if (el) el.remove();
+                cargarPanel();
+            };
+            reader.readAsDataURL(archivo);
+            return false;
+        }
+
+        // ========== MARCAR NOTIFICACIÓN LEÍDA ==========
+        function marcarNotificacionLeida(id) {
+            var clientes = JSON.parse(localStorage.getItem(K_CLIENTES)) || [];
+            var idx = clientes.findIndex(function(c) { return c.id === clienteActual.id; });
+            if (idx === -1) return;
+            var notifs = clientes[idx].notificaciones || [];
+            var n = notifs.find(function(not) { return not.id === id; });
+            if (n) { n.leida = true; localStorage.setItem(K_CLIENTES, JSON.stringify(clientes)); cargarPanel(); }
+        }
+
+        // ========== INICIAR ==========
         cargarPanel();
     </script>
 </body>
