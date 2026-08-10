@@ -7,51 +7,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet" />
     <style>
         :root {
-            --primary: #2ecc71;
-            --primary-dark: #27ae60;
-            --primary-light: #eafaf1;
-            --accent: #00cec9;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --info: #3b82f6;
-            --bg: #f8fafc;
-            --surface: #ffffff;
-            --text: #0f172a;
-            --text-secondary: #64748b;
-            --border: #e2e8f0;
-            --radius: 18px;
-            --radius-sm: 12px;
-            --shadow: 0 4px 16px rgba(0,0,0,0.06);
-            --shadow-lg: 0 12px 30px rgba(0,0,0,0.1);
+            --primary: #2ecc71; --primary-dark: #27ae60; --primary-light: #eafaf1;
+            --accent: #00cec9; --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+            --info: #3b82f6; --bg: #f8fafc; --surface: #ffffff; --text: #0f172a;
+            --text-secondary: #64748b; --border: #e2e8f0; --radius: 18px; --radius-sm: 12px;
+            --shadow: 0 4px 16px rgba(0,0,0,0.06); --shadow-lg: 0 12px 30px rgba(0,0,0,0.1);
             --transition: 0.25s ease;
         }
 
         * { margin:0; padding:0; box-sizing:border-box; }
 
         body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background: var(--bg); color: var(--text);
-            min-height: 100vh; display: flex; flex-direction: column;
-            -webkit-font-smoothing: antialiased;
+            font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text);
+            min-height: 100vh; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased;
         }
 
         /* ========== NAVBAR ========== */
-        .navbar {
-            background: var(--surface); border-bottom: 1px solid var(--border);
-            padding: 0 24px; height: 64px; display: flex; align-items: center;
-            justify-content: space-between; position: sticky; top: 0; z-index: 100;
-            box-shadow: var(--shadow);
-        }
+        .navbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
         .navbar-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: var(--text); }
         .brand-icon { width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
         .navbar-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .navbar-actions span { font-weight: 600; font-size: 13px; color: var(--text-secondary); }
-
         .btn-icon { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: var(--transition); position: relative; }
         .btn-icon:hover { border-color: var(--primary); color: var(--primary); }
         .btn-icon .badge-notif { position: absolute; top: -4px; right: -4px; background: var(--danger); color: #fff; min-width: 18px; height: 18px; border-radius: 50%; font-size: 10px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
-
         .btn-logout { padding: 8px 16px; border-radius: 50px; border: 2px solid var(--border); background: transparent; color: var(--text-secondary); font-weight: 600; font-size: 12px; cursor: pointer; transition: var(--transition); font-family: inherit; }
         .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
 
@@ -72,28 +51,23 @@
         .badge-activo { background: #d1fae5; color: #065f46; }
         .badge-vencido { background: #fee2e2; color: #991b1b; }
         .badge-gracia { background: #fef3c7; color: #92400e; animation: pulseGracia 1.5s infinite; }
-        .badge-suspendido { background: #e2e8f0; color: #475569; }
         @keyframes pulseGracia { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
 
         /* ========== SECCIONES ========== */
         .seccion { background: var(--surface); border-radius: var(--radius); padding: 24px 28px; border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 20px; }
         .seccion h2 { font-size: 17px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        .seccion h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text-secondary); }
 
         /* ========== BARRA DE PROGRESO ========== */
         .progress-bar { width: 100%; height: 10px; background: #e2e8f0; border-radius: 10px; overflow: hidden; margin: 8px 0; }
-        .progress-bar .progress-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
-        .progress-fill.green { background: var(--success); }
-        .progress-fill.yellow { background: var(--warning); }
-        .progress-fill.red { background: var(--danger); }
-        .progress-fill.blue { background: var(--info); }
+        .progress-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
+        .progress-fill.green { background: var(--success); } .progress-fill.yellow { background: var(--warning); }
+        .progress-fill.red { background: var(--danger); } .progress-fill.blue { background: var(--info); }
         .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); }
 
-        /* ========== TIMER / CONTADOR ========== */
+        /* ========== TIMER ========== */
         .timer-box { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: var(--radius-sm); margin: 12px 0; border: 1px solid; }
         .timer-box.warning { background: #fffbeb; border-color: #fde68a; color: #92400e; }
         .timer-box.danger { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
-        .timer-box.info { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
         .timer-box .timer-num { font-size: 28px; font-weight: 900; }
         .timer-box .timer-text { font-size: 12px; }
 
@@ -108,14 +82,11 @@
         .cal-pago-item .pago-monto { font-size: 16px; font-weight: 900; }
         .cal-pago-item .pago-estado { font-size: 10px; font-weight: 700; text-transform: uppercase; }
 
-        /* ========== LISTA DE PAGOS ========== */
+        /* ========== HISTORIAL DE PAGOS ========== */
         .pago-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px; font-size: 12px; }
         .pago-item:last-child { border-bottom: none; }
-        .pago-item .pago-info strong { display: block; font-size: 13px; }
         .estado-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
-        .estado-dot.ok { background: var(--success); }
-        .estado-dot.pend { background: var(--warning); }
-        .estado-dot.bad { background: var(--danger); }
+        .estado-dot.ok { background: var(--success); } .estado-dot.pend { background: var(--warning); } .estado-dot.bad { background: var(--danger); }
 
         /* ========== NOTIFICACIONES ========== */
         .notif-item { padding: 12px 14px; border-radius: var(--radius-sm); margin-bottom: 6px; border: 1px solid var(--border); display: flex; align-items: center; gap: 10px; cursor: pointer; transition: var(--transition); font-size: 12px; }
@@ -124,50 +95,50 @@
         .notif-item .notif-icon { font-size: 20px; flex-shrink: 0; }
         .notif-item .notif-fecha { font-size: 10px; color: var(--text-secondary); margin-left: auto; white-space: nowrap; }
 
+        /* ========== TUTORIALES ========== */
+        .tutorial-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 6px; transition: var(--transition); cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text); }
+        .tutorial-item:hover { border-color: var(--primary); background: var(--primary-light); }
+        .tutorial-item .tuto-icon { font-size: 22px; flex-shrink: 0; }
+
         /* ========== BOTONES ========== */
         .btn { padding: 10px 20px; border-radius: 50px; font-weight: 700; font-size: 12px; cursor: pointer; border: none; transition: var(--transition); font-family: inherit; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
         .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 14px rgba(46,204,113,0.3); }
         .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
-        .btn-warning { background: var(--warning); color: #000; }
-        .btn-warning:hover { background: #d97706; }
+        .btn-warning { background: var(--warning); color: #000; } .btn-warning:hover { background: #d97706; }
         .btn-danger { background: var(--danger); color: #fff; }
         .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
         .btn-outline:hover { background: var(--primary-light); }
-        .btn-sm { padding: 6px 14px; font-size: 10px; }
         .btn-block { width: 100%; justify-content: center; }
 
         /* ========== FORMULARIOS ========== */
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-weight: 700; font-size: 10px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; letter-spacing: 0.5px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; transition: var(--transition); background: var(--bg); color: var(--text); }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46,204,113,0.08); background: var(--surface); }
+        .form-group input, .form-group select { width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; transition: var(--transition); background: var(--bg); color: var(--text); }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46,204,113,0.08); background: var(--surface); }
         .form-group input[type="file"] { padding: 8px; border: 2px dashed var(--border); cursor: pointer; }
         .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
         .form-row .form-group { flex: 1; min-width: 120px; }
 
+        /* ========== MODAL DE TUTORIAL ========== */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.75); backdrop-filter: blur(6px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.activo { display: flex; }
+        .modal-tutorial { background: var(--surface); border-radius: var(--radius); padding: 28px 24px; max-width: 480px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: modalIn 0.35s ease; text-align: center; }
+        @keyframes modalIn { from { opacity:0; transform:translateY(30px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } }
+        .modal-tutorial .modal-icon { font-size: 48px; margin-bottom: 12px; }
+        .modal-tutorial h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+        .modal-tutorial p { color: var(--text-secondary); font-size: 13px; line-height: 1.7; margin-bottom: 16px; }
+        .modal-tutorial .btn { margin-top: 8px; }
+
         /* ========== TOAST ========== */
         .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); padding: 12px 24px; border-radius: 50px; font-weight: 700; font-size: 13px; z-index: 500; opacity: 0; transition: all 0.4s; pointer-events: none; box-shadow: var(--shadow-lg); max-width: 90%; text-align: center; }
         .toast.mostrar { opacity: 1; transform: translateX(-50%) translateY(0); }
-        .toast.exito { background: var(--success); color: #fff; }
-        .toast.error { background: var(--danger); color: #fff; }
-        .toast.info { background: var(--primary); color: #fff; }
+        .toast.exito { background: var(--success); color: #fff; } .toast.error { background: var(--danger); color: #fff; } .toast.info { background: var(--primary); color: #fff; }
 
-        /* ========== TUTORIALES ========== */
-        .tutorial-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 6px; transition: var(--transition); text-decoration: none; color: var(--text); font-size: 12px; font-weight: 600; }
-        .tutorial-item:hover { border-color: var(--primary); background: var(--primary-light); }
-        .tutorial-item .tuto-icon { font-size: 22px; flex-shrink: 0; }
-
-        /* ========== RESPONSIVE ========== */
         @media (max-width: 768px) {
-            .navbar { padding: 0 16px; height: 58px; }
-            .contenido { padding: 16px 12px; }
-            .seccion { padding: 18px 16px; }
-            .resumen-grid { grid-template-columns: 1fr 1fr; }
-            .cal-pagos { flex-direction: column; }
+            .navbar { padding: 0 16px; height: 58px; } .contenido { padding: 16px 12px; } .seccion { padding: 18px 16px; }
+            .resumen-grid { grid-template-columns: 1fr 1fr; } .cal-pagos { flex-direction: column; }
         }
-        @media (max-width: 480px) {
-            .resumen-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 480px) { .resumen-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -180,21 +151,27 @@
         </div>
         <div class="navbar-actions">
             <span id="usuario-nombre"></span>
-            <button class="btn-icon" id="btn-notificaciones" onclick="toggleNotificaciones()" title="Notificaciones">
-                🔔<span class="badge-notif" id="badge-notif" style="display:none;">0</span>
-            </button>
+            <button class="btn-icon" id="btn-notificaciones" onclick="toggleNotificaciones()" title="Notificaciones">🔔<span class="badge-notif" id="badge-notif" style="display:none;">0</span></button>
             <button class="btn-logout" onclick="cerrarSesion()">🚪 Salir</button>
         </div>
     </nav>
 
-    <!-- ========== CONTENIDO ========== -->
     <div class="contenido" id="contenido-principal"></div>
+
+    <!-- ========== MODAL DE TUTORIAL ========== -->
+    <div class="modal-overlay" id="modal-tutorial" onclick="if(event.target===this)cerrarModalTutorial()">
+        <div class="modal-tutorial">
+            <div class="modal-icon" id="modal-icon">📚</div>
+            <h3 id="modal-titulo">Tutorial</h3>
+            <p id="modal-texto">Contenido del tutorial.</p>
+            <button class="btn btn-primary" onclick="cerrarModalTutorial()">✅ Entendido</button>
+        </div>
+    </div>
 
     <div class="toast" id="toast"></div>
 
     <script>
-        
-// ========== VERIFICACIÓN DE SESIÓN ==========
+        // ========== VERIFICACIÓN DE SESIÓN ==========
         (function() {
             var sesion = JSON.parse(sessionStorage.getItem('clienteSesion') || 'null');
             if (!sesion || !sesion.id || !sesion.token) { window.location.href = 'login-cliente.html'; return; }
@@ -204,18 +181,12 @@
             sessionStorage.setItem('clienteSesion', JSON.stringify(sesion));
         })();
 
-        // ========== STORAGE KEYS ==========
-        var K_CLIENTES = 'central_clientes';
-        var K_PAGOS = 'central_pagos';
-        var K_CONFIG = 'central_config';
-        var K_PLANTILLAS = 'central_plantillas';
-        var K_SOLICITUDES = 'central_solicitudes';
-
+        var K_CLIENTES = 'central_clientes', K_PAGOS = 'central_pagos', K_CONFIG = 'central_config', K_PLANTILLAS = 'central_plantillas', K_SOLICITUDES = 'central_solicitudes';
         var sesionActual = JSON.parse(sessionStorage.getItem('clienteSesion'));
         var clienteActual = null;
         var notificacionesAbiertas = false;
+        var totalDebe = 0;
 
-        // ========== FUNCIONES DE DATOS ==========
         function cargarClienteActual() {
             var clientes = JSON.parse(localStorage.getItem(K_CLIENTES)) || [];
             clienteActual = clientes.find(function(c) { return c.id === sesionActual.id; });
@@ -229,21 +200,26 @@
             return {
                 nombrePlataforma: cfg.nombrePlataforma || 'Isla Market', emoji: cfg.emoji || '🏝️',
                 telefono: cfg.telefono || '', whatsapp: cfg.whatsapp || '', email: cfg.email || '',
-                moneda: cfg.moneda || 'CUP', diasPrueba: cfg.diasPrueba || 7, precioMensual: cfg.precioMensual || 10,
+                moneda: cfg.moneda || 'CUP', diasPrueba: cfg.diasPrueba || 7,
                 planPrecio: cfg.planPrecio || 16000, planDescuentoEfectivo: cfg.planDescuentoEfectivo || 15
             };
         }
 
         function mostrarToast(mensaje, tipo) {
-            var t = document.getElementById('toast'); t.textContent = mensaje;
-            t.className = 'toast mostrar ' + (tipo || 'info');
+            var t = document.getElementById('toast'); t.textContent = mensaje; t.className = 'toast mostrar ' + (tipo || 'info');
             clearTimeout(t._timeout); t._timeout = setTimeout(function() { t.className = 'toast'; }, 4000);
         }
 
-        function toggleNotificaciones() {
-            notificacionesAbiertas = !notificacionesAbiertas;
-            cargarPanel();
+        function abrirModalTutorial(titulo, texto, icono) {
+            document.getElementById('modal-icon').textContent = icono || '📚';
+            document.getElementById('modal-titulo').textContent = titulo;
+            document.getElementById('modal-texto').textContent = texto;
+            document.getElementById('modal-tutorial').classList.add('activo');
         }
+
+        function cerrarModalTutorial() { document.getElementById('modal-tutorial').classList.remove('activo'); }
+
+        function toggleNotificaciones() { notificacionesAbiertas = !notificacionesAbiertas; cargarPanel(); }
 
         // ========== CARGAR PANEL COMPLETO ==========
         function cargarPanel() {
@@ -253,9 +229,7 @@
             var cfg = obtenerConfig();
             var plantillas = JSON.parse(localStorage.getItem(K_PLANTILLAS)) || [];
             var pagos = JSON.parse(localStorage.getItem(K_PAGOS)) || [];
-            var solicitudes = JSON.parse(localStorage.getItem(K_SOLICITUDES)) || [];
             var hoy = new Date();
-            var hoyStr = hoy.toISOString().split('T')[0];
 
             document.getElementById('usuario-nombre').textContent = '👋 ' + (clienteActual.dueno || clienteActual.nombre);
             document.getElementById('brand-nombre').textContent = cfg.nombrePlataforma;
@@ -274,37 +248,33 @@
 
             if (enPeriodoGracia && clienteActual.fechaInicioGracia) {
                 var inicioGracia = new Date(clienteActual.fechaInicioGracia);
-                var finGracia = new Date(inicioGracia);
-                finGracia.setDate(finGracia.getDate() + 5);
+                var finGracia = new Date(inicioGracia); finGracia.setDate(finGracia.getDate() + 5);
                 diasGraciaRestantes = Math.ceil((finGracia - hoy) / (1000 * 60 * 60 * 24));
                 if (diasGraciaRestantes < 0) diasGraciaRestantes = 0;
             }
 
-            // ========== Calcular días de prueba ==========
             var diasPruebaRestantes = 0;
             var diasPruebaTotal = cfg.diasPrueba || 7;
             if (esPrueba && clienteActual.fechaPruebaInicio) {
                 var inicioPrueba = new Date(clienteActual.fechaPruebaInicio);
-                var finPrueba = new Date(inicioPrueba);
-                finPrueba.setDate(finPrueba.getDate() + diasPruebaTotal);
+                var finPrueba = new Date(inicioPrueba); finPrueba.setDate(finPrueba.getDate() + diasPruebaTotal);
                 diasPruebaRestantes = Math.ceil((finPrueba - hoy) / (1000 * 60 * 60 * 24));
                 if (diasPruebaRestantes < 0) diasPruebaRestantes = 0;
             }
 
-            // ========== Calcular pagos ==========
-            var metodoPago = clienteActual.metodoPago || 'unico';
             var fechasPago = clienteActual.fechasPago || [];
             var montosPago = clienteActual.montosPago || [];
             var pagosRealizados = clienteActual.pagosRealizados || [];
-            if (fechasPago.length === 0 && clienteActual.fechaVencimiento) { fechasPago = [clienteActual.fechaVencimiento]; montosPago = [clienteActual.precio || cfg.planPrecio]; pagosRealizados = [false]; }
+            if (fechasPago.length === 0 && clienteActual.fechaVencimiento && esAlquiler) {
+                fechasPago = [clienteActual.fechaVencimiento]; montosPago = [clienteActual.precio || cfg.planPrecio]; pagosRealizados = [false];
+            }
 
             var totalPagos = fechasPago.length;
             var pagosHechos = pagosRealizados.filter(function(p) { return p; }).length;
             var porcentajePagos = totalPagos > 0 ? Math.round((pagosHechos / totalPagos) * 100) : 0;
-            var totalDebe = montosPago.reduce(function(s, m, i) { return pagosRealizados[i] ? s : s + m; }, 0);
+            totalDebe = montosPago.reduce(function(s, m, i) { return pagosRealizados[i] ? s : s + m; }, 0);
             var totalPagado = montosPago.reduce(function(s, m, i) { return pagosRealizados[i] ? s + m : s; }, 0);
 
-            // Próximo pago pendiente
             var proximoPago = null;
             for (var i = 0; i < fechasPago.length; i++) {
                 if (!pagosRealizados[i]) { proximoPago = { fecha: fechasPago[i], monto: montosPago[i], index: i }; break; }
@@ -312,7 +282,6 @@
             var diasProximoPago = 0;
             if (proximoPago) { diasProximoPago = Math.ceil((new Date(proximoPago.fecha) - hoy) / (1000 * 60 * 60 * 24)); }
 
-            // ========== NOTIFICACIONES ==========
             var notificaciones = clienteActual.notificaciones || [];
             var noLeidas = notificaciones.filter(function(n) { return !n.leida; });
             var badgeNotif = document.getElementById('badge-notif');
@@ -330,65 +299,58 @@
                 var timerClass = diasPruebaRestantes <= 3 ? 'danger' : 'warning';
 
                 html += '<div class="resumen-grid">' +
-                    '<div class="resumen-card"><div class="r-label">🏪 Mi Tienda</div><div class="r-value" style="font-size:16px;">' + clienteActual.nombre + '</div><div class="r-sub">' + (pl.nombre || 'Sin plantilla') + '</div></div>' +
-                    '<div class="resumen-card"><div class="r-label">📊 Estado</div><span class="badge badge-prueba">🧪 Prueba gratuita</span><div class="r-sub">Plan: ' + (clienteActual.plan || 'Básico') + '</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">🏪 Mi Tienda</div><div class="r-value" style="font-size:16px;">' + clienteActual.nombre + '</div><div class="r-sub">' + (pl.nombre || 'Sin plantilla asignada') + '</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">📊 Estado</div><span class="badge badge-prueba">🧪 Prueba gratuita</span><div class="r-sub">' + diasPruebaTotal + ' días gratis</div></div>' +
                     '<div class="resumen-card"><div class="r-label">⏱️ Días restantes</div><div class="r-value">' + diasPruebaRestantes + ' / ' + diasPruebaTotal + '</div><div class="r-sub">Desde: ' + new Date(clienteActual.fechaPruebaInicio + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'short' }) + '</div></div>' +
-                    '<div class="resumen-card"><div class="r-label">💲 Plan de alquiler</div><div class="r-value" style="font-size:16px;">$' + (cfg.planPrecio || 16000).toLocaleString() + ' ' + cfg.moneda + '</div><div class="r-sub">Por mes</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">📅 Vence</div><div class="r-value" style="font-size:16px;">' + new Date(finPrueba).toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' }) + '</div><div class="r-sub">Al finalizar puedes contratar</div></div>' +
                     '</div>';
 
                 html += '<div class="timer-box ' + timerClass + '"><span class="timer-num">' + diasPruebaRestantes + '</span><span class="timer-text">días de prueba gratuita restantes' + (diasPruebaRestantes <= 3 ? ' ⚠️ ¡Apresúrate!' : '') + '</span></div>';
                 html += '<div class="progress-label"><span>Progreso de prueba</span><span>' + (diasPruebaTotal - diasPruebaRestantes) + ' de ' + diasPruebaTotal + ' días usados</span></div>';
                 html += '<div class="progress-bar"><div class="progress-fill ' + barColor + '" style="width:' + pctPrueba + '%;"></div></div>';
 
-                html += '<div class="seccion"><h2>📋 Lo que tienes ahora</h2>' +
+                html += '<div class="seccion"><h2>📋 Lo que incluye tu prueba</h2>' +
                     '<ul style="list-style:none;font-size:13px;color:var(--text-secondary);line-height:2.2;">' +
                     '<li>✅ 1 tienda activa por ' + diasPruebaTotal + ' días</li>' +
                     '<li>✅ Panel de administración completo</li>' +
                     '<li>✅ Hasta 50 productos</li>' +
                     '<li>✅ Personaliza colores, logo y portada</li>' +
                     '<li>✅ Sin necesidad de programación</li>' +
-                    '<li>✅ Soporte durante la prueba</li>' +
-                    '</ul></div>';
+                    '<li>✅ Soporte durante la prueba</li></ul></div>';
 
                 html += '<div class="seccion" style="text-align:center;">' +
                     '<h2>💲 ¿Listo para crecer en serio?</h2>' +
-                    '<p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Contrata el plan de alquiler y olvídate de los límites.</p>' +
-                    '<button class="btn btn-warning btn-block" onclick="abrirFormularioPago()" style="font-size:14px;padding:14px;">💲 Quiero pasarme al plan de alquiler</button>' +
-                    '</div>';
+                    '<p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Contrata el plan de alquiler y olvídate de los límites. Solo pagas una vez al mes.</p>' +
+                    '<button class="btn btn-warning btn-block" onclick="abrirFormularioPago()" style="font-size:14px;padding:14px;">💲 Quiero pasarme al plan de alquiler</button></div>';
             }
 
             // ========== MODO: PLAN ACTIVO (ALQUILER) ==========
             else if (esAlquiler && estado === 'activo' && !enPeriodoGracia) {
                 html += '<div class="resumen-grid">' +
                     '<div class="resumen-card"><div class="r-label">🏪 Mi Tienda</div><div class="r-value" style="font-size:16px;">' + clienteActual.nombre + '</div><div class="r-sub">' + (pl.nombre || 'Sin plantilla') + '</div></div>' +
-                    '<div class="resumen-card"><div class="r-label">📊 Estado</div><span class="badge badge-activo">✅ Plan activo</span><div class="r-sub">Plan: ' + (clienteActual.plan || 'Básico') + '</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">📊 Estado</div><span class="badge badge-activo">✅ Plan activo</span><div class="r-sub">Plan: ' + (clienteActual.plan || 'Alquiler') + '</div></div>' +
                     '<div class="resumen-card"><div class="r-label">💰 Pagado</div><div class="r-value" style="font-size:16px;">$' + totalPagado.toLocaleString() + '</div><div class="r-sub">' + pagosHechos + ' de ' + totalPagos + ' pagos</div></div>' +
-                    '<div class="resumen-card"><div class="r-label">📅 Próximo pago</div><div class="r-value" style="font-size:16px;">' + (proximoPago ? new Date(proximoPago.fecha + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'short' }) : '—') + '</div><div class="r-sub">' + (proximoPago ? '$' + proximoPago.monto.toLocaleString() : 'Todo pagado') + '</div></div>' +
+                    '<div class="resumen-card"><div class="r-label">📅 Próximo pago</div><div class="r-value" style="font-size:16px;">' + (proximoPago ? new Date(proximoPago.fecha + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'short' }) : '—') + '</div><div class="r-sub">' + (proximoPago ? '$' + proximoPago.monto.toLocaleString() : 'Todo al día ✅') + '</div></div>' +
                     '</div>';
 
                 if (proximoPago && diasProximoPago <= 7 && diasProximoPago > 0) {
-                    var timerClass2 = diasProximoPago <= 3 ? 'danger' : 'warning';
-                    html += '<div class="timer-box ' + timerClass2 + '"><span class="timer-num">' + diasProximoPago + '</span><span class="timer-text">días para el próximo pago</span></div>';
+                    html += '<div class="timer-box ' + (diasProximoPago <= 3 ? 'danger' : 'warning') + '"><span class="timer-num">' + diasProximoPago + '</span><span class="timer-text">días para el próximo pago</span></div>';
                 }
 
                 html += '<div class="progress-label"><span>Progreso de pagos</span><span>' + pagosHechos + ' de ' + totalPagos + ' pagos (' + porcentajePagos + '%)</span></div>';
                 html += '<div class="progress-bar"><div class="progress-fill blue" style="width:' + porcentajePagos + '%;"></div></div>';
 
-                // Calendario de pagos
                 html += '<div class="seccion"><h2>📅 Calendario de Pagos</h2><div class="cal-pagos">';
                 for (var i = 0; i < fechasPago.length; i++) {
                     var clase = pagosRealizados[i] ? 'pagado' : (new Date(fechasPago[i]) < hoy ? 'vencido' : 'pendiente');
-                    var icono = pagosRealizados[i] ? '✅' : (new Date(fechasPago[i]) < hoy ? '⚠️' : '⏳');
-                    var estadoTexto = pagosRealizados[i] ? 'Pagado' : (new Date(fechasPago[i]) < hoy ? 'Vencido' : 'Pendiente');
-                    html += '<div class="cal-pago-item ' + clase + '"><div class="pago-icon">' + icono + '</div><div class="pago-fecha">' + new Date(fechasPago[i] + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'short' }) + '</div><div class="pago-monto">$' + montosPago[i].toLocaleString() + '</div><div class="pago-estado">' + estadoTexto + '</div></div>';
+                    html += '<div class="cal-pago-item ' + clase + '"><div class="pago-icon">' + (pagosRealizados[i] ? '✅' : (new Date(fechasPago[i]) < hoy ? '⚠️' : '⏳')) + '</div><div class="pago-fecha">' + new Date(fechasPago[i] + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'short' }) + '</div><div class="pago-monto">$' + montosPago[i].toLocaleString() + '</div><div class="pago-estado">' + (pagosRealizados[i] ? 'Pagado' : (new Date(fechasPago[i]) < hoy ? 'Vencido' : 'Pendiente')) + '</div></div>';
                 }
                 html += '</div></div>';
 
                 if (proximoPago && !(new Date(proximoPago.fecha) < hoy)) {
                     html += '<div class="seccion"><h2>📤 Subir Comprobante</h2><p style="color:var(--text-secondary);font-size:12px;margin-bottom:12px;">Sube tu comprobante para el pago del ' + new Date(proximoPago.fecha + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' }) + '.</p>' +
                         '<form id="form-comprobante" onsubmit="return subirComprobante(event)">' +
-                        '<div class="form-row"><div class="form-group"><label>Monto ($)</label><input type="number" id="comp-monto" value="' + proximoPago.monto + '" step="0.01" required></div>' +
-                        '<div class="form-group"><label>Método</label><select id="comp-metodo"><option>Efectivo</option><option>Transferencia</option><option>Tarjeta</option><option>Enzona</option><option>MLC</option></select></div></div>' +
+                        '<div class="form-row"><div class="form-group"><label>Monto ($)</label><input type="number" id="comp-monto" value="' + proximoPago.monto + '" step="0.01" required></div><div class="form-group"><label>Método</label><select id="comp-metodo"><option>Efectivo</option><option>Transferencia</option><option>Tarjeta</option><option>Enzona</option><option>MLC</option></select></div></div>' +
                         '<div class="form-group"><label>Comprobante (imagen)</label><input type="file" id="comp-archivo" accept="image/*" required></div>' +
                         '<div class="form-group"><label>Notas (opcional)</label><input type="text" id="comp-notas" placeholder="Detalles adicionales..."></div>' +
                         '<button type="submit" class="btn btn-primary btn-block">📨 Enviar comprobante</button></form></div>';
@@ -401,17 +363,11 @@
                     '<div class="resumen-card"><div class="r-label">🏪 Mi Tienda</div><div class="r-value" style="font-size:16px;">' + clienteActual.nombre + '</div><div class="r-sub">' + (pl.nombre || 'Sin plantilla') + '</div></div>' +
                     '<div class="resumen-card"><div class="r-label">📊 Estado</div><span class="badge badge-gracia">⚠️ Período de gracia</span><div class="r-sub">Tu tienda sigue activa</div></div>' +
                     '<div class="resumen-card"><div class="r-label">⏱️ Tiempo extra</div><div class="r-value">' + diasGraciaRestantes + ' días</div><div class="r-sub">Para ponerte al día</div></div>' +
-                    '<div class="resumen-card"><div class="r-label">💰 Pendiente</div><div class="r-value" style="font-size:16px;">$' + totalDebe.toLocaleString() + '</div><div class="r-sub">Debes pagar</div></div>' +
-                    '</div>';
+                    '<div class="resumen-card"><div class="r-label">💰 Pendiente</div><div class="r-value" style="font-size:16px;">$' + totalDebe.toLocaleString() + '</div><div class="r-sub">Debes pagar</div></div></div>';
 
                 html += '<div class="timer-box danger"><span class="timer-num">' + diasGraciaRestantes + '</span><span class="timer-text">días para pagar antes de que se pause tu tienda</span></div>';
                 html += '<div class="progress-bar"><div class="progress-fill red" style="width:' + ((5 - diasGraciaRestantes) / 5 * 100) + '%;"></div></div>';
-
-                html += '<div class="seccion" style="text-align:center;">' +
-                    '<h2>⚠️ No pierdas tu tienda</h2>' +
-                    '<p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Tienes ' + diasGraciaRestantes + ' días extra para ponerte al día. Después, tu tienda se pausará.</p>' +
-                    '<button class="btn btn-danger btn-block" onclick="abrirFormularioPago()" style="font-size:14px;padding:14px;">💲 Pagar ahora</button>' +
-                    '</div>';
+                html += '<div class="seccion" style="text-align:center;"><h2>⚠️ No pierdas tu tienda</h2><p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Tienes ' + diasGraciaRestantes + ' días extra. Después, tu tienda se pausará.</p><button class="btn btn-danger btn-block" onclick="abrirFormularioPago()" style="font-size:14px;padding:14px;">💲 Pagar ahora</button></div>';
             }
 
             // ========== MODO: VENCIDO O SUSPENDIDO ==========
@@ -419,30 +375,26 @@
                 html += '<div class="resumen-grid">' +
                     '<div class="resumen-card"><div class="r-label">🏪 Mi Tienda</div><div class="r-value" style="font-size:16px;">' + clienteActual.nombre + '</div><div class="r-sub">' + (pl.nombre || 'Sin plantilla') + '</div></div>' +
                     '<div class="resumen-card"><div class="r-label">📊 Estado</div><span class="badge badge-vencido">⏰ ' + (estado === 'suspendido' ? 'Suspendido' : 'Vencido') + '</span><div class="r-sub">Tu tienda está pausada</div></div>' +
-                    '<div class="resumen-card"><div class="r-label">💰 Adeudo</div><div class="r-value" style="font-size:16px;">$' + totalDebe.toLocaleString() + '</div><div class="r-sub">Para reactivar</div></div>' +
-                    '</div>';
-
+                    '<div class="resumen-card"><div class="r-label">💰 Adeudo</div><div class="r-value" style="font-size:16px;">$' + totalDebe.toLocaleString() + '</div><div class="r-sub">Para reactivar</div></div></div>';
                 html += '<div class="timer-box danger"><span>⏰</span><span style="font-weight:700;">Tu ' + (esPrueba ? 'prueba' : 'plan') + ' ha ' + (estado === 'suspendido' ? 'sido suspendido' : 'vencido') + '.</span></div>';
-                html += '<div class="seccion" style="text-align:center;">' +
-                    '<h2>💲 Reactiva tu tienda</h2>' +
-                    '<p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Contrata el plan de alquiler para volver a tener tu tienda activa.</p>' +
-                    '<button class="btn btn-warning btn-block" onclick="abrirFormularioPago()" style="font-size:14px;padding:14px;">💲 Activar mi tienda ahora</button>' +
-                    '</div>';
+                html += '<div class="seccion" style="text-align:center;"><h2>💲 Reactiva tu tienda</h2><p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Contrata el plan de alquiler para volver a tener tu tienda activa.</p><button class="btn btn-warning btn-block" onclick="abrirFormularioPago()" style="font-size:14px;padding:14px;">💲 Activar mi tienda ahora</button></div>';
             }
 
             // ========== ACCESO A TIENDA ==========
             html += '<div class="seccion"><h2>🌐 Acceso a mi Tienda</h2><div style="display:flex;gap:10px;flex-wrap:wrap;">';
             if (clienteActual.urlTienda) html += '<a href="' + clienteActual.urlTienda + '" target="_blank" class="btn btn-primary">🌐 Visitar mi tienda</a>';
             if (clienteActual.urlAdmin) html += '<a href="' + clienteActual.urlAdmin + '" target="_blank" class="btn btn-outline">🔧 Panel de administración</a>';
-            if (!clienteActual.urlTienda && !clienteActual.urlAdmin) html += '<span style="font-size:12px;color:var(--text-secondary);">El administrador está configurando tu tienda.</span>';
+            if (!clienteActual.urlTienda && !clienteActual.urlAdmin) html += '<span style="font-size:12px;color:var(--text-secondary);">El administrador está configurando tu tienda. Pronto tendrás acceso.</span>';
             html += '</div></div>';
 
             // ========== TUTORIALES ==========
-            html += '<div class="seccion"><h2>📚 Tutoriales rápidos</h2>' +
-                '<a class="tutorial-item" href="#" onclick="mostrarToast(\'📋 Entra a tu panel de administración y busca la sección Productos. Allí puedes agregar, editar y eliminar productos con nombre, precio e imagen.\',\'info\');return false;"><span class="tuto-icon">🍕</span> Cómo agregar productos a tu tienda</a>' +
-                '<a class="tutorial-item" href="#" onclick="mostrarToast(\'🎨 En tu panel de administración, ve a Configuración. Allí puedes cambiar colores, logo, portada y hasta poner un carrusel de imágenes.\',\'info\');return false;"><span class="tuto-icon">🎨</span> Cómo personalizar el diseño de tu tienda</a>' +
-                '<a class="tutorial-item" href="#" onclick="mostrarToast(\'📊 En tu panel de administración, ve a Reportes. Allí verás gráficos de ventas, productos más vendidos y más.\',\'info\');return false;"><span class="tuto-icon">📊</span> Cómo ver las estadísticas de tu negocio</a>' +
-                '</div>';
+            html += '<div class="seccion"><h2>📚 Ayuda y Tutoriales</h2>';
+            html += '<div class="tutorial-item" onclick="abrirModalTutorial(\'🍕 Cómo agregar productos\',\'Entra a tu panel de administración (🔧 Panel de administración) y busca la sección Productos. Allí verás un botón de Añadir Producto. Llena el nombre, precio, categoría y sube una imagen. ¡Es muy fácil!\',\'🍕\')"><span class="tuto-icon">🍕</span> Cómo agregar productos a tu tienda</div>';
+            html += '<div class="tutorial-item" onclick="abrirModalTutorial(\'🎨 Cómo personalizar tu tienda\',\'En tu panel de administración, ve a la sección Configuración. Allí puedes cambiar los colores, el logo, la imagen de portada, el horario y mucho más. Los cambios se ven inmediatamente en tu tienda.\',\'🎨\')"><span class="tuto-icon">🎨</span> Cómo personalizar el diseño de tu tienda</div>';
+            html += '<div class="tutorial-item" onclick="abrirModalTutorial(\'📊 Cómo ver tus estadísticas\',\'En tu panel de administración, ve a la sección Reportes. Allí encontrarás gráficos de ventas por día, productos más vendidos y un resumen de ingresos.\',\'📊\')"><span class="tuto-icon">📊</span> Cómo ver las estadísticas de tu negocio</div>';
+            html += '<div class="tutorial-item" onclick="abrirModalTutorial(\'💬 Cómo contactar con soporte\',\'Puedes contactarnos por WhatsApp, llamada o email. Busca los botones de contacto en la sección de ayuda de este panel o en el pie de página de tu tienda.\',\'💬\')"><span class="tuto-icon">💬</span> Cómo contactar con soporte</div>';
+            html += '<div class="tutorial-item" onclick="abrirModalTutorial(\'💲 Cómo funciona el plan de alquiler\',\'El plan de alquiler es un pago mensual. Cuando contratas, recibes acceso ilimitado a tu tienda. Puedes pagar en efectivo (con descuento), por transferencia o en USD. Cada mes recibirás un recordatorio.\',\'💲\')"><span class="tuto-icon">💲</span> Cómo funciona el plan de alquiler</div>';
+            html += '</div>';
 
             // ========== HISTORIAL DE PAGOS ==========
             if (pagosCliente.length > 0) {
@@ -484,9 +436,7 @@
             var metodo = document.getElementById('comp-metodo').value;
             var archivo = document.getElementById('comp-archivo').files[0];
             var notas = document.getElementById('comp-notas').value.trim();
-            if (!monto || monto <= 0) { mostrarToast('⚠️ Ingresa un monto válido.', 'error'); return false; }
-            if (!archivo) { mostrarToast('⚠️ Selecciona una imagen del comprobante.', 'error'); return false; }
-
+            if (!monto || !archivo) { mostrarToast('⚠️ Completa todos los campos.', 'error'); return false; }
             var reader = new FileReader();
             reader.onload = function(ev) {
                 var pagos = JSON.parse(localStorage.getItem(K_PAGOS)) || [];
@@ -500,7 +450,6 @@
             return false;
         }
 
-        // ========== ABRIR FORMULARIO DE PAGO ==========
         function abrirFormularioPago() {
             var cfg = obtenerConfig();
             var montoSugerido = totalDebe || cfg.planPrecio || 16000;
@@ -527,15 +476,13 @@
                 pagos.push({ id: Date.now(), clienteId: clienteActual.id, monto: monto, fecha: new Date().toISOString().split('T')[0], metodoPago: metodo, estado: 'Pendiente', comprobante: ev.target.result, notas: 'Solicitud de activación de plan', fechaCreacion: new Date().toISOString(), numeroComprobante: 'ACT-' + clienteActual.id + '-' + Date.now().toString().slice(-6) });
                 localStorage.setItem(K_PAGOS, JSON.stringify(pagos));
                 mostrarToast('✅ Solicitud enviada. El administrador revisará tu pago.', 'exito');
-                var el = document.getElementById('seccion-pago-rapido');
-                if (el) el.remove();
+                var el = document.getElementById('seccion-pago-rapido'); if (el) el.remove();
                 cargarPanel();
             };
             reader.readAsDataURL(archivo);
             return false;
         }
 
-        // ========== MARCAR NOTIFICACIÓN LEÍDA ==========
         function marcarNotificacionLeida(id) {
             var clientes = JSON.parse(localStorage.getItem(K_CLIENTES)) || [];
             var idx = clientes.findIndex(function(c) { return c.id === clienteActual.id; });
@@ -545,7 +492,6 @@
             if (n) { n.leida = true; localStorage.setItem(K_CLIENTES, JSON.stringify(clientes)); cargarPanel(); }
         }
 
-        // ========== INICIAR ==========
         cargarPanel();
     </script>
 </body>
