@@ -14,15 +14,11 @@
             --shadow: 0 4px 16px rgba(0,0,0,0.06); --shadow-lg: 0 12px 30px rgba(0,0,0,0.1);
             --transition: 0.25s ease;
         }
-
         * { margin:0; padding:0; box-sizing:border-box; }
-
         body {
             font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text);
             min-height: 100vh; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased;
         }
-
-        /* ========== NAVBAR ========== */
         .navbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
         .navbar-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: var(--text); }
         .brand-icon { width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
@@ -34,10 +30,8 @@
         .btn-logout { padding: 8px 16px; border-radius: 50px; border: 2px solid var(--border); background: transparent; color: var(--text-secondary); font-weight: 600; font-size: 12px; cursor: pointer; transition: var(--transition); font-family: inherit; }
         .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
 
-        /* ========== CONTENIDO ========== */
         .contenido { max-width: 900px; margin: 0 auto; padding: 24px 20px; flex: 1; width: 100%; }
 
-        /* ========== TARJETAS DE RESUMEN ========== */
         .resumen-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 24px; }
         .resumen-card { background: var(--surface); border-radius: var(--radius); padding: 18px 20px; border: 1px solid var(--border); box-shadow: var(--shadow); transition: var(--transition); }
         .resumen-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
@@ -45,7 +39,6 @@
         .resumen-card .r-value { font-size: 22px; font-weight: 900; margin: 4px 0; }
         .resumen-card .r-sub { font-size: 11px; color: var(--text-secondary); }
 
-        /* ========== BADGES ========== */
         .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; }
         .badge-prueba { background: #fef3c7; color: #92400e; }
         .badge-activo { background: #d1fae5; color: #065f46; }
@@ -53,25 +46,21 @@
         .badge-gracia { background: #fef3c7; color: #92400e; animation: pulseGracia 1.5s infinite; }
         @keyframes pulseGracia { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
 
-        /* ========== SECCIONES ========== */
         .seccion { background: var(--surface); border-radius: var(--radius); padding: 24px 28px; border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 20px; }
         .seccion h2 { font-size: 17px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
 
-        /* ========== BARRA DE PROGRESO ========== */
         .progress-bar { width: 100%; height: 10px; background: #e2e8f0; border-radius: 10px; overflow: hidden; margin: 8px 0; }
         .progress-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
         .progress-fill.green { background: var(--success); } .progress-fill.yellow { background: var(--warning); }
         .progress-fill.red { background: var(--danger); } .progress-fill.blue { background: var(--info); }
         .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); }
 
-        /* ========== TIMER ========== */
         .timer-box { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: var(--radius-sm); margin: 12px 0; border: 1px solid; }
         .timer-box.warning { background: #fffbeb; border-color: #fde68a; color: #92400e; }
         .timer-box.danger { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
         .timer-box .timer-num { font-size: 28px; font-weight: 900; }
         .timer-box .timer-text { font-size: 12px; }
 
-        /* ========== CALENDARIO DE PAGOS ========== */
         .cal-pagos { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
         .cal-pago-item { flex: 1; min-width: 100px; text-align: center; padding: 14px 10px; border-radius: var(--radius-sm); border: 2px solid var(--border); background: var(--bg); }
         .cal-pago-item.pagado { border-color: var(--success); background: #f0fdf4; }
@@ -82,25 +71,21 @@
         .cal-pago-item .pago-monto { font-size: 16px; font-weight: 900; }
         .cal-pago-item .pago-estado { font-size: 10px; font-weight: 700; text-transform: uppercase; }
 
-        /* ========== HISTORIAL DE PAGOS ========== */
         .pago-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px; font-size: 12px; }
         .pago-item:last-child { border-bottom: none; }
         .estado-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
         .estado-dot.ok { background: var(--success); } .estado-dot.pend { background: var(--warning); } .estado-dot.bad { background: var(--danger); }
 
-        /* ========== NOTIFICACIONES ========== */
         .notif-item { padding: 12px 14px; border-radius: var(--radius-sm); margin-bottom: 6px; border: 1px solid var(--border); display: flex; align-items: center; gap: 10px; cursor: pointer; transition: var(--transition); font-size: 12px; }
         .notif-item:hover { border-color: var(--primary); background: var(--primary-light); }
         .notif-item.no-leida { border-left: 3px solid var(--primary); background: #f8fafc; font-weight: 600; }
         .notif-item .notif-icon { font-size: 20px; flex-shrink: 0; }
         .notif-item .notif-fecha { font-size: 10px; color: var(--text-secondary); margin-left: auto; white-space: nowrap; }
 
-        /* ========== TUTORIALES ========== */
         .tutorial-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 6px; transition: var(--transition); cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text); }
         .tutorial-item:hover { border-color: var(--primary); background: var(--primary-light); }
         .tutorial-item .tuto-icon { font-size: 22px; flex-shrink: 0; }
 
-        /* ========== BOTONES ========== */
         .btn { padding: 10px 20px; border-radius: 50px; font-weight: 700; font-size: 12px; cursor: pointer; border: none; transition: var(--transition); font-family: inherit; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
         .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 14px rgba(46,204,113,0.3); }
         .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
@@ -110,7 +95,6 @@
         .btn-outline:hover { background: var(--primary-light); }
         .btn-block { width: 100%; justify-content: center; }
 
-        /* ========== FORMULARIOS ========== */
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-weight: 700; font-size: 10px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; letter-spacing: 0.5px; }
         .form-group input, .form-group select { width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; transition: var(--transition); background: var(--bg); color: var(--text); }
@@ -119,17 +103,25 @@
         .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
         .form-row .form-group { flex: 1; min-width: 120px; }
 
-        /* ========== MODAL DE TUTORIAL ========== */
+        /* ========== MODALES ========== */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.75); backdrop-filter: blur(6px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
         .modal-overlay.activo { display: flex; }
-        .modal-tutorial { background: var(--surface); border-radius: var(--radius); padding: 28px 24px; max-width: 480px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: modalIn 0.35s ease; text-align: center; }
+        .modal-box { background: var(--surface); border-radius: var(--radius); padding: 28px 24px; max-width: 540px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: modalIn 0.35s ease; position: relative; max-height: 85vh; overflow-y: auto; }
         @keyframes modalIn { from { opacity:0; transform:translateY(30px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } }
-        .modal-tutorial .modal-icon { font-size: 48px; margin-bottom: 12px; }
-        .modal-tutorial h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
-        .modal-tutorial p { color: var(--text-secondary); font-size: 13px; line-height: 1.7; margin-bottom: 16px; }
-        .modal-tutorial .btn { margin-top: 8px; }
+        .modal-close { position: absolute; top: 12px; right: 14px; width: 32px; height: 32px; border-radius: 50%; border: none; background: #e2e8f0; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: var(--transition); color: var(--text-secondary); font-family: inherit; }
+        .modal-close:hover { background: var(--danger); color: #fff; }
+        .modal-box .modal-icon { font-size: 48px; margin-bottom: 12px; text-align: center; }
+        .modal-box h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; text-align: center; }
+        .modal-box p { color: var(--text-secondary); font-size: 13px; line-height: 1.7; margin-bottom: 16px; text-align: center; }
 
-        /* ========== TOAST ========== */
+        .plan-resumen-item { background: #f8fafc; border-radius: 12px; padding: 14px 18px; border: 2px solid var(--border); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .plan-resumen-item.seleccionado { border-color: var(--primary); background: var(--primary-light); }
+        .plan-resumen-item .plan-radio { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .plan-resumen-item .plan-radio input[type="radio"] { accent-color: var(--primary); width: 18px; height: 18px; cursor: pointer; }
+        .plan-resumen-item .plan-precio { font-weight: 900; font-size: 16px; }
+        .plan-resumen-item .plan-ahorro { font-size: 11px; color: #065f46; font-weight: 700; }
+        .badge-descuento { display: inline-block; background: #ef4444; color: #fff; font-size: 9px; font-weight: 800; padding: 2px 10px; border-radius: 20px; margin-left: 6px; }
+
         .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); padding: 12px 24px; border-radius: 50px; font-weight: 700; font-size: 13px; z-index: 500; opacity: 0; transition: all 0.4s; pointer-events: none; box-shadow: var(--shadow-lg); max-width: 90%; text-align: center; }
         .toast.mostrar { opacity: 1; transform: translateX(-50%) translateY(0); }
         .toast.exito { background: var(--success); color: #fff; } .toast.error { background: var(--danger); color: #fff; } .toast.info { background: var(--primary); color: #fff; }
@@ -143,24 +135,21 @@
 </head>
 <body>
 
-    <!-- ========== NAVBAR ========== -->
     <nav class="navbar">
-        <div class="navbar-brand">
-            <div class="brand-icon" id="brand-emoji">🏝️</div>
-            <span id="brand-nombre">Isla Market</span>
-        </div>
+        <div class="navbar-brand"><div class="brand-icon" id="brand-emoji">🏝️</div><span id="brand-nombre">Isla Market</span></div>
         <div class="navbar-actions">
             <span id="usuario-nombre"></span>
-            <button class="btn-icon" id="btn-notificaciones" onclick="toggleNotificaciones()" title="Notificaciones">🔔<span class="badge-notif" id="badge-notif" style="display:none;">0</span></button>
+            <button class="btn-icon" onclick="toggleNotificaciones()" title="Notificaciones">🔔<span class="badge-notif" id="badge-notif" style="display:none;">0</span></button>
             <button class="btn-logout" onclick="cerrarSesion()">🚪 Salir</button>
         </div>
     </nav>
 
     <div class="contenido" id="contenido-principal"></div>
 
-    <!-- ========== MODAL DE TUTORIAL ========== -->
+    <!-- MODAL DE TUTORIAL -->
     <div class="modal-overlay" id="modal-tutorial" onclick="if(event.target===this)cerrarModalTutorial()">
-        <div class="modal-tutorial">
+        <div class="modal-box">
+            <button class="modal-close" onclick="cerrarModalTutorial()">✕</button>
             <div class="modal-icon" id="modal-icon">📚</div>
             <h3 id="modal-titulo">Tutorial</h3>
             <p id="modal-texto">Contenido del tutorial.</p>
@@ -168,10 +157,19 @@
         </div>
     </div>
 
+    <!-- MODAL DE SOLICITUD DE PLAN -->
+    <div class="modal-overlay" id="modal-solicitud-plan" onclick="if(event.target===this)cerrarModalSolicitudPlan()">
+        <div class="modal-box">
+            <button class="modal-close" onclick="cerrarModalSolicitudPlan()">✕</button>
+            <h3>💲 Solicitar Plan de Alquiler</h3>
+            <p style="font-size:12px;">Elige cuántos meses y cómo quieres pagar. El administrador revisará tu solicitud y activará tu plan.</p>
+            <div id="solicitud-plan-contenido"></div>
+        </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <script>
-        // ========== VERIFICACIÓN DE SESIÓN ==========
         (function() {
             var sesion = JSON.parse(sessionStorage.getItem('clienteSesion') || 'null');
             if (!sesion || !sesion.id || !sesion.token) { window.location.href = 'login-cliente.html'; return; }
@@ -181,7 +179,7 @@
             sessionStorage.setItem('clienteSesion', JSON.stringify(sesion));
         })();
 
-        var K_CLIENTES = 'central_clientes', K_PAGOS = 'central_pagos', K_CONFIG = 'central_config', K_PLANTILLAS = 'central_plantillas', K_SOLICITUDES = 'central_solicitudes';
+        var K_CLIENTES = 'central_clientes', K_PAGOS = 'central_pagos', K_CONFIG = 'central_config', K_PLANTILLAS = 'central_plantillas';
         var sesionActual = JSON.parse(sessionStorage.getItem('clienteSesion'));
         var clienteActual = null;
         var notificacionesAbiertas = false;
@@ -201,7 +199,9 @@
                 nombrePlataforma: cfg.nombrePlataforma || 'Isla Market', emoji: cfg.emoji || '🏝️',
                 telefono: cfg.telefono || '', whatsapp: cfg.whatsapp || '', email: cfg.email || '',
                 moneda: cfg.moneda || 'CUP', diasPrueba: cfg.diasPrueba || 7,
-                planPrecio: cfg.planPrecio || 16000, planDescuentoEfectivo: cfg.planDescuentoEfectivo || 15
+                planPrecio: cfg.planPrecio || 16000, planDescuentoEfectivo: cfg.planDescuentoEfectivo || 15,
+                planTasa: cfg.planTasa || 680, simboloMoneda: cfg.simboloMoneda || '$',
+                planMoneda: cfg.planMoneda || 'CUP'
             };
         }
 
@@ -216,12 +216,94 @@
             document.getElementById('modal-texto').textContent = texto;
             document.getElementById('modal-tutorial').classList.add('activo');
         }
-
         function cerrarModalTutorial() { document.getElementById('modal-tutorial').classList.remove('activo'); }
+
+        function abrirModalSolicitudPlan() {
+            var cfg = obtenerConfig();
+            var precioBase = cfg.planPrecio || 16000;
+            var descuento = cfg.planDescuentoEfectivo || 15;
+            var tasa = cfg.planTasa || 680;
+            var simbolo = cfg.simboloMoneda || '$';
+
+            var html = '';
+            html += '<div class="form-group"><label>¿Cuántos meses quieres contratar?</label><select id="solic-meses" onchange="actualizarResumenSolicitud()"><option value="1">1 mes</option><option value="2">2 meses</option><option value="3">3 meses</option><option value="6">6 meses</option><option value="12">12 meses</option></select></div>';
+
+            html += '<p style="font-weight:700;font-size:13px;margin:16px 0 8px;">📋 Elige tu método de pago:</p>';
+            html += '<div id="resumen-planes"></div>';
+
+            html += '<div class="form-group" style="margin-top:14px;"><label>Método de pago seleccionado</label><select id="solic-metodo-pago" onchange="actualizarResumenSolicitud()"><option value="tarjeta_cup">🏦 Transferencia bancaria (CUP)</option><option value="efectivo_cup">💵 Efectivo (CUP) - 15% descuento</option><option value="efectivo_usd">💲 USD Efectivo - 15% descuento</option></select></div>';
+
+            html += '<button class="btn btn-warning btn-block" onclick="enviarSolicitudPlan()" style="font-size:14px;padding:14px;">📨 Enviar solicitud al administrador</button>';
+            html += '<p style="text-align:center;font-size:11px;color:var(--text-secondary);margin-top:8px;">El administrador revisará tu solicitud y configurará tu plan de pago.</p>';
+
+            document.getElementById('solicitud-plan-contenido').innerHTML = html;
+            document.getElementById('modal-solicitud-plan').classList.add('activo');
+            actualizarResumenSolicitud();
+        }
+
+        function cerrarModalSolicitudPlan() { document.getElementById('modal-solicitud-plan').classList.remove('activo'); }
+
+        function actualizarResumenSolicitud() {
+            var cfg = obtenerConfig();
+            var meses = parseInt(document.getElementById('solic-meses').value) || 1;
+            var metodo = document.getElementById('solic-metodo-pago').value;
+            var precioBase = (cfg.planPrecio || 16000) * meses;
+            var descuento = cfg.planDescuentoEfectivo || 15;
+            var tasa = cfg.planTasa || 680;
+            var simbolo = cfg.simboloMoneda || '$';
+            var precioEfectivo = Math.round(precioBase * (1 - descuento / 100));
+            var precioUSD = (precioBase / tasa).toFixed(2);
+            var precioUSDdescuento = (precioEfectivo / tasa).toFixed(2);
+
+            var html = '';
+
+            // Opción 1: Transferencia CUP
+            var sel1 = metodo === 'tarjeta_cup' ? ' seleccionado' : '';
+            html += '<div class="plan-resumen-item' + sel1 + '"><label class="plan-radio"><input type="radio" name="plan-opcion" value="tarjeta_cup" ' + (metodo === 'tarjeta_cup' ? 'checked' : '') + ' onchange="seleccionarMetodo(\'tarjeta_cup\')">🏦 Transferencia (CUP)</label><div><span class="plan-precio">' + simbolo + precioBase.toLocaleString() + ' CUP</span><br><span style="font-size:11px;color:var(--text-secondary);">≈ ' + simbolo + precioUSD + ' USD (tasa: ' + tasa + ')</span></div></div>';
+
+            // Opción 2: Efectivo CUP
+            var sel2 = metodo === 'efectivo_cup' ? ' seleccionado' : '';
+            html += '<div class="plan-resumen-item' + sel2 + '"><label class="plan-radio"><input type="radio" name="plan-opcion" value="efectivo_cup" ' + (metodo === 'efectivo_cup' ? 'checked' : '') + ' onchange="seleccionarMetodo(\'efectivo_cup\')">💵 Efectivo (CUP)</label><div><span class="plan-precio">' + simbolo + precioEfectivo.toLocaleString() + ' CUP</span> <span class="badge-descuento">-' + descuento + '%</span><br><span class="plan-ahorro">Ahorras ' + simbolo + (precioBase - precioEfectivo).toLocaleString() + ' CUP</span></div></div>';
+
+            // Opción 3: USD Efectivo
+            var sel3 = metodo === 'efectivo_usd' ? ' seleccionado' : '';
+            html += '<div class="plan-resumen-item' + sel3 + '"><label class="plan-radio"><input type="radio" name="plan-opcion" value="efectivo_usd" ' + (metodo === 'efectivo_usd' ? 'checked' : '') + ' onchange="seleccionarMetodo(\'efectivo_usd\')">💲 USD Efectivo</label><div><span class="plan-precio">' + simbolo + precioUSDdescuento + ' USD</span> <span class="badge-descuento">-' + descuento + '%</span><br><span class="plan-ahorro">Ahorras ' + simbolo + (precioUSD - precioUSDdescuento).toFixed(2) + ' USD</span></div></div>';
+
+            document.getElementById('resumen-planes').innerHTML = html;
+        }
+
+        function seleccionarMetodo(valor) {
+            document.getElementById('solic-metodo-pago').value = valor;
+            actualizarResumenSolicitud();
+        }
+
+        function enviarSolicitudPlan() {
+            var cfg = obtenerConfig();
+            var meses = parseInt(document.getElementById('solic-meses').value) || 1;
+            var metodo = document.getElementById('solic-metodo-pago').value;
+            var metodosNombres = { tarjeta_cup: 'Transferencia (CUP)', efectivo_cup: 'Efectivo (CUP)', efectivo_usd: 'USD Efectivo' };
+
+            var solicitudes = JSON.parse(localStorage.getItem('central_solicitudes')) || [];
+            solicitudes.unshift({
+                id: Date.now(),
+                fecha: new Date().toISOString(),
+                nombre: clienteActual.nombre,
+                telefono: clienteActual.telefono || '',
+                email: clienteActual.email || '',
+                clienteId: clienteActual.id,
+                estado: 'nueva',
+                tipoContacto: 'solicitud_plan',
+                mensaje: 'Solicitud de cambio a plan de alquiler. Meses: ' + meses + '. Método: ' + metodosNombres[metodo] + '.',
+                mesesContratados: meses,
+                metodoPago: metodo
+            });
+            localStorage.setItem('central_solicitudes', JSON.stringify(solicitudes));
+            mostrarToast('✅ Solicitud enviada. El administrador te contactará pronto.', 'exito');
+            cerrarModalSolicitudPlan();
+        }
 
         function toggleNotificaciones() { notificacionesAbiertas = !notificacionesAbiertas; cargarPanel(); }
 
-        // ========== CARGAR PANEL COMPLETO ==========
         function cargarPanel() {
             cargarClienteActual();
             if (!clienteActual) return;
@@ -237,8 +319,6 @@
 
             var pl = plantillas.find(function(p) { return p.id === clienteActual.plantillaId; }) || {};
             var pagosCliente = pagos.filter(function(p) { return p.clienteId === clienteActual.id; });
-
-            // ========== DETERMINAR MODO ==========
             var tipoCliente = clienteActual.tipoCliente || 'prueba';
             var esPrueba = (tipoCliente === 'prueba' || !tipoCliente);
             var esAlquiler = (tipoCliente === 'alquiler');
@@ -265,9 +345,7 @@
             var fechasPago = clienteActual.fechasPago || [];
             var montosPago = clienteActual.montosPago || [];
             var pagosRealizados = clienteActual.pagosRealizados || [];
-            if (fechasPago.length === 0 && clienteActual.fechaVencimiento && esAlquiler) {
-                fechasPago = [clienteActual.fechaVencimiento]; montosPago = [clienteActual.precio || cfg.planPrecio]; pagosRealizados = [false];
-            }
+            if (fechasPago.length === 0 && clienteActual.fechaVencimiento && esAlquiler) { fechasPago = [clienteActual.fechaVencimiento]; montosPago = [clienteActual.precio || cfg.planPrecio]; pagosRealizados = [false]; }
 
             var totalPagos = fechasPago.length;
             var pagosHechos = pagosRealizados.filter(function(p) { return p; }).length;
@@ -276,19 +354,15 @@
             var totalPagado = montosPago.reduce(function(s, m, i) { return pagosRealizados[i] ? s + m : s; }, 0);
 
             var proximoPago = null;
-            for (var i = 0; i < fechasPago.length; i++) {
-                if (!pagosRealizados[i]) { proximoPago = { fecha: fechasPago[i], monto: montosPago[i], index: i }; break; }
-            }
+            for (var i = 0; i < fechasPago.length; i++) { if (!pagosRealizados[i]) { proximoPago = { fecha: fechasPago[i], monto: montosPago[i], index: i }; break; } }
             var diasProximoPago = 0;
             if (proximoPago) { diasProximoPago = Math.ceil((new Date(proximoPago.fecha) - hoy) / (1000 * 60 * 60 * 24)); }
 
             var notificaciones = clienteActual.notificaciones || [];
             var noLeidas = notificaciones.filter(function(n) { return !n.leida; });
             var badgeNotif = document.getElementById('badge-notif');
-            if (noLeidas.length > 0) { badgeNotif.textContent = noLeidas.length; badgeNotif.style.display = 'flex'; }
-            else { badgeNotif.style.display = 'none'; }
+            if (noLeidas.length > 0) { badgeNotif.textContent = noLeidas.length; badgeNotif.style.display = 'flex'; } else { badgeNotif.style.display = 'none'; }
 
-            // ========== HTML ==========
             var container = document.getElementById('contenido-principal');
             var html = '';
 
@@ -311,20 +385,12 @@
 
                 html += '<div class="seccion"><h2>📋 Lo que incluye tu prueba</h2>' +
                     '<ul style="list-style:none;font-size:13px;color:var(--text-secondary);line-height:2.2;">' +
-                    '<li>✅ 1 tienda activa por ' + diasPruebaTotal + ' días</li>' +
-                    '<li>✅ Panel de administración completo</li>' +
-                    '<li>✅ Hasta 50 productos</li>' +
-                    '<li>✅ Personaliza colores, logo y portada</li>' +
-                    '<li>✅ Sin necesidad de programación</li>' +
-                    '<li>✅ Soporte durante la prueba</li></ul></div>';
+                    '<li>✅ 1 tienda activa por ' + diasPruebaTotal + ' días</li><li>✅ Panel de administración completo</li><li>✅ Hasta 50 productos</li><li>✅ Personaliza colores, logo y portada</li><li>✅ Sin necesidad de programación</li><li>✅ Soporte durante la prueba</li></ul></div>';
 
-                html += '<div class="seccion" style="text-align:center;">' +
-                    '<h2>💲 ¿Listo para crecer en serio?</h2>' +
-                    '<p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Contrata el plan de alquiler y olvídate de los límites. Solo pagas una vez al mes.</p>' +
-                    '<button class="btn btn-warning btn-block" onclick="abrirFormularioPago()" style="font-size:14px;padding:14px;">💲 Quiero pasarme al plan de alquiler</button></div>';
+                html += '<div class="seccion" style="text-align:center;"><h2>💲 ¿Listo para crecer en serio?</h2><p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Elige cuántos meses quieres contratar y tu método de pago. El administrador configurará tu plan.</p><button class="btn btn-warning btn-block" onclick="abrirModalSolicitudPlan()" style="font-size:14px;padding:14px;">💲 Solicitar plan de alquiler</button></div>';
             }
 
-            // ========== MODO: PLAN ACTIVO (ALQUILER) ==========
+            // ========== MODO: PLAN ACTIVO ==========
             else if (esAlquiler && estado === 'activo' && !enPeriodoGracia) {
                 html += '<div class="resumen-grid">' +
                     '<div class="resumen-card"><div class="r-label">🏪 Mi Tienda</div><div class="r-value" style="font-size:16px;">' + clienteActual.nombre + '</div><div class="r-sub">' + (pl.nombre || 'Sin plantilla') + '</div></div>' +
@@ -339,7 +405,6 @@
 
                 html += '<div class="progress-label"><span>Progreso de pagos</span><span>' + pagosHechos + ' de ' + totalPagos + ' pagos (' + porcentajePagos + '%)</span></div>';
                 html += '<div class="progress-bar"><div class="progress-fill blue" style="width:' + porcentajePagos + '%;"></div></div>';
-
                 html += '<div class="seccion"><h2>📅 Calendario de Pagos</h2><div class="cal-pagos">';
                 for (var i = 0; i < fechasPago.length; i++) {
                     var clase = pagosRealizados[i] ? 'pagado' : (new Date(fechasPago[i]) < hoy ? 'vencido' : 'pendiente');
@@ -349,51 +414,45 @@
 
                 if (proximoPago && !(new Date(proximoPago.fecha) < hoy)) {
                     html += '<div class="seccion"><h2>📤 Subir Comprobante</h2><p style="color:var(--text-secondary);font-size:12px;margin-bottom:12px;">Sube tu comprobante para el pago del ' + new Date(proximoPago.fecha + 'T00:00:00').toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' }) + '.</p>' +
-                        '<form id="form-comprobante" onsubmit="return subirComprobante(event)">' +
-                        '<div class="form-row"><div class="form-group"><label>Monto ($)</label><input type="number" id="comp-monto" value="' + proximoPago.monto + '" step="0.01" required></div><div class="form-group"><label>Método</label><select id="comp-metodo"><option>Efectivo</option><option>Transferencia</option><option>Tarjeta</option><option>Enzona</option><option>MLC</option></select></div></div>' +
+                        '<form id="form-comprobante" onsubmit="return subirComprobante(event)"><div class="form-row"><div class="form-group"><label>Monto ($)</label><input type="number" id="comp-monto" value="' + proximoPago.monto + '" step="0.01" required></div><div class="form-group"><label>Método</label><select id="comp-metodo"><option>Efectivo (CUP)</option><option>Transferencia (CUP)</option><option>USD Efectivo</option></select></div></div>' +
                         '<div class="form-group"><label>Comprobante (imagen)</label><input type="file" id="comp-archivo" accept="image/*" required></div>' +
                         '<div class="form-group"><label>Notas (opcional)</label><input type="text" id="comp-notas" placeholder="Detalles adicionales..."></div>' +
                         '<button type="submit" class="btn btn-primary btn-block">📨 Enviar comprobante</button></form></div>';
                 }
             }
 
-            // ========== MODO: PERÍODO DE GRACIA ==========
+            // ========== MODO: GRACIA / VENCIDO ==========
             else if (enPeriodoGracia && diasGraciaRestantes > 0) {
                 html += '<div class="resumen-grid">' +
                     '<div class="resumen-card"><div class="r-label">🏪 Mi Tienda</div><div class="r-value" style="font-size:16px;">' + clienteActual.nombre + '</div><div class="r-sub">' + (pl.nombre || 'Sin plantilla') + '</div></div>' +
                     '<div class="resumen-card"><div class="r-label">📊 Estado</div><span class="badge badge-gracia">⚠️ Período de gracia</span><div class="r-sub">Tu tienda sigue activa</div></div>' +
                     '<div class="resumen-card"><div class="r-label">⏱️ Tiempo extra</div><div class="r-value">' + diasGraciaRestantes + ' días</div><div class="r-sub">Para ponerte al día</div></div>' +
                     '<div class="resumen-card"><div class="r-label">💰 Pendiente</div><div class="r-value" style="font-size:16px;">$' + totalDebe.toLocaleString() + '</div><div class="r-sub">Debes pagar</div></div></div>';
-
                 html += '<div class="timer-box danger"><span class="timer-num">' + diasGraciaRestantes + '</span><span class="timer-text">días para pagar antes de que se pause tu tienda</span></div>';
-                html += '<div class="progress-bar"><div class="progress-fill red" style="width:' + ((5 - diasGraciaRestantes) / 5 * 100) + '%;"></div></div>';
-                html += '<div class="seccion" style="text-align:center;"><h2>⚠️ No pierdas tu tienda</h2><p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Tienes ' + diasGraciaRestantes + ' días extra. Después, tu tienda se pausará.</p><button class="btn btn-danger btn-block" onclick="abrirFormularioPago()" style="font-size:14px;padding:14px;">💲 Pagar ahora</button></div>';
-            }
-
-            // ========== MODO: VENCIDO O SUSPENDIDO ==========
-            else {
+                html += '<div class="seccion" style="text-align:center;"><h2>⚠️ No pierdas tu tienda</h2><p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Tienes ' + diasGraciaRestantes + ' días extra. Después, tu tienda se pausará.</p><button class="btn btn-danger btn-block" onclick="abrirModalSolicitudPlan()" style="font-size:14px;padding:14px;">💲 Pagar ahora</button></div>';
+            } else {
                 html += '<div class="resumen-grid">' +
                     '<div class="resumen-card"><div class="r-label">🏪 Mi Tienda</div><div class="r-value" style="font-size:16px;">' + clienteActual.nombre + '</div><div class="r-sub">' + (pl.nombre || 'Sin plantilla') + '</div></div>' +
                     '<div class="resumen-card"><div class="r-label">📊 Estado</div><span class="badge badge-vencido">⏰ ' + (estado === 'suspendido' ? 'Suspendido' : 'Vencido') + '</span><div class="r-sub">Tu tienda está pausada</div></div>' +
                     '<div class="resumen-card"><div class="r-label">💰 Adeudo</div><div class="r-value" style="font-size:16px;">$' + totalDebe.toLocaleString() + '</div><div class="r-sub">Para reactivar</div></div></div>';
                 html += '<div class="timer-box danger"><span>⏰</span><span style="font-weight:700;">Tu ' + (esPrueba ? 'prueba' : 'plan') + ' ha ' + (estado === 'suspendido' ? 'sido suspendido' : 'vencido') + '.</span></div>';
-                html += '<div class="seccion" style="text-align:center;"><h2>💲 Reactiva tu tienda</h2><p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Contrata el plan de alquiler para volver a tener tu tienda activa.</p><button class="btn btn-warning btn-block" onclick="abrirFormularioPago()" style="font-size:14px;padding:14px;">💲 Activar mi tienda ahora</button></div>';
+                html += '<div class="seccion" style="text-align:center;"><h2>💲 Reactiva tu tienda</h2><p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Contrata el plan de alquiler para volver a tener tu tienda activa.</p><button class="btn btn-warning btn-block" onclick="abrirModalSolicitudPlan()" style="font-size:14px;padding:14px;">💲 Activar mi tienda ahora</button></div>';
             }
 
             // ========== ACCESO A TIENDA ==========
             html += '<div class="seccion"><h2>🌐 Acceso a mi Tienda</h2><div style="display:flex;gap:10px;flex-wrap:wrap;">';
             if (clienteActual.urlTienda) html += '<a href="' + clienteActual.urlTienda + '" target="_blank" class="btn btn-primary">🌐 Visitar mi tienda</a>';
             if (clienteActual.urlAdmin) html += '<a href="' + clienteActual.urlAdmin + '" target="_blank" class="btn btn-outline">🔧 Panel de administración</a>';
-            if (!clienteActual.urlTienda && !clienteActual.urlAdmin) html += '<span style="font-size:12px;color:var(--text-secondary);">El administrador está configurando tu tienda. Pronto tendrás acceso.</span>';
+            if (!clienteActual.urlTienda && !clienteActual.urlAdmin) html += '<span style="font-size:12px;color:var(--text-secondary);">El administrador está configurando tu tienda.</span>';
             html += '</div></div>';
 
             // ========== TUTORIALES ==========
             html += '<div class="seccion"><h2>📚 Ayuda y Tutoriales</h2>';
-            html += '<div class="tutorial-item" onclick="abrirModalTutorial(\'🍕 Cómo agregar productos\',\'Entra a tu panel de administración (🔧 Panel de administración) y busca la sección Productos. Allí verás un botón de Añadir Producto. Llena el nombre, precio, categoría y sube una imagen. ¡Es muy fácil!\',\'🍕\')"><span class="tuto-icon">🍕</span> Cómo agregar productos a tu tienda</div>';
-            html += '<div class="tutorial-item" onclick="abrirModalTutorial(\'🎨 Cómo personalizar tu tienda\',\'En tu panel de administración, ve a la sección Configuración. Allí puedes cambiar los colores, el logo, la imagen de portada, el horario y mucho más. Los cambios se ven inmediatamente en tu tienda.\',\'🎨\')"><span class="tuto-icon">🎨</span> Cómo personalizar el diseño de tu tienda</div>';
-            html += '<div class="tutorial-item" onclick="abrirModalTutorial(\'📊 Cómo ver tus estadísticas\',\'En tu panel de administración, ve a la sección Reportes. Allí encontrarás gráficos de ventas por día, productos más vendidos y un resumen de ingresos.\',\'📊\')"><span class="tuto-icon">📊</span> Cómo ver las estadísticas de tu negocio</div>';
-            html += '<div class="tutorial-item" onclick="abrirModalTutorial(\'💬 Cómo contactar con soporte\',\'Puedes contactarnos por WhatsApp, llamada o email. Busca los botones de contacto en la sección de ayuda de este panel o en el pie de página de tu tienda.\',\'💬\')"><span class="tuto-icon">💬</span> Cómo contactar con soporte</div>';
-            html += '<div class="tutorial-item" onclick="abrirModalTutorial(\'💲 Cómo funciona el plan de alquiler\',\'El plan de alquiler es un pago mensual. Cuando contratas, recibes acceso ilimitado a tu tienda. Puedes pagar en efectivo (con descuento), por transferencia o en USD. Cada mes recibirás un recordatorio.\',\'💲\')"><span class="tuto-icon">💲</span> Cómo funciona el plan de alquiler</div>';
+            html += '<div class="tutorial-item" onclick="abrirModalTutorial(\'🍕 Cómo agregar productos\',\'Entra a tu panel de administración y busca la sección Productos. Allí puedes añadir productos con nombre, precio, categoría e imagen.\',\'🍕\')"><span class="tuto-icon">🍕</span> Cómo agregar productos a tu tienda</div>';
+            html += '<div class="tutorial-item" onclick="abrirModalTutorial(\'🎨 Cómo personalizar tu tienda\',\'En tu panel de administración, ve a Configuración. Puedes cambiar colores, logo, portada, horario y más.\',\'🎨\')"><span class="tuto-icon">🎨</span> Cómo personalizar el diseño de tu tienda</div>';
+            html += '<div class="tutorial-item" onclick="abrirModalTutorial(\'📊 Cómo ver tus estadísticas\',\'En tu panel de administración, ve a Reportes. Verás gráficos de ventas y productos más vendidos.\',\'📊\')"><span class="tuto-icon">📊</span> Cómo ver las estadísticas de tu negocio</div>';
+            html += '<div class="tutorial-item" onclick="abrirModalTutorial(\'💲 Cómo funcionan los pagos\',\'Puedes pagar por transferencia (CUP), en efectivo (CUP con 15% de descuento) o en USD efectivo. El administrador revisa tu comprobante y activa tu plan.\',\'💲\')"><span class="tuto-icon">💲</span> Cómo funcionan los métodos de pago</div>';
+            html += '<div class="tutorial-item" onclick="abrirModalTutorial(\'🔄 Cómo pasarme al plan de alquiler\',\'Haz clic en Solicitar plan de alquiler, elige los meses y el método de pago. El administrador recibirá tu solicitud y configurará tu plan.\',\'🔄\')"><span class="tuto-icon">🔄</span> Cómo pasarme al plan de alquiler</div>';
             html += '</div>';
 
             // ========== HISTORIAL DE PAGOS ==========
@@ -401,7 +460,7 @@
                 html += '<div class="seccion"><h2>📋 Historial de Comprobantes</h2>';
                 html += pagosCliente.sort(function(a, b) { return new Date(b.fecha) - new Date(a.fecha); }).map(function(p) {
                     var dot = p.estado === 'Confirmado' ? 'ok' : p.estado === 'Rechazado' ? 'bad' : 'pend';
-                    return '<div class="pago-item"><div class="pago-info"><strong>' + p.fecha + '</strong><span><span class="estado-dot ' + dot + '"></span>' + (p.estado || 'Pendiente') + ' · $' + p.monto.toFixed(2) + ' · ' + (p.metodoPago || '—') + '</span></div>' + (p.notas ? '<span style="font-size:11px;color:var(--text-secondary);">📝 ' + p.notas + '</span>' : '') + '</div>';
+                    return '<div class="pago-item"><div class="pago-info"><strong>' + p.fecha + '</strong><span><span class="estado-dot ' + dot + '"></span>' + (p.estado || 'Pendiente') + ' · $' + p.monto.toFixed(2) + ' · ' + (p.metodoPago || '—') + '</span></div></div>';
                 }).join('');
                 html += '</div>';
             }
@@ -414,12 +473,12 @@
                 }).join('');
                 html += '</div>';
             } else if (notificacionesAbiertas) {
-                html += '<div class="seccion"><h2>🔔 Notificaciones</h2><p style="color:var(--text-secondary);font-size:13px;text-align:center;">No tienes notificaciones.</p></div>';
+                html += '<div class="seccion"><h2>🔔 Notificaciones</h2><p style="color:var(--text-secondary);font-size:13px;">No tienes notificaciones.</p></div>';
             }
 
             // ========== CONTACTO ==========
             html += '<div class="seccion" style="background:#f8fafc;border:2px dashed var(--border);text-align:center;">' +
-                '<h2>📞 ¿Necesitas ayuda?</h2><p style="color:var(--text-secondary);font-size:13px;">Contáctanos si tienes dudas sobre tu suscripción o necesitas asistencia.</p>' +
+                '<h2>📞 ¿Necesitas ayuda?</h2><p style="color:var(--text-secondary);font-size:13px;">Contáctanos si tienes dudas.</p>' +
                 '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px;">' +
                 (cfg.whatsapp ? '<a href="https://wa.me/' + cfg.whatsapp.replace(/\+/g, '') + '" target="_blank" class="btn btn-primary" style="background:#25d366;">💬 WhatsApp</a>' : '') +
                 (cfg.telefono ? '<a href="tel:' + cfg.telefono + '" class="btn btn-outline" style="border-color:#2563eb;color:#2563eb;">📞 Llamar</a>' : '') +
@@ -429,7 +488,6 @@
             container.innerHTML = html;
         }
 
-        // ========== SUBIR COMPROBANTE ==========
         function subirComprobante(e) {
             e.preventDefault();
             var monto = parseFloat(document.getElementById('comp-monto').value);
@@ -442,41 +500,8 @@
                 var pagos = JSON.parse(localStorage.getItem(K_PAGOS)) || [];
                 pagos.push({ id: Date.now(), clienteId: clienteActual.id, monto: monto, fecha: new Date().toISOString().split('T')[0], metodoPago: metodo, estado: 'Pendiente', comprobante: ev.target.result, notas: notas, fechaCreacion: new Date().toISOString(), numeroComprobante: 'CLI-' + clienteActual.id + '-' + Date.now().toString().slice(-6) });
                 localStorage.setItem(K_PAGOS, JSON.stringify(pagos));
-                mostrarToast('✅ Comprobante enviado. Espera la confirmación.', 'exito');
+                mostrarToast('✅ Comprobante enviado.', 'exito');
                 document.getElementById('form-comprobante').reset();
-                cargarPanel();
-            };
-            reader.readAsDataURL(archivo);
-            return false;
-        }
-
-        function abrirFormularioPago() {
-            var cfg = obtenerConfig();
-            var montoSugerido = totalDebe || cfg.planPrecio || 16000;
-            var html = '<div class="seccion" id="seccion-pago-rapido"><h2>💲 Activar Plan de Alquiler</h2><p style="color:var(--text-secondary);font-size:12px;margin-bottom:12px;">Completa el formulario para enviar tu comprobante.</p>' +
-                '<form id="form-pago-rapido" onsubmit="return subirComprobanteRapido(event)">' +
-                '<div class="form-row"><div class="form-group"><label>Monto ($)</label><input type="number" id="pago-monto" value="' + montoSugerido + '" step="0.01" required></div>' +
-                '<div class="form-group"><label>Método</label><select id="pago-metodo"><option>Efectivo</option><option>Transferencia</option><option>Tarjeta</option><option>Enzona</option><option>MLC</option></select></div></div>' +
-                '<div class="form-group"><label>Comprobante (imagen)</label><input type="file" id="pago-archivo" accept="image/*" required></div>' +
-                '<button type="submit" class="btn btn-warning btn-block">📨 Enviar y solicitar activación</button></form></div>';
-            var container = document.getElementById('contenido-principal');
-            container.insertAdjacentHTML('afterbegin', html);
-            document.getElementById('seccion-pago-rapido').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function subirComprobanteRapido(e) {
-            e.preventDefault();
-            var monto = parseFloat(document.getElementById('pago-monto').value);
-            var metodo = document.getElementById('pago-metodo').value;
-            var archivo = document.getElementById('pago-archivo').files[0];
-            if (!monto || !archivo) { mostrarToast('⚠️ Completa todos los campos.', 'error'); return false; }
-            var reader = new FileReader();
-            reader.onload = function(ev) {
-                var pagos = JSON.parse(localStorage.getItem(K_PAGOS)) || [];
-                pagos.push({ id: Date.now(), clienteId: clienteActual.id, monto: monto, fecha: new Date().toISOString().split('T')[0], metodoPago: metodo, estado: 'Pendiente', comprobante: ev.target.result, notas: 'Solicitud de activación de plan', fechaCreacion: new Date().toISOString(), numeroComprobante: 'ACT-' + clienteActual.id + '-' + Date.now().toString().slice(-6) });
-                localStorage.setItem(K_PAGOS, JSON.stringify(pagos));
-                mostrarToast('✅ Solicitud enviada. El administrador revisará tu pago.', 'exito');
-                var el = document.getElementById('seccion-pago-rapido'); if (el) el.remove();
                 cargarPanel();
             };
             reader.readAsDataURL(archivo);
