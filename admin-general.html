@@ -167,34 +167,44 @@
         .toast.error{background:var(--danger);color:#fff;}
         .toast.info{background:var(--primary);color:#fff;}
         .etiqueta-select{display:flex;gap:4px;flex-wrap:wrap;}
+        /* ===== COLORES PARA FILAS DE CUOTAS ===== */
+.fila-pagada{background:var(--success-bg);border-left:3px solid var(--success);}
+.fila-vencida{background:var(--danger-bg);border-left:3px solid var(--danger);}
+.fila-pendiente{background:var(--warning-bg);border-left:3px solid var(--warning);}
         @media(max-width:1024px){.stats-grid{grid-template-columns:repeat(2,1fr);}.detalle-grid{grid-template-columns:repeat(2,1fr);}.acciones-grid{grid-template-columns:repeat(2,1fr);}}
         @media(max-width:900px){.sidebar{transform:translateX(-100%);}.sidebar.abierto{transform:translateX(0);}.btn-menu-movil{display:flex;}.contenido{margin-left:0;width:100%;padding:14px 10px;padding-top:56px;}}
         @media(max-width:600px){
-            .stats-grid{grid-template-columns:1fr 1fr;gap:8px;}
-            .stat-card{padding:12px;}
-            .stat-value{font-size:17px;}
-            .seccion{padding:14px 12px;}
-            .form-grid{grid-template-columns:1fr;}
-            .dias-grid{grid-template-columns:repeat(5,1fr);}
-            .detalle-grid{grid-template-columns:1fr 1fr;}
-            .acciones-grid{grid-template-columns:1fr 1fr;}
-            .modal{padding:14px 10px;max-width:100%;}
-            .tabla-wrap{border:none;overflow:visible;}
-            table{min-width:auto;display:block;}
-            thead{display:none;}
-            tbody{display:block;}
-            tr{display:block;margin-bottom:8px;border:1px solid var(--primary);border-radius:var(--radius-sm);padding:8px;border-left:3px solid var(--primary);}
-            td{display:flex;justify-content:space-between;padding:5px 0;border:none;font-size:11px;}
-            td::before{content:attr(data-label);font-weight:600;color:var(--primary);font-size:9px;text-transform:uppercase;margin-right:8px;flex-shrink:0;}
-            /* Apilar tablas dentro del modal */
-.modal .tabla-wrap{border:none;overflow:visible !important;}
-.modal .tabla-wrap table{min-width:auto !important;display:block !important;width:100%;}
-.modal .tabla-wrap thead{display:none;}
-.modal .tabla-wrap tbody{display:block;}
-.modal .tabla-wrap tr{display:block;margin-bottom:8px;border:1px solid var(--primary);border-radius:var(--radius-sm);padding:8px;border-left:3px solid var(--primary);}
-.modal .tabla-wrap td{display:flex;justify-content:space-between;padding:5px 0;border:none;font-size:11px;width:100%;}
-.modal .tabla-wrap td::before{content:attr(data-label);font-weight:600;color:var(--primary);font-size:9px;text-transform:uppercase;margin-right:8px;flex-shrink:0;}
-        }
+    .stats-grid{grid-template-columns:1fr 1fr;gap:8px;}
+    .stat-card{padding:12px;}
+    .stat-value{font-size:17px;}
+    .seccion{padding:14px 12px;}
+    .form-grid{grid-template-columns:1fr;}
+    .dias-grid{grid-template-columns:repeat(5,1fr);}
+    .detalle-grid{grid-template-columns:1fr 1fr;}
+    .acciones-grid{grid-template-columns:1fr 1fr;}
+    .modal{padding:14px 10px;max-width:100%;}
+
+    /* Apilar tablas generales */
+    .tabla-wrap{border:none;overflow:visible;}
+    table{min-width:auto;display:block;}
+    thead{display:none;}
+    tbody{display:block;}
+    tr{display:block;margin-bottom:8px;border:1px solid var(--primary);border-radius:var(--radius-sm);padding:8px;border-left:3px solid var(--primary);}
+    td{display:flex;justify-content:space-between;padding:5px 0;border:none;font-size:11px;}
+    td::before{content:attr(data-label);font-weight:600;color:var(--primary);font-size:9px;text-transform:uppercase;margin-right:8px;flex-shrink:0;}
+
+    /* Apilar tablas dentro del modal */
+    .modal .tabla-wrap{border:none;overflow:visible !important;}
+    .modal .tabla-wrap table{min-width:auto !important;display:block !important;width:100%;}
+    .modal .tabla-wrap thead{display:none;}
+    .modal .tabla-wrap tbody{display:block;}
+    .modal .tabla-wrap tr{display:block;margin-bottom:8px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;}
+    .modal .tabla-wrap tr.fila-pagada{border-color:var(--success);border-left:3px solid var(--success);}
+    .modal .tabla-wrap tr.fila-vencida{border-color:var(--danger);border-left:3px solid var(--danger);}
+    .modal .tabla-wrap tr.fila-pendiente{border-color:var(--warning);border-left:3px solid var(--warning);}
+    .modal .tabla-wrap td{display:flex;justify-content:space-between;padding:5px 0;border:none;font-size:11px;}
+    .modal .tabla-wrap td::before{content:attr(data-label);font-weight:600;color:var(--primary);font-size:9px;text-transform:uppercase;margin-right:8px;flex-shrink:0;}
+}
         @media(max-width:400px){.stats-grid{grid-template-columns:1fr;}.acciones-grid{grid-template-columns:1fr;}}
     </style>
 </head>
@@ -879,49 +889,52 @@
         function filtrarClientesEtiqueta(e,el){filtroEtiqueta=e;filtroEstadoActual='todos';document.querySelectorAll('.filtros .chip').forEach(function(c){c.classList.remove('activo');});if(el)el.classList.add('activo');aplicarFiltrosClientes();}
 
         function verDetalleCliente(id){
-            var cl=(JSON.parse(localStorage.getItem(K.CLIENTES))||[]).find(function(c){return c.id===id;});
-            if(!cl)return;
-            var cuotas=cl.cuotas||[];
-            if(cuotas.length===0&&cl.tipoCliente==='alquiler'&&cl.fechaVencimiento){
-                cuotas=[{numero:1,fechaVencimiento:cl.fechaVencimiento,montoEstimado:cl.precio||16000,montoReal:null,monedaReal:null,tasaUsada:null,pagado:false,fechaPago:null,comprobanteId:null}];
-            }
-            var totalCuotas=cuotas.length,pagadas=cuotas.filter(function(q){return q.pagado;}).length;
-            var porcentaje=totalCuotas>0?Math.round((pagadas/totalCuotas)*100):0;
-            var totalPagado=cuotas.filter(function(q){return q.pagado;}).reduce(function(s,q){return s+(q.montoReal||q.montoEstimado);},0);
-            var totalPendiente=cuotas.filter(function(q){return !q.pagado;}).reduce(function(s,q){return s+q.montoEstimado;},0);
-            var html='<div style="font-size:13px;">';
-            html+='<div class="detalle-seccion"><h4>Datos Generales</h4>';
-            html+='<p><strong>Nombre:</strong> '+cl.nombre+' | <strong>Dueño:</strong> '+(cl.dueno||'—')+'</p>';
-            html+='<p><strong>Tel:</strong> '+(cl.telefono||'—')+' | <strong>Email:</strong> '+(cl.email||'—')+'</p>';
-            html+='<p><strong>Usuario:</strong> '+cl.usuario+' | <strong>Contraseña:</strong> <span id="pass-'+cl.id+'">••••</span> <button class="btn btn-outline btn-xs" onclick="togglePassword('+cl.id+',\''+(cl.contrasena||'123456').replace(/'/g,"\\'")+'\')">Ver</button></p>';
-            html+='<p><strong>Etiquetas:</strong> '+getEtiquetasBadges(cl.etiquetas)+'</p>';
-            html+='<div class="contacto-botones" style="margin-top:8px;">'+btnLlamar(cl.telefono)+btnWhatsApp(cl.whatsapp||cl.telefono)+'</div>';
-            html+='</div>';
-            if(cl.tipoCliente==='alquiler'&&cuotas.length>0){
-                html+='<div class="detalle-seccion"><h4>Cuotas ('+cuotas.length+')</h4><div class="tabla-wrap"><table style="min-width:400px;font-size:11px;"><thead><tr><th>#</th><th>Vence</th><th>Estimado</th><th>Real</th><th>Estado</th><th>Acción</th></tr></thead><tbody>';
-                for(var i=0;i<cuotas.length;i++){
-                    var q=cuotas[i],fv=new Date(q.fechaVencimiento+'T00:00:00'),vencido=!q.pagado&&fv<new Date();
-                    var estadoTexto=q.pagado?'Pagado':(vencido?'Vencido':'Pendiente');
-                    var accion=q.pagado?'':('<button class="btn btn-success btn-xs" onclick="pagarCuotaDesdeModal('+cl.id+','+i+')">Pagar</button>');
-                    html+='<tr><td data-label="#">'+q.numero+'</td><td data-label="Vence">'+fv.toLocaleDateString('es-ES')+'</td><td data-label="Estimado">$'+q.montoEstimado.toLocaleString()+'</td><td data-label="Real">'+(q.montoReal?'$'+q.montoReal.toLocaleString():'—')+'</td><td data-label="Estado">'+estadoTexto+'</td><td data-label="Acción">'+accion+'</td></tr>';
-                }
-                html+='</tbody></table></div>';
-                html+='<div class="progress"><div class="progress-fill" style="width:'+porcentaje+'%;background:var(--success);"></div></div>';
-                html+='<div class="detalle-grid"><div class="item"><div class="num">$'+totalPagado.toLocaleString()+'</div><div class="lbl">Pagado</div></div><div class="item"><div class="num">$'+totalPendiente.toLocaleString()+'</div><div class="lbl">Pendiente</div></div><div class="item"><div class="num">'+pagadas+'/'+totalCuotas+'</div><div class="lbl">Cuotas</div></div><div class="item"><div class="num">'+porcentaje+'%</div><div class="lbl">Progreso</div></div></div>';
-                html+='</div>';
-            }else{
-                html+='<div class="detalle-seccion"><h4>Cuotas</h4><p>No tiene cuotas registradas.</p></div>';
-            }
-            html+='<div class="acciones-grid">';
-            html+='<button class="btn-accion" onclick="accionCliente('+cl.id+',\'publicar\')">'+(cl.publicadoEnVitrina?'Ocultar':'Publicar')+'</button>';
-            html+='<button class="btn-accion" onclick="accionCliente('+cl.id+',\'gracia\')">'+(cl.enPeriodoGracia?'Quitar Gracia':'Activar Gracia')+'</button>';
-            html+='<button class="btn-accion" onclick="accionCliente('+cl.id+',\'suspender\')">'+(cl.estado==='suspendido'?'Reactivar':'Suspender')+'</button>';
-            html+='<button class="btn-accion danger" onclick="cerrarModalConfirmar();eliminarCliente('+cl.id+')">Eliminar</button>';
-            if(cl.urlTienda)html+='<a class="btn-accion" href="'+cl.urlTienda+'" target="_blank" style="text-decoration:none;">Ver Tienda</a>';
-            html+='</div></div>';
-            mostrarDetalleModal('Detalle: '+cl.nombre,html);
-            document.getElementById('modal-confirmar').querySelector('.modal').classList.add('modal-detalle');
+    var cl=(JSON.parse(localStorage.getItem(K.CLIENTES))||[]).find(function(c){return c.id===id;});
+    if(!cl)return;
+    var cuotas=cl.cuotas||[];
+    if(cuotas.length===0&&cl.tipoCliente==='alquiler'&&cl.fechaVencimiento){
+        cuotas=[{numero:1,fechaVencimiento:cl.fechaVencimiento,montoEstimado:cl.precio||16000,montoReal:null,monedaReal:null,tasaUsada:null,pagado:false,fechaPago:null,comprobanteId:null}];
+    }
+    var totalCuotas=cuotas.length,pagadas=cuotas.filter(function(q){return q.pagado;}).length;
+    var porcentaje=totalCuotas>0?Math.round((pagadas/totalCuotas)*100):0;
+    var totalPagado=cuotas.filter(function(q){return q.pagado;}).reduce(function(s,q){return s+(q.montoReal||q.montoEstimado);},0);
+    var totalPendiente=cuotas.filter(function(q){return !q.pagado;}).reduce(function(s,q){return s+q.montoEstimado;},0);
+    var html='<div style="font-size:13px;">';
+    html+='<div class="detalle-seccion"><h4>Datos Generales</h4>';
+    html+='<p><strong>Nombre:</strong> '+cl.nombre+' | <strong>Dueño:</strong> '+(cl.dueno||'—')+'</p>';
+    html+='<p><strong>Tel:</strong> '+(cl.telefono||'—')+' | <strong>Email:</strong> '+(cl.email||'—')+'</p>';
+    html+='<p><strong>Usuario:</strong> '+cl.usuario+' | <strong>Contraseña:</strong> <span id="pass-'+cl.id+'">••••</span> <button class="btn btn-outline btn-xs" onclick="togglePassword('+cl.id+',\''+(cl.contrasena||'123456').replace(/'/g,"\\'")+'\')">Ver</button></p>';
+    html+='<p><strong>Etiquetas:</strong> '+getEtiquetasBadges(cl.etiquetas)+'</p>';
+    html+='<div class="contacto-botones" style="margin-top:8px;">'+btnLlamar(cl.telefono)+btnWhatsApp(cl.whatsapp||cl.telefono)+'</div>';
+    html+='</div>';
+    if(cl.tipoCliente==='alquiler'&&cuotas.length>0){
+        html+='<div class="detalle-seccion"><h4>Cuotas ('+cuotas.length+')</h4><div class="tabla-wrap"><table style="font-size:11px;"><thead><tr><th>#</th><th>Vence</th><th>Estimado</th><th>Real</th><th>Estado</th><th>Acción</th></tr></thead><tbody>';
+        for(var i=0;i<cuotas.length;i++){
+            var q=cuotas[i],fv=new Date(q.fechaVencimiento+'T00:00:00'),vencido=!q.pagado&&fv<new Date();
+            var claseFila=q.pagado?'fila-pagada':(vencido?'fila-vencida':'fila-pendiente');
+            var estadoTexto=q.pagado?'Pagado':(vencido?'Vencido':'Pendiente');
+            var accion=q.pagado?'':('<button class="btn btn-success btn-xs" onclick="pagarCuotaDesdeModal('+cl.id+','+i+')">Pagar</button>');
+            html+='<tr class="'+claseFila+'"><td data-label="#">'+q.numero+'</td><td data-label="Vence">'+fv.toLocaleDateString('es-ES')+'</td><td data-label="Estimado">$'+q.montoEstimado.toLocaleString()+'</td><td data-label="Real">'+(q.montoReal?'$'+q.montoReal.toLocaleString():'—')+'</td><td data-label="Estado">'+estadoTexto+'</td><td data-label="Acción">'+accion+'</td></tr>';
         }
+        html+='</tbody></table></div>';
+        html+='<div class="progress"><div class="progress-fill" style="width:'+porcentaje+'%;background:var(--success);"></div></div>';
+        html+='<div class="detalle-grid"><div class="item"><div class="num">$'+totalPagado.toLocaleString()+'</div><div class="lbl">Pagado</div></div><div class="item"><div class="num">$'+totalPendiente.toLocaleString()+'</div><div class="lbl">Pendiente</div></div><div class="item"><div class="num">'+pagadas+'/'+totalCuotas+'</div><div class="lbl">Cuotas</div></div><div class="item"><div class="num">'+porcentaje+'%</div><div class="lbl">Progreso</div></div></div>';
+        html+='</div>';
+    }else{
+        html+='<div class="detalle-seccion"><h4>Cuotas</h4><p>No tiene cuotas registradas.</p></div>';
+    }
+    html+='<div class="acciones-grid">';
+    html+='<button class="btn-accion" onclick="accionCliente('+cl.id+',\'publicar\')">'+(cl.publicadoEnVitrina?'Ocultar':'Publicar')+'</button>';
+    html+='<button class="btn-accion" onclick="accionCliente('+cl.id+',\'gracia\')">'+(cl.enPeriodoGracia?'Quitar Gracia':'Activar Gracia')+'</button>';
+    html+='<button class="btn-accion" onclick="accionCliente('+cl.id+',\'suspender\')">'+(cl.estado==='suspendido'?'Reactivar':'Suspender')+'</button>';
+    html+='<button class="btn-accion danger" onclick="cerrarModalConfirmar();eliminarCliente('+cl.id+')">Eliminar</button>';
+    if(cl.urlTienda)html+='<a class="btn-accion" href="'+cl.urlTienda+'" target="_blank" style="text-decoration:none;">Ver Tienda</a>';
+    html+='</div></div>';
+    mostrarDetalleModal('Detalle: '+cl.nombre,html);
+    document.getElementById('modal-confirmar').querySelector('.modal').classList.add('modal-detalle');
+}
+        
+        
         function togglePassword(id,pass){var el=document.getElementById('pass-'+id);if(el){el.textContent=el.textContent==='••••'?pass:'••••';}}
         function pagarCuotaDesdeModal(cid,cuotaIndex){
             var cl=(JSON.parse(localStorage.getItem(K.CLIENTES))||[]).find(function(c){return c.id===cid;});
