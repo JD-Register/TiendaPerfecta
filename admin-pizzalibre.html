@@ -44,6 +44,14 @@
     --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
 }
 
+.logo-config-preview {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    margin-top: 8px;
+    border: 2px solid var(--border);
+}
 .dark-mode {
     --bg: #1a1a2e;
     --surface: #16213e;
@@ -421,7 +429,7 @@ tr:hover { background: #f8fafc; }
     if(!localStorage.getItem(K.PRODUCTOS)) localStorage.setItem(K.PRODUCTOS, '[]');
     if(!localStorage.getItem(K.CATEGORIAS)) localStorage.setItem(K.CATEGORIAS, '[]');
     if(!localStorage.getItem(K.PEDIDOS)) localStorage.setItem(K.PEDIDOS, '[]');
-    if(!localStorage.getItem(K.CONFIG)) { localStorage.setItem(K.CONFIG, JSON.stringify({ nombre:'Pizzería La Libre', eslogan:'Te la llevamos calentita hasta tu hogar', telefono:'+5351045684', whatsapp:'+5351045684', email:'info@pizzeria.com', direccion:'Vedado, La Habana', horario:'Lun-Dom: 12PM - 11PM', mensaje:'Hola! quiero hacer un pedido', color:'#e63946', emoji:'🍕', bgColor:'#fafaf9', textColor:'#1e293b', logo:'', portada:'', favicon:'', moneda:'CUP', simboloMoneda:'$', posicionMoneda:'despues', formatoFecha:'DD/MM/YYYY', tipoEnvio:'gratis', envioFijo:0, envioZonas:'', tiempoEntrega:'30-45 minutos', metodosPago:['efectivo','transferencia','enzona','mlc'], metodosPersonalizados:'', secciones:{buscador:true,categorias:true,carrusel:true,portada:true,'mas-vendidos':true,valoraciones:true}, darkMode:false, carrusel:[], tipoNegocio:'Pizzería', descripcionNegocio:'', diasLimpieza:7, tiempoLimitePedido:15 })); }
+    if(!localStorage.getItem(K.CONFIG)) { localStorage.setItem(K.CONFIG, JSON.stringify({ nombre:'Pizzería La Libre', eslogan:'Te la llevamos calentita hasta tu hogar', telefono:'+5351045684', whatsapp:'+5351045684', email:'info@pizzeria.com', direccion:'Vedado, La Habana', horario:'Lun-Dom: 12PM - 11PM', mensaje:'Hola! quiero hacer un pedido', color:'#e63946', emoji:'', bgColor:'#fafaf9', textColor:'#1e293b', logo:'', portada:'', favicon:'', moneda:'CUP', simboloMoneda:'$', posicionMoneda:'despues', formatoFecha:'DD/MM/YYYY', tipoEnvio:'gratis', envioFijo:0, envioZonas:'', tiempoEntrega:'30-45 minutos', metodosPago:['efectivo','transferencia','enzona','mlc'], metodosPersonalizados:'', secciones:{buscador:true,categorias:true,carrusel:true,portada:true,'mas-vendidos':true,valoraciones:true}, darkMode:false, carrusel:[], tipoNegocio:'Pizzería', descripcionNegocio:'', diasLimpieza:7, tiempoLimitePedido:15 })); }
     if(!localStorage.getItem(K.CLIENTES)) localStorage.setItem(K.CLIENTES, '[]');
     if(!localStorage.getItem(K.VALORACIONES)) localStorage.setItem(K.VALORACIONES, '[]');
     if(!localStorage.getItem(K.LOGS)) localStorage.setItem(K.LOGS, '[]');
@@ -1230,7 +1238,7 @@ function parsearFecha(fechaStr) {
                         <div class="form-group"><label>Categoría</label><select id="prod-categoria">${categorias.map(function(c) { return '<option value="' + c.nombre + '">' + c.emoji + ' ' + c.nombre + '</option>'; }).join('')}</select></div>
                         <div class="form-group"><label>Precio</label><input type="number" id="prod-precio" placeholder="0.00" step="0.01" min="0"></div>
                         <div class="form-group"><label>Stock</label><input type="number" id="prod-stock" value="10" min="0"></div>
-                        <div class="form-group"><label>Emoji</label><input type="text" id="prod-emoji" placeholder="🍕" maxlength="2"></div>
+                        <div class="form-group"><label>Emoji</label><input type="text" id="prod-emoji" placeholder="" maxlength="2"></div>
                         <div class="form-group"><label>Disponible</label><select id="prod-disponible"><option value="si">Disponible</option><option value="no">Agotado</option></select></div>
                         <div class="form-group"><label>Destacado</label><select id="prod-destacado"><option value="no">Normal</option><option value="si">Destacado</option></select></div>
                         <div class="form-group" style="grid-column:1/-1;"><label>Descripción</label><input type="text" id="prod-descripcion" placeholder="Breve descripción"></div>
@@ -1302,7 +1310,7 @@ function parsearFecha(fechaStr) {
         var categoria = document.getElementById('prod-categoria').value;
         var precio = parseFloat(document.getElementById('prod-precio').value);
         var stock = parseInt(document.getElementById('prod-stock').value) || 0;
-        var emoji = document.getElementById('prod-emoji').value.trim() || '🍕';
+        var emoji = document.getElementById('prod-emoji').value.trim() || '';
         var disponible = document.getElementById('prod-disponible').value;
         var destacado = document.getElementById('prod-destacado').value;
         var descripcion = document.getElementById('prod-descripcion').value.trim();
@@ -1490,7 +1498,7 @@ function parsearFecha(fechaStr) {
 
     function crearCategoria() {
         var nombre = document.getElementById('cat-nombre').value.trim();
-        var emoji = document.getElementById('cat-emoji').value.trim() || '📂';
+        var emoji = document.getElementById('cat-emoji').value.trim() || '';
         var descripcion = document.getElementById('cat-descripcion').value.trim();
         if (!nombre) { toast('Pon un nombre', 'error'); return; }
         var categorias = getCategorias();
@@ -1643,7 +1651,7 @@ function parsearFecha(fechaStr) {
                     <div class="form-group"><label>Email</label><input type="text" id="cfg-email" value="${cfg.email || ''}"></div>
                     <div class="form-group"><label>Dirección</label><input type="text" id="cfg-direccion" value="${cfg.direccion || ''}"></div>
                     <div class="form-group"><label>Horario</label><input type="text" id="cfg-horario" value="${cfg.horario || ''}"></div>
-                    <div class="form-group"><label>Emoji</label><input type="text" id="cfg-emoji" value="${cfg.emoji || '🍕'}" maxlength="2"></div>
+                    <div class="form-group"><label>Emoji</label><input type="text" id="cfg-emoji" value="${cfg.emoji || ''}" maxlength="2"></div>
                     <div class="form-group"><label>Color Principal</label><input type="color" id="cfg-color" value="${cfg.color || '#e63946'}"></div>
                 </div>
                 <div class="form-row">
@@ -1662,6 +1670,17 @@ function parsearFecha(fechaStr) {
                     <div class="form-group"><label>⏰ Tiempo Límite Pedido (min)</label><input type="number" id="cfg-tiempo-limite" value="${cfg.tiempoLimitePedido || 15}" min="1" max="120"></div>
                 </div>
                 <div class="form-row">
+    <div class="form-group" style="grid-column:1/-1;">
+        <label>🏷️ Logo del Negocio (cuadrado recomendado)</label>
+        <input type="file" id="cfg-logo-input" accept="image/*" onchange="previewLogo(event)">
+        <div id="logo-preview-container" style="margin-top:8px;">
+            ${cfg.logo ? '<img src="' + cfg.logo + '" class="logo-config-preview" alt="Logo">' : '<p style="color:var(--text-secondary);font-size:12px;">Sin logo</p>'}
+        </div>
+        ${cfg.logo ? '<button class="btn btn-danger btn-xs" onclick="eliminarLogo()" style="margin-top:4px;">Eliminar Logo</button>' : ''}
+    </div>
+</div>
+                
+                <div class="form-row">
                     <div class="form-group" style="grid-column:1/-1;">
                         <label>🖼️ Imagen de Portada</label>
                         <input type="file" id="cfg-portada-input" accept="image/*" onchange="previewPortada(event)">
@@ -1670,6 +1689,7 @@ function parsearFecha(fechaStr) {
                         </div>
                         ${cfg.portada ? '<button class="btn btn-danger btn-xs" onclick="eliminarPortada()" style="margin-top:4px;">Eliminar Portada</button>' : ''}
                     </div>
+                    
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="grid-column:1/-1;">
@@ -1704,7 +1724,7 @@ function parsearFecha(fechaStr) {
         cfg.email = document.getElementById('cfg-email').value.trim();
         cfg.direccion = document.getElementById('cfg-direccion').value.trim();
         cfg.horario = document.getElementById('cfg-horario').value.trim();
-        cfg.emoji = document.getElementById('cfg-emoji').value.trim() || '🍕';
+        cfg.emoji = document.getElementById('cfg-emoji').value.trim() || '';
         cfg.color = document.getElementById('cfg-color').value;
         cfg.moneda = document.getElementById('cfg-moneda').value;
         cfg.simboloMoneda = document.getElementById('cfg-simbolo').value.trim() || '$';
@@ -1728,10 +1748,45 @@ function parsearFecha(fechaStr) {
     }
 
     function actualizarSidebar() {
-        var cfg = getConfig();
-        document.getElementById('sidebar-emoji').textContent = cfg.emoji || '🍕';
-        document.getElementById('sidebar-nombre').innerHTML = cfg.nombre + '<span>Panel de Gestión</span>';
+    var cfg = getConfig();
+    
+    // Emoji del sidebar (solo si existe)
+    var logoIcon = document.getElementById('sidebar-emoji');
+    if (cfg.logo && cfg.logo.startsWith('data:')) {
+        logoIcon.innerHTML = '<img src="' + cfg.logo + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">';
+    } else if (cfg.emoji) {
+        logoIcon.textContent = cfg.emoji;
+    } else {
+        logoIcon.textContent = '🏪';
     }
+    
+    document.getElementById('sidebar-nombre').innerHTML = cfg.nombre + '<span>Panel de Gestión</span>';
+}
+
+    function previewLogo(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+        document.getElementById('logo-preview-container').innerHTML = '<img src="' + ev.target.result + '" class="logo-config-preview" alt="Logo">';
+        var cfg = getConfig();
+        cfg.logo = ev.target.result;
+        localStorage.setItem(K.CONFIG, JSON.stringify(cfg));
+        toast('Logo actualizado', 'success');
+        actualizarSidebar();
+    };
+    reader.readAsDataURL(file);
+}
+
+function eliminarLogo() {
+    var cfg = getConfig();
+    cfg.logo = '';
+    localStorage.setItem(K.CONFIG, JSON.stringify(cfg));
+    renderConfig(document.getElementById('contenido-principal'));
+    actualizarSidebar();
+    toast('Logo eliminado', 'success');
+}
+
 
     // ==========================================
     // REPORTES
