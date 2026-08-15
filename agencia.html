@@ -328,7 +328,7 @@
         
         <!-- 🚉 LUGAR DE RECOGIDA (NUEVO) -->
         <div class="form-grupo" style="margin-top:8px;">
-            <label style="color: red;">🚉 ¿Dónde abordas?</label>
+            <label style="color: red;">🚻 ¿Dónde abordas?</label>
             <select id="res-lugar-recogida-tipo" onchange="toggleLugarRecogida()">
                 <option value="oficial">En el lugar oficial</option>
                 <option value="personalizado">Lugar personalizado</option>
@@ -370,8 +370,8 @@
         <div style="font-size:50px;">🎉</div><h2>¡Reserva Realizada!</h2>
         <p style="color:var(--texto-claro);margin-bottom:12px;font-size:13px;">Guarda tu código de reserva:</p>
         <div id="tickets-generados"></div>
-        <button class="btn btn-copiar" id="btn-copiar" onclick="copiarCodigos()" style="width:100%;margin-bottom:8px;">📋 Copiar código</button>
-        <a href="#" class="btn btn-verde" id="btn-whatsapp-confirmar" target="_blank" style="width:100%;padding:11px;border-radius:50px;text-decoration:none;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:6px;">💬 Compartir por WhatsApp</a>
+        <button class="btn btn-copiar" id="btn-copiar" onclick="copiarCodigos()" style="width:100%;margin-bottom:8px;">Copiar código</button>
+        <a href="#" class="btn btn-verde" id="btn-whatsapp-confirmar" target="_blank" style="width:100%;padding:11px;border-radius:50px;text-decoration:none;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:6px;"> Compartir por WhatsApp</a>
         <button class="btn btn-outline btn-sm" onclick="descargarTickets()" style="width:100%;margin-bottom:4px;">📥 Descargar Tickets</button>
         <button class="btn btn-outline btn-sm" onclick="cerrarConfirmacion()" style="width:100%;">Cerrar</button>
     </div></div>
@@ -439,7 +439,24 @@
         function aplicarConfiguracion(){
             var cfg=obtenerConfig();
             document.documentElement.style.setProperty('--rojo',cfg.color);
-            document.getElementById('topbar-brand').textContent=cfg.emoji+' '+cfg.nombre;
+            var brandEl = document.getElementById('topbar-brand');
+if (cfg.logo && cfg.logo.startsWith('data:')) {
+    brandEl.innerHTML = '<img src="' + cfg.logo + '" alt="' + cfg.nombre + '" style="width:28px;height:28px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:6px;"> ' + cfg.nombre;
+    brandEl.style.display = 'flex';
+    brandEl.style.alignItems = 'center';
+    brandEl.style.gap = '6px';
+    brandEl.style.justifyContent = 'flex-start';
+} else if (cfg.emoji) {
+    brandEl.textContent = cfg.emoji + ' ' + cfg.nombre;
+    brandEl.style.display = '';
+    brandEl.style.alignItems = '';
+    brandEl.style.gap = '';
+} else {
+    brandEl.textContent = cfg.nombre;
+    brandEl.style.display = '';
+    brandEl.style.alignItems = '';
+    brandEl.style.gap = '';
+}
             document.getElementById('info-direccion').textContent='📍 '+cfg.direccion;
             document.getElementById('info-horario').textContent='🕐 '+cfg.horario;
             document.getElementById('info-telefono').textContent='📞 '+cfg.telefono;
