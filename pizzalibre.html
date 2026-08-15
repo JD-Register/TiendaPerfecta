@@ -688,7 +688,7 @@
     <!-- ===== TOPBAR ===== -->
 <div class="topbar">
     <div class="topbar-contenido">
-        <div class="topbar-logo" id="topbar-nombre">🍕 Mi Tienda</div>
+        <div class="topbar-logo" id="topbar-nombre">Mi Tienda</div>
         <div class="topbar-nav">
             <button class="btn-nav activo" id="btn-tienda" onclick="cambiarSeccion('tienda')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -717,15 +717,12 @@
     </div>
 </div>
 
-<!-- ===== PORTADA ===== -->
-<div class="portada-container" id="portada-container">
-    <img class="portada-img" id="portada-img" src="" alt="Portada">
-</div>
+
 
 <!-- ===== HERO ===== -->
 <div class="heroe" id="heroe">
     <div class="heroe-contenido">
-        <h1 id="heroe-titulo">🍕 Las Mejores <span>Pizzas</span></h1>
+        <h1 id="heroe-titulo">Las Mejores <span>Pizzas</span></h1>
         <p id="heroe-desc">Descubre nuestra especialidad</p>
         <div class="heroe-info">
             <span id="heroe-horario">🕐 Lun-Dom: 12PM - 11PM</span>
@@ -733,6 +730,11 @@
             <span id="heroe-direccion">📍 Vedado, La Habana</span>
         </div>
     </div>
+</div>
+
+<!-- ===== PORTADA ===== -->
+<div class="portada-container" id="portada-container">
+    <img class="portada-img" id="portada-img" src="" alt="Portada">
 </div>
 
 <!-- ===== CARRUSEL ===== -->
@@ -871,7 +873,7 @@
                 horario: 'Lun-Dom: 12PM - 11PM',
                 mensaje: 'Hola! quiero hacer un pedido',
                 color: '#e63946',
-                emoji: '🍕',
+                emoji: '',
                 bgColor: '#fafaf9',
                 textColor: '#1e293b',
                 logo: '',
@@ -945,10 +947,12 @@
     function aplicarConfiguracion() {
         var topbarNombre = document.getElementById('topbar-nombre');
         if (cfg.logo && cfg.logo.startsWith('data:')) {
-            topbarNombre.innerHTML = '<img src="' + cfg.logo + '" alt="' + cfg.nombre + '"> <span>' + cfg.nombre + '</span>';
-        } else {
-            topbarNombre.textContent = cfg.emoji + ' ' + cfg.nombre;
-        }
+    topbarNombre.innerHTML = '<img src="' + cfg.logo + '" alt="' + cfg.nombre + '" style="width:32px;height:32px;object-fit:cover;border-radius:8px;"> <span>' + cfg.nombre + '</span>';
+} else if (cfg.emoji) {
+    topbarNombre.textContent = cfg.emoji + ' ' + cfg.nombre;
+} else {
+    topbarNombre.textContent = cfg.nombre;
+}
 
         document.getElementById('heroe-titulo').innerHTML = cfg.emoji + ' ' + (cfg.eslogan || 'Bienvenidos');
         document.getElementById('heroe-desc').textContent = cfg.descripcionNegocio || cfg.eslogan || '';
@@ -1134,7 +1138,7 @@
         // Cargar filtros de categoría
         if (secciones.categorias !== false && categorias.length > 0) {
             var filtrosContainer = document.getElementById('filtros-categorias');
-            var htmlFiltros = '<button class="filtro-btn' + (categoriaActiva === 'todos' ? ' activo' : '') + '" onclick="filtrarCategoria(\'todos\', this)">🍕 Todos</button>';
+            var htmlFiltros = '<button class="filtro-btn' + (categoriaActiva === 'todos' ? ' activo' : '') + '" onclick="filtrarCategoria(\'todos\', this)"> Todos</button>';
             categorias.forEach(function(cat) {
                 htmlFiltros += '<button class="filtro-btn' + (categoriaActiva === cat.nombre ? ' activo' : '') + '" onclick="filtrarCategoria(\'' + cat.nombre + '\', this)">' + cat.emoji + ' ' + cat.nombre + '</button>';
             });
@@ -1284,7 +1288,7 @@
         return `
             <div class="producto-card${agotado ? ' agotado' : ''}" id="producto-${p.id}">
                 <div class="producto-imagen" onclick="abrirModalProducto(${p.id})">
-                    ${imagen ? `<img src="${imagen}" alt="${p.nombre}">` : `<span class="sin-imagen">${p.emoji || '🍕'}</span>`}
+                    ${imagen ? `<img src="${imagen}" alt="${p.nombre}">` : (p.emoji ? `<span class="sin-imagen">${p.emoji}</span>` : `<span class="sin-imagen">📦</span>`)}
                 </div>
                 <div class="producto-body">
                     <h3 onclick="abrirModalProducto(${p.id})" style="cursor:pointer;">${p.nombre}</h3>
@@ -1411,7 +1415,7 @@
         var modal = document.getElementById('modal-producto-contenido');
         modal.innerHTML = `
             <div class="modal-imagen" onclick="${imagen ? `abrirZoom('${imagen}')` : ''}">
-                ${imagen ? `<img src="${imagen}" alt="${p.nombre}">` : `<span class="sin-imagen">${p.emoji || '🍕'}</span>`}
+                ${imagen ? `<img src="${imagen}" alt="${p.nombre}">` : `<span class="sin-imagen">${p.emoji || ''}</span>`}
             </div>
             <div class="modal-body">
                 <h2>${p.nombre}</h2>
@@ -1915,7 +1919,7 @@
             }
         }, 5000);
 
-        console.log('🍕 Tienda Profesional cargada correctamente');
+        console.log(' Tienda Profesional cargada correctamente');
     }
 
     document.addEventListener('keydown', function(e) {
