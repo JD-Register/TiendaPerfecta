@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         :root {
             --primary: #2ecc71; --primary-dark: #27ae60; --primary-light: #eafaf1;
@@ -16,11 +17,10 @@
             --text-secondary: #64748b; --text-light: #94a3b8; --border: #e2e8f0;
             --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
             --radius: 18px; --radius-sm: 12px; --radius-xs: 8px;
-            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.06); --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
             --shadow-lg: 0 12px 30px rgba(0,0,0,0.12); --shadow-xl: 0 20px 50px rgba(0,0,0,0.15);
             --shadow-2xl: 0 30px 70px rgba(0,0,0,0.2);
-            /* Iconos SVG */
             --wa-green:#25d366; --wa-green-dark:#128c7e; --phone-blue:#2563eb;
         }
         *{margin:0;padding:0;box-sizing:border-box;}
@@ -36,7 +36,6 @@
         @keyframes shimmerGlass{0%{background-position:-200% center;}100%{background-position:200% center;}}
         @keyframes pulseDescuento{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
         @keyframes pulseUrgente{0%,100%{transform:scale(1);box-shadow:0 4px 14px rgba(239,68,68,0.3);}50%{transform:scale(1.03);box-shadow:0 8px 28px rgba(239,68,68,0.5);}}
-
         .navbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;height:68px;transition:var(--transition);}
         .navbar.scrolled{box-shadow:var(--shadow-sm);}
         .navbar-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:100%;}
@@ -120,8 +119,8 @@
         .grid-header h3{font-size:22px;font-weight:800;}
         .grid-count{font-size:13px;color:var(--text-secondary);font-weight:600;}
         .negocios-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;}
-        .negocio-card{background:var(--surface);border-radius:var(--radius);padding:24px;border:1px solid var(--border);transition:var(--transition);box-shadow:var(--shadow-sm);position:relative;overflow:hidden;opacity:0;transform:translateY(30px);}
-        .negocio-card.visible{opacity:1;transform:translateY(0);transition:opacity 0.6s ease,transform 0.6s ease;}
+        .negocio-card{background:var(--surface);border-radius:var(--radius);padding:24px;border:1px solid var(--border);transition:var(--transition);box-shadow:var(--shadow-sm);position:relative;overflow:hidden;opacity:0;transform:translateY(30px);will-change:transform,opacity;}
+        .negocio-card.visible{opacity:1;transform:translateY(0);transition:opacity 0.6s cubic-bezier(0.22,1,0.36,1),transform 0.6s cubic-bezier(0.22,1,0.36,1);}
         .negocio-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:var(--primary);}
         .negocio-card.destacado{border:2px solid var(--primary);background:linear-gradient(135deg,var(--surface),var(--primary-light));}
         .negocio-card.destacado::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--accent),var(--primary));background-size:200% 100%;animation:shimmerGlass 3s linear infinite;}
@@ -140,8 +139,8 @@
         .btn-visitar:hover{background:var(--primary-dark);transform:scale(1.03);}
 
         .plantillas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;}
-        .plantilla-card{background:var(--surface);border-radius:var(--radius);padding:28px 24px;border:1px solid var(--border);text-align:center;opacity:0;transform:translateY(30px);}
-        .plantilla-card.visible{opacity:1;transform:translateY(0);transition:opacity 0.6s ease,transform 0.6s ease;}
+        .plantilla-card{background:var(--surface);border-radius:var(--radius);padding:28px 24px;border:1px solid var(--border);text-align:center;opacity:0;transform:translateY(30px);will-change:transform,opacity;cursor:pointer;}
+        .plantilla-card.visible{opacity:1;transform:translateY(0);transition:opacity 0.6s cubic-bezier(0.22,1,0.36,1),transform 0.6s cubic-bezier(0.22,1,0.36,1);}
         .plantilla-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:var(--primary);}
         .plantilla-emoji{font-size:48px;margin-bottom:12px;display:block;}
         .plantilla-card h4{font-size:18px;font-weight:700;margin-bottom:4px;}
@@ -230,6 +229,24 @@
         .btn-submit{width:100%;padding:14px;border-radius:50px;font-weight:700;font-size:16px;cursor:pointer;border:none;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;transition:var(--transition);font-family:inherit;box-shadow:0 4px 14px var(--primary-glow);margin-top:4px;}
         .btn-submit:hover{transform:translateY(-2px);box-shadow:0 8px 28px var(--primary-glow);}
 
+        .modal-tienda-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.75);backdrop-filter:blur(8px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeInScale 0.3s ease;}
+        .modal-tienda{background:var(--surface);border-radius:var(--radius);max-width:600px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 30px 70px rgba(0,0,0,0.2);border:1px solid var(--border);animation:fadeInUp 0.4s ease;}
+        .modal-tienda-portada{width:100%;height:180px;border-radius:var(--radius) var(--radius) 0 0;overflow:hidden;background:#f1f5f9;}
+        .modal-tienda-portada img{width:100%;height:100%;object-fit:cover;}
+        .modal-tienda-portada .placeholder{width:100%;height:100%;background:linear-gradient(135deg,#e2e8f0,#cbd5e1);display:flex;align-items:center;justify-content:center;font-size:64px;color:#94a3b8;}
+        .modal-tienda-body{padding:20px 24px 24px;position:relative;}
+        .modal-tienda-logo{width:80px;height:80px;border-radius:20px;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:40px;position:absolute;top:-40px;left:24px;box-shadow:var(--shadow-md);}
+        .modal-tienda-logo img{width:100%;height:100%;object-fit:contain;padding:8px;}
+        .modal-tienda-body h2{margin-top:40px;font-size:22px;font-weight:800;}
+        .modal-categoria{font-size:14px;color:var(--primary);font-weight:600;margin-bottom:8px;}
+        .modal-eslogan{font-style:italic;color:var(--text-secondary);margin-bottom:8px;}
+        .modal-descripcion{font-size:13px;color:var(--text-secondary);margin-bottom:12px;}
+        .modal-tienda-info{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;font-size:13px;color:var(--text-secondary);}
+        .modal-tienda-acciones{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+        .modal-tienda-valoracion{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+        .modal-tienda-valoracion h4{font-size:16px;font-weight:700;margin-bottom:8px;}
+        .modal-tienda-mapa{margin-top:16px;border-radius:12px;overflow:hidden;}
+
         .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);padding:14px 28px;border-radius:50px;font-weight:700;font-size:14px;z-index:3000;opacity:0;transition:all 0.4s ease;pointer-events:none;box-shadow:var(--shadow-xl);max-width:90%;text-align:center;}
         .toast.mostrar{opacity:1;transform:translateX(-50%) translateY(0);}
         .toast.exito{background:var(--success);color:#fff;}.toast.error{background:var(--danger);color:#fff;}.toast.info{background:var(--primary);color:#fff;}
@@ -282,7 +299,6 @@
     </style>
 </head>
 <body>
-
     <nav class="navbar" id="navbar">
         <div class="navbar-inner">
             <div class="navbar-brand" onclick="window.scrollTo({top:0,behavior:'smooth'})">
@@ -290,12 +306,12 @@
                 <span id="brand-nombre">Isla Market</span>
             </div>
             <div class="navbar-links" id="nav-links">
-                <a href="#seccion-negocios" class="nav-link activo">🏪 Negocios</a>
-                <a href="#seccion-plantillas" class="nav-link">📦 Plantillas</a>
-                <a href="#seccion-plan-gratuito" class="nav-link">🎁 Plan Gratuito</a>
-                <a href="#seccion-plan" class="nav-link">💲 Plan</a>
-                <a href="#seccion-faq" class="nav-link">❓ FAQ</a>
-                <a href="#seccion-contacto" class="nav-link">📩 Contacto</a>
+                <a href="#seccion-negocios" class="nav-link activo">Negocios</a>
+                <a href="#seccion-plantillas" class="nav-link">Plantillas</a>
+                <a href="#seccion-plan-gratuito" class="nav-link">Plan Gratuito</a>
+                <a href="#seccion-plan" class="nav-link">Plan</a>
+                <a href="#seccion-faq" class="nav-link">FAQ</a>
+                <a href="#seccion-contacto" class="nav-link">Contacto</a>
                 <button class="btn-nav-primary" onclick="inicsescliente()">Iniciar Sesión</button>
             </div>
             <button class="menu-toggle" id="menu-toggle" aria-label="Menú"><span></span><span></span><span></span></button>
@@ -311,9 +327,9 @@
             <h1 id="hero-titulo">Descubre tiendas <span class="highlight">digitales</span> profesionales</h1>
             <p id="hero-subtitulo">Explora negocios que ya confían en nosotros. Encuentra inspiración y alquila tu propia tienda online en minutos.</p>
             <div class="hero-actions">
-                <a href="#seccion-negocios" class="btn-hero-primary">🏪 Ver tiendas</a>
-                <a href="#seccion-plantillas" class="btn-hero-secondary">📦 Ver plantillas</a>
-                <button class="btn-hero-secondary" onclick="abrirContacto('consulta')">💬 Solo quiero preguntar</button>
+                <a href="#seccion-negocios" class="btn-hero-primary">Ver tiendas</a>
+                <a href="#seccion-plantillas" class="btn-hero-secondary">Ver plantillas</a>
+                <button class="btn-hero-secondary" onclick="abrirContacto('consulta')">Solo quiero preguntar</button>
             </div>
             <div class="hero-stats">
                 <div class="hero-stat"><div class="stat-number" id="stat-negocios">0</div><div class="stat-label">Tiendas Creadas</div></div>
@@ -450,68 +466,814 @@
         <div class="footer-bottom"><span>© <span id="footer-year">2025</span> <span id="footer-copy-nombre">Isla Market</span>. Todos los derechos reservados.</span><span>Hecho con ❤️ para emprendedores</span></div>
     </footer>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        function inicsescliente(){ window.location.href='login-cliente.html'; }
-        var K_CLIENTES='central_clientes', K_CATEGORIAS='central_categorias', K_CONFIG='central_config', K_PLANTILLAS='central_plantillas', K_SOLICITUDES='central_solicitudes';
-        var categoriaActiva='todas', animacionesActivas=true, observer=null;
+    function inicsescliente(){ window.location.href='login-cliente.html'; }
+    
+    var K_CLIENTES='central_clientes', K_CATEGORIAS='central_categorias', K_CONFIG='central_config', K_PLANTILLAS='central_plantillas', K_SOLICITUDES='central_solicitudes', K_VALORACIONES='valoracionesNegocios';
+    var categoriaActiva='todas', animacionesActivas=true, observer=null;
+    var debounceBusqueda=null;
+    var negociosVisibles=8;
+    var ordenActual='relevancia';
+    var estrellasSeleccionadas=0;
 
-        function obtenerConfig(){
-            var cfg=JSON.parse(localStorage.getItem(K_CONFIG))||{};
-            return {
-                nombrePlataforma:cfg.nombrePlataforma||'Isla Market',emoji:cfg.emoji||'🏝️',logo:cfg.logo||'',telefono:cfg.telefono||'',whatsapp:cfg.whatsapp||'',email:cfg.email||'',
-                moneda:cfg.moneda||'CUP',heroTitulo:cfg.heroTitulo||'Descubre tiendas digitales profesionales',heroSubtitulo:cfg.heroSubtitulo||'Explora negocios que ya confían en nosotros.',
-                colorPrimario:cfg.colorPrimario||'#2ecc71',planNombre:cfg.planNombre||'Plan Estándar',planEmoji:cfg.planEmoji||'🚀',planPrecio:cfg.planPrecio||16000,
-                planDescuentoEfectivo:cfg.planDescuentoEfectivo||15,planTasa:cfg.tasaCUP_USD||cfg.planTasa||365,planDescripcion:cfg.planDescripcion||'Todo lo que necesitas para tener tu tienda online profesional.',
-                planCaracteristicas:cfg.planCaracteristicas||['✓ 1 tienda activa','✓ Hasta 50 productos','✓ Panel de administración fácil','✓ Sin necesidad de programación','✓ Soporte por email','✓ Estadísticas básicas'],
-                planNota:cfg.planNota||'💡 Si tienes CUP en efectivo, ahorras un 15%. Si tienes USD efectivo, también ahorras.'
-            };
+    function obtenerConfig(){
+        var cfg=JSON.parse(localStorage.getItem(K_CONFIG))||{};
+        return {
+            nombrePlataforma:cfg.nombrePlataforma||'Isla Market',emoji:cfg.emoji||'🏝️',logo:cfg.logo||'',telefono:cfg.telefono||'',whatsapp:cfg.whatsapp||'',email:cfg.email||'',
+            moneda:cfg.moneda||'CUP',heroTitulo:cfg.heroTitulo||'Descubre tiendas digitales profesionales',heroSubtitulo:cfg.heroSubtitulo||'Explora negocios que ya confían en nosotros.',
+            colorPrimario:cfg.colorPrimario||'#2ecc71',planNombre:cfg.planNombre||'Plan Estándar',planEmoji:cfg.planEmoji||'🚀',planPrecio:cfg.planPrecio||16000,
+            planDescuentoEfectivo:cfg.planDescuentoEfectivo||15,planTasa:cfg.tasaCUP_USD||cfg.planTasa||365,planDescripcion:cfg.planDescripcion||'Todo lo que necesitas para tener tu tienda online profesional.',
+            planCaracteristicas:cfg.planCaracteristicas||['✓ 1 tienda activa','✓ Hasta 50 productos','✓ Panel de administración fácil','✓ Sin necesidad de programación','✓ Soporte por email','✓ Estadísticas básicas'],
+            planNota:cfg.planNota||'💡 Si tienes CUP en efectivo, ahorras un 15%. Si tienes USD efectivo, también ahorras.'
+        };
+    }
+
+    function aplicarConfig(){
+        var cfg=obtenerConfig();
+        document.documentElement.style.setProperty('--primary',cfg.colorPrimario);
+        document.documentElement.style.setProperty('--primary-glow',cfg.colorPrimario+'33');
+        
+        var brandIcon=document.getElementById('brand-emoji');
+        var footerIcon=document.getElementById('footer-emoji');
+        
+        if(cfg.logo && cfg.logo.startsWith('data:')){
+            brandIcon.innerHTML='<img src="'+cfg.logo+'" alt="Logo" style="width:100%;height:100%;object-fit:contain;background:transparent;display:block;">';
+            footerIcon.innerHTML='<img src="'+cfg.logo+'" alt="Logo" style="width:32px;height:32px;object-fit:contain;background:transparent;display:block;">';
+        } else {
+            brandIcon.textContent=cfg.emoji;
+            footerIcon.textContent=cfg.emoji;
         }
+        
+        document.getElementById('brand-nombre').textContent=cfg.nombrePlataforma;
+        document.getElementById('footer-nombre').textContent=cfg.nombrePlataforma;
+        document.getElementById('footer-copy-nombre').textContent=cfg.nombrePlataforma;
+        document.getElementById('hero-titulo').textContent=cfg.heroTitulo;
+        document.getElementById('hero-subtitulo').textContent=cfg.heroSubtitulo;
+        
+        var telEl=document.getElementById('footer-telefono');
+        var emailEl=document.getElementById('footer-email');
+        var waEl=document.getElementById('footer-whatsapp');
+        
+        if(cfg.telefono){telEl.querySelector('.footer-tel-text').textContent=cfg.telefono;telEl.href='tel:'+cfg.telefono;}
+        else{telEl.style.display='none';}
+        if(cfg.email){emailEl.querySelector('.footer-email-text').textContent=cfg.email;emailEl.href='mailto:'+cfg.email;}
+        else{emailEl.style.display='none';}
+        if(cfg.whatsapp){waEl.querySelector('.footer-wa-text').textContent='WhatsApp';waEl.href='https://wa.me/'+cfg.whatsapp.replace(/\+/g,'');}
+        else{waEl.style.display='none';}
+        
+        document.getElementById('footer-year').textContent=new Date().getFullYear();
+        document.title=cfg.nombrePlataforma+' - Tiendas Online Profesionales';
+    }
 
-        function aplicarConfig(){
-            var cfg=obtenerConfig();
-            document.documentElement.style.setProperty('--primary',cfg.colorPrimario);document.documentElement.style.setProperty('--primary-glow',cfg.colorPrimario+'33');
-            var brandIcon=document.getElementById('brand-emoji');var footerIcon=document.getElementById('footer-emoji');
-            if(cfg.logo){
-                brandIcon.innerHTML='<img src="'+cfg.logo+'" alt="Logo" style="width:100%;height:100%;object-fit:contain;background:transparent;display:block;">';
-                footerIcon.innerHTML='<img src="'+cfg.logo+'" alt="Logo" style="width:32px;height:32px;object-fit:contain;background:transparent;display:block;">';
-            }else{brandIcon.textContent=cfg.emoji;footerIcon.textContent=cfg.emoji;}
-            document.getElementById('brand-nombre').textContent=cfg.nombrePlataforma;document.getElementById('footer-nombre').textContent=cfg.nombrePlataforma;
-            document.getElementById('footer-copy-nombre').textContent=cfg.nombrePlataforma;
-            document.getElementById('hero-titulo').innerHTML=cfg.heroTitulo+' <span class="cursor"></span>';document.getElementById('hero-subtitulo').textContent=cfg.heroSubtitulo;
-            var telEl=document.getElementById('footer-telefono');
-            var emailEl=document.getElementById('footer-email');
-            var waEl=document.getElementById('footer-whatsapp');
-            if(cfg.telefono){telEl.querySelector('.footer-tel-text').textContent=cfg.telefono;telEl.href='tel:'+cfg.telefono;}
-            else{telEl.style.display='none';}
-            if(cfg.email){emailEl.querySelector('.footer-email-text').textContent=cfg.email;emailEl.href='mailto:'+cfg.email;}
-            else{emailEl.style.display='none';}
-            if(cfg.whatsapp){waEl.querySelector('.footer-wa-text').textContent='WhatsApp';waEl.href='https://wa.me/'+cfg.whatsapp.replace(/\+/g,'');}
-            else{waEl.style.display='none';}
-            document.getElementById('footer-year').textContent=new Date().getFullYear();document.title=cfg.nombrePlataforma+' - Tiendas Online Profesionales';
+    function mostrarToast(mensaje,tipo){
+        var t=document.getElementById('toast');
+        t.textContent=mensaje;
+        t.className='toast mostrar '+(tipo||'info');
+        clearTimeout(t._timeout);
+        t._timeout=setTimeout(function(){t.className='toast';},4000);
+    }
+
+    function toggleFAQ(el){el.parentElement.classList.toggle('abierto');}
+
+    function abrirContacto(tipo){
+        var modal=document.getElementById('modal-solicitud');
+        var titulo=document.getElementById('modal-titulo-contexto');
+        var desc=document.getElementById('modal-solicitud-desc');
+        var tipoInput=document.getElementById('solicitud-modal-tipo');
+        
+        tipoInput.value=tipo;
+        document.getElementById('solicitud-modal-plantilla').value='';
+        
+        if(tipo==='plan_gratuito'||tipo==='gratis'){
+            titulo.innerHTML='🎁 <span>Solicitar Prueba Gratuita</span>';
+            desc.textContent='¡Genial! Completa tus datos y en menos de 24h tendrás tu tienda de prueba lista para explorar.';
+            tipoInput.value='plan_gratuito';
+        } else if(tipo==='plan_pago'||tipo==='pago'){
+            titulo.innerHTML='💲 <span>Contratar Plan de Alquiler</span>';
+            desc.textContent='Has decidido crecer en serio. Déjanos tus datos y te guiamos en el proceso de activación.';
+            tipoInput.value='plan_pago';
+        } else if(tipo==='plantilla'){
+            titulo.innerHTML='📦 <span>Me interesa esta plantilla</span>';
+            desc.textContent='Buena elección. Completa el formulario y te contamos cómo empezar con este diseño.';
+            tipoInput.value='consulta';
+        } else if(tipo==='soporte'){
+            titulo.innerHTML='🔧 <span>Soporte Técnico</span>';
+            desc.textContent='Cuéntanos tu problema y te ayudaremos.';
+            tipoInput.value='soporte';
+        } else {
+            titulo.innerHTML='💬 <span>Consultar información</span>';
+            desc.textContent='Cuéntanos qué necesitas y te respondemos todas tus dudas sin compromiso.';
+            tipoInput.value='consulta';
         }
+        
+        document.getElementById('form-solicitud-modal').reset();
+        modal.classList.add('activo');
+        document.body.style.overflow='hidden';
+        cargarCategoriasEnSelect('solicitud-modal-categoria');
+    }
 
-        function mostrarToast(mensaje,tipo){var t=document.getElementById('toast');t.textContent=mensaje;t.className='toast mostrar '+(tipo||'info');clearTimeout(t._timeout);t._timeout=setTimeout(function(){t.className='toast';},4000);}
-        function toggleFAQ(el){el.parentElement.classList.toggle('abierto');}
-        function abrirContacto(tipo){var modal=document.getElementById('modal-solicitud');var titulo=document.getElementById('modal-titulo-contexto');var desc=document.getElementById('modal-solicitud-desc');var tipoInput=document.getElementById('solicitud-modal-tipo');tipoInput.value=tipo;if(tipo==='plan_gratuito'||tipo==='gratis'){titulo.innerHTML='🎁 <span>Solicitar Prueba Gratuita</span>';desc.textContent='¡Genial! Completa tus datos y en menos de 24h tendrás tu tienda de prueba lista para explorar.';tipoInput.value='plan_gratuito';}else if(tipo==='plan_pago'||tipo==='pago'){titulo.innerHTML='💲 <span>Contratar Plan de Alquiler</span>';desc.textContent='Has decidido crecer en serio. Déjanos tus datos y te guiamos en el proceso de activación.';tipoInput.value='plan_pago';}else if(tipo==='plantilla'){titulo.innerHTML='📦 <span>Me interesa esta plantilla</span>';desc.textContent='Buena elección. Completa el formulario y te contamos cómo empezar con este diseño.';tipoInput.value='consulta';}else if(tipo==='soporte'){titulo.innerHTML='🔧 <span>Soporte Técnico</span>';desc.textContent='Cuéntanos tu problema y te ayudaremos.';tipoInput.value='soporte';}else{titulo.innerHTML='💬 <span>Consultar información</span>';desc.textContent='Cuéntanos qué necesitas y te respondemos todas tus dudas sin compromiso.';tipoInput.value='consulta';}document.getElementById('form-solicitud-modal').reset();modal.classList.add('activo');document.body.style.overflow='hidden';cargarCategoriasEnSelect('solicitud-modal-categoria');}
-        function cerrarModalSolicitud(){document.getElementById('modal-solicitud').classList.remove('activo');document.body.style.overflow='';}
-        function actualizarMensajeContexto(){var tipo=document.getElementById('solicitud-tipo').value;var textarea=document.getElementById('solicitud-mensaje');if(tipo==='plan_gratuito')textarea.placeholder='Quiero probar la plataforma gratis por 7 días...';else if(tipo==='plan_pago')textarea.placeholder='Quiero contratar el plan de alquiler mensual...';else if(tipo==='soporte')textarea.placeholder='Describe tu problema técnico...';else textarea.placeholder='Cuéntanos sobre tu negocio o lo que necesitas...';}
-        function cargarCategoriasEnSelect(selectId){var select=document.getElementById(selectId);if(!select)return;var cats=JSON.parse(localStorage.getItem(K_CATEGORIAS))||[];select.innerHTML='<option value="">Selecciona una categoría</option>';cats.sort(function(a,b){return a.orden-b.orden;});cats.forEach(function(c){select.innerHTML+='<option value="'+c.id+'">'+c.emoji+' '+c.nombre+'</option>';});}
-        function enviarSolicitud(e){e.preventDefault();var tipo=document.getElementById('solicitud-modal-tipo').value;var nombre=document.getElementById('solicitud-modal-nombre').value.trim();var tel=document.getElementById('solicitud-modal-telefono').value.trim();var email=document.getElementById('solicitud-modal-email').value.trim();var catId=document.getElementById('solicitud-modal-categoria').value;var msg=document.getElementById('solicitud-modal-mensaje').value.trim();var plantillaId=document.getElementById('solicitud-modal-plantilla').value;var acepto=document.getElementById('solicitud-modal-acepto').checked;if(!nombre||!tel||!acepto){mostrarToast('⚠️ Completa todos los campos obligatorios.','error');return false;}guardarSolicitud(nombre,tel,email,catId,msg,plantillaId,tipo);document.getElementById('form-solicitud-modal').reset();cerrarModalSolicitud();return false;}
-        function enviarDesdeFormulario(e){e.preventDefault();var tipo=document.getElementById('solicitud-tipo').value;var nombre=document.getElementById('solicitud-nombre').value.trim();var tel=document.getElementById('solicitud-telefono').value.trim();var email=document.getElementById('solicitud-email').value.trim();var msg=document.getElementById('solicitud-mensaje').value.trim();var acepto=document.getElementById('solicitud-acepto').checked;if(!nombre||!tel||!acepto){mostrarToast('⚠️ Completa todos los campos obligatorios.','error');return false;}guardarSolicitud(nombre,tel,email,null,msg,null,tipo);document.getElementById('form-solicitud-directo').reset();return false;}
-        function guardarSolicitud(nombre,telefono,email,categoriaId,mensaje,plantillaId,tipo){var solicitudes=JSON.parse(localStorage.getItem(K_SOLICITUDES))||[];var solicitud={id:Date.now(),fecha:new Date().toISOString(),nombre:nombre,telefono:telefono,email:email,categoriaId:categoriaId?parseInt(categoriaId):null,plantillaId:plantillaId?parseInt(plantillaId):null,mensaje:mensaje,estado:'nueva',leida:false,origen:'pagina_principal',notas:'',tipoContacto:tipo||'consulta',contexto:{}};solicitudes.unshift(solicitud);localStorage.setItem(K_SOLICITUDES,JSON.stringify(solicitudes));var emoji=tipo==='plan_gratuito'?'🎁':tipo==='plan_pago'?'💲':tipo==='soporte'?'🔧':'💬';mostrarToast(emoji+' ¡Solicitud enviada! Te contactaremos pronto.','exito');}
-        function renderPlanUnico(cfg){var container=document.getElementById('plan-unico-container');if(!container)return;var precioEfectivo=Math.round(cfg.planPrecio*(1-cfg.planDescuentoEfectivo/100));var ahorro=cfg.planPrecio-precioEfectivo;var precioUSD=(cfg.planPrecio/cfg.planTasa).toFixed(2);var precioUSDdescuento=(precioEfectivo/cfg.planTasa).toFixed(2);var ahorroUSD=(precioUSD-precioUSDdescuento).toFixed(2);var fechaTasa=cfg.planTasaActualizada?new Date(cfg.planTasaActualizada+'T00:00:00').toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric'}):'hoy';container.innerHTML='<div class="plan-card-unico visible"><div class="plan-badge">⭐ Incluye todo</div><span class="plan-emoji">'+cfg.planEmoji+'</span><h4>'+cfg.planNombre+'</h4><div class="plan-precio-tarjeta" style="margin:12px 0;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="font-size:18px;">💳</span><span style="font-weight:700;font-size:14px;color:#1e40af;">Pago con Tarjeta (USD → CUP)</span></div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:6px;">Pagas en CUP por transferencia</div><div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;"><span style="font-size:24px;font-weight:900;color:#1e40af;">$'+cfg.planPrecio.toLocaleString()+' CUP</span><span style="font-size:15px;color:var(--text-secondary);">(≈ $'+precioUSD+' USD)</span></div><div style="font-size:11px;color:var(--text-light);margin-top:4px;">⚙️ Tasa configurada · '+fechaTasa+'</div></div><div class="plan-precio-efectivo" style="margin:0 0 12px 0;"><span class="badge-descuento">-'+cfg.planDescuentoEfectivo+'%</span><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="font-size:18px;">💵</span><span style="font-weight:700;font-size:14px;color:#065f46;">Pago en Efectivo (CUP)</span></div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:6px;">Pagas en CUP efectivo y ahorras</div><div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;"><span style="font-size:24px;font-weight:900;color:#065f46;">$'+precioEfectivo.toLocaleString()+' CUP</span><span style="font-size:13px;color:#065f46;font-weight:600;">🎉 ¡Ahorras $'+ahorro.toLocaleString()+' CUP!</span></div><div style="font-size:11px;color:#065f46;margin-top:4px;">💡 Mejor opción si tienes CUP en efectivo</div></div><div class="plan-precio-efectivo" style="margin:0 0 12px 0;"><span class="badge-descuento">-'+cfg.planDescuentoEfectivo+'%</span><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="font-size:18px;">💲</span><span style="font-weight:700;font-size:14px;color:#334155;">Pago en USD Efectivo</span></div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:6px;">Pagas en USD efectivo y ahorras</div><div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;"><span style="font-size:24px;font-weight:900;color:#334155;">$'+precioUSDdescuento+' USD</span><span style="font-size:13px;color:#334155;font-weight:600;">🎉 ¡Ahorras $'+ahorroUSD+' USD!</span></div><div style="font-size:11px;color:var(--text-light);margin-top:4px;">💡 Ideal si tienes dólares en efectivo</div></div>'+(cfg.planNota?'<div class="plan-nota">'+cfg.planNota+'</div>':'')+'<p class="plan-desc">'+cfg.planDescripcion+'</p><ul class="plan-features">'+cfg.planCaracteristicas.map(function(f){var icon=f.trim().startsWith('✓')?'✅':'✓';return'<li><span class="check">'+icon+'</span> '+f.trim().replace(/^✓\s*/,'')+'</li>';}).join('')+'</ul><button class="btn-plan-unico" onclick="abrirContacto(\'plan_pago\')">💲 Quiero contratar este plan</button></div>';}
-        function renderCategoriasFiltros(categorias){var container=document.getElementById('categorias-filtros');var html='';categorias.sort(function(a,b){return a.orden-b.orden;});categorias.forEach(function(cat){html+='<button class="filtro-chip" onclick="filtrarNegocios(\''+cat.id+'\',this)">'+cat.emoji+' '+cat.nombre+'</button>';});container.innerHTML=html;}
+    function solicitarPlantilla(id){
+        document.getElementById('solicitud-modal-plantilla').value = id;
+        abrirContacto('plantilla');
+    }
 
-        function renderPlantillas(plantillas){var grid=document.getElementById('plantillas-grid');if(!plantillas.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1;text-align:center;padding:60px;"><div style="font-size:60px;">📦</div><h3>No hay plantillas disponibles</h3><p>Pronto agregaremos nuevas plantillas.</p></div>';return;}grid.innerHTML=plantillas.map(function(p,i){var tags=p.tags?p.tags.split(',').map(function(t){return t.trim();}):[];var disponible=p.disponible!==false;var imagenHTML='';if(p.imagen&&p.imagen.startsWith('data:')){imagenHTML='<img src="'+p.imagen+'" alt="'+p.nombre+'">';}else{imagenHTML='<div class="placeholder" style="width:100%;height:100%;background:linear-gradient(135deg,#eafaf1,#ccfbf1,#e6fffa);display:flex;align-items:center;justify-content:center;font-size:36px;color:rgba(46,204,113,0.25);">📷</div>';}return'<div class="plantilla-card" data-anim-delay="'+i+'"><div class="plantilla-imagen">'+imagenHTML+'</div><h4>'+p.nombre+'</h4><p class="plantilla-desc">'+(p.descripcion||'Plantilla profesional para tu negocio.')+'</p>'+(tags.length?'<div class="plantilla-tags">'+tags.map(function(t){return'<span>'+t+'</span>';}).join('')+'</div>':'')+'<div class="plantilla-actions">'+(disponible&&p.urlDemo!=='#'?'<a href="'+p.urlDemo+'" target="_blank" class="btn-demo">👁️ Ver demo</a>':'<button class="btn-demo" disabled style="opacity:0.5;">👁️ Ver demo</button>')+'<button class="btn-alquilar-plantilla" onclick="'+(disponible?"abrirContacto('plantilla');document.getElementById('solicitud-modal-plantilla').value="+p.id+";":"mostrarToast('⚠️ No disponible','error')")+'">🚀 '+(disponible?'Solicitar esta plantilla':'No disponible')+'</button></div></div>';}).join('');}
+    function cerrarModalSolicitud(){
+        document.getElementById('modal-solicitud').classList.remove('activo');
+        document.body.style.overflow='';
+    }
 
-        function filtrarNegocios(catId,el){if(catId!==undefined)categoriaActiva=catId;document.querySelectorAll('.filtro-chip').forEach(function(c){c.classList.remove('activo');});if(el)el.classList.add('activo');aplicarFiltros();}
-        function aplicarFiltros(){var clientes=JSON.parse(localStorage.getItem(K_CLIENTES))||[],categorias=JSON.parse(localStorage.getItem(K_CATEGORIAS))||[];var filtro=(document.getElementById('buscador-input')?.value||'').toLowerCase().trim();var lista=clientes.filter(function(c){return c.estado==='activo'&&c.publicadoEnVitrina===true;});if(categoriaActiva==='destacados')lista=lista.filter(function(c){return c.destacado;});else if(categoriaActiva!=='todas'){var catId=parseInt(categoriaActiva);lista=lista.filter(function(c){return c.categoriaId===catId;});}if(filtro)lista=lista.filter(function(c){return c.nombre.toLowerCase().includes(filtro)||(c.dueno||'').toLowerCase().includes(filtro);});lista.sort(function(a,b){return a.destacado&&!b.destacado?-1:!a.destacado&&b.destacado?1:a.nombre.localeCompare(b.nombre);});var grid=document.getElementById('negocios-grid'),empty=document.getElementById('empty-state'),count=document.getElementById('grid-count');if(!lista.length){grid.innerHTML='';empty.style.display='block';count.textContent='0 negocios';}else{empty.style.display='none';count.textContent=lista.length+' negocio'+(lista.length>1?'s':'');grid.innerHTML=lista.map(function(c,i){return crearTarjetaNegocio(c,categorias,i);}).join('');setTimeout(function(){document.querySelectorAll('.negocio-card').forEach(function(card,i){setTimeout(function(){card.classList.add('visible');},i*80);});},100);}}
-        function crearTarjetaNegocio(cliente,categorias,index){var cat=categorias.find(function(c){return c.id===cliente.categoriaId;})||{};var badgesHTML='';if(cliente.destacado)badgesHTML+='<span class="badge-card badge-destacado">⭐ Destacado</span>';if(cliente.nuevo)badgesHTML+='<span class="badge-card badge-nuevo">🆕 Nuevo</span>';var logoHTML=(cliente.logo&&cliente.logo.startsWith('data:'))?'<img src="'+cliente.logo+'" alt="'+cliente.nombre+'">':(cliente.logo||'🏪');var portadaHTML=(cliente.portada&&cliente.portada.startsWith('data:'))?'<img src="'+cliente.portada+'" alt="'+cliente.nombre+'">':'<div class="placeholder-portada">🏢</div>';var tagsHTML='';if(cliente.tags&&cliente.tags.length)tagsHTML='<div class="card-tags">'+cliente.tags.map(function(t){return'<span>'+t.trim()+'</span>';}).join('')+'</div>';var valoracionHTML='';if(cliente.valoracion&&cliente.valoracion>0){var estrellas='';for(var i=0;i<Math.round(cliente.valoracion);i++)estrellas+='⭐';for(var j=Math.round(cliente.valoracion);j<5;j++)estrellas+='☆';valoracionHTML='<div class="card-valoracion">'+estrellas+' '+cliente.valoracion.toFixed(1)+'/5 · '+(cliente.totalValoraciones||0)+' valoraciones</div>';}var ofertaHTML='';if(cliente.oferta)ofertaHTML='<div class="card-oferta">🏷️ '+cliente.oferta+'</div>';var telefonoHTML='';if(cliente.telefono)telefonoHTML='<a href="tel:'+cliente.telefono.replace(/\s/g,'')+'" class="btn-llamar"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Llamar</a>';var whatsappHTML='';var wn=cliente.whatsapp||cliente.telefono||'';if(wn)whatsappHTML='<a href="https://wa.me/'+wn.replace(/\+/g,'').replace(/\s/g,'')+'" target="_blank" class="btn-whatsapp"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg> WhatsApp</a>';var socialHTML='';var links=[];if(cliente.instagram)links.push('<a href="https://instagram.com/'+cliente.instagram.replace('@','').trim()+'" target="_blank" class="social-link">📱</a>');if(cliente.facebook)links.push('<a href="https://facebook.com/'+cliente.facebook.replace('/','').trim()+'" target="_blank" class="social-link">👍</a>');if(links.length)socialHTML='<div class="card-social">'+links.join('')+'</div>';return'<div class="negocio-card'+(cliente.destacado?' destacado':'')+'">'+(badgesHTML?'<div class="card-badges">'+badgesHTML+'</div>':'')+'<div class="card-portada">'+portadaHTML+'<div class="card-portada-overlay"><span class="card-categoria">'+(cat.emoji||'📂')+' '+(cat.nombre||'Sin categoría')+'</span></div></div><div class="card-header"><div class="card-logo">'+logoHTML+'</div><div class="card-info"><h4>'+cliente.nombre+'</h4>'+(cliente.direccion?'<span class="card-direccion">📍 '+cliente.direccion+'</span>':'')+(cliente.horario?'<span class="card-horario">⏰ '+cliente.horario+'</span>':'')+'</div></div>'+(cliente.eslogan?'<div class="card-eslogan">"'+cliente.eslogan+'"</div>':'')+(cliente.descripcion&&cliente.descripcion!==cliente.eslogan?'<div class="card-descripcion">'+cliente.descripcion+'</div>':'')+tagsHTML+valoracionHTML+ofertaHTML+'<div class="card-footer">'+telefonoHTML+whatsappHTML+'<a href="'+(cliente.urlTienda||'#')+'" target="_blank" class="btn-visitar">🌐 Ver Tienda</a></div>'+socialHTML+'</div>';}
+    function actualizarMensajeContexto(){
+        var tipo=document.getElementById('solicitud-tipo').value;
+        var textarea=document.getElementById('solicitud-mensaje');
+        if(tipo==='plan_gratuito')textarea.placeholder='Quiero probar la plataforma gratis por 7 días...';
+        else if(tipo==='plan_pago')textarea.placeholder='Quiero contratar el plan de alquiler mensual...';
+        else if(tipo==='soporte')textarea.placeholder='Describe tu problema técnico...';
+        else textarea.placeholder='Cuéntanos sobre tu negocio o lo que necesitas...';
+    }
 
-        function cargarTodo(){var clientes=JSON.parse(localStorage.getItem(K_CLIENTES))||[],categorias=JSON.parse(localStorage.getItem(K_CATEGORIAS))||[],plantillas=JSON.parse(localStorage.getItem(K_PLANTILLAS))||[],cfg=obtenerConfig();var publicados=clientes.filter(function(c){return c.estado==='activo'&&c.publicadoEnVitrina===true;}),destacados=publicados.filter(function(c){return c.destacado;});document.getElementById('stat-negocios').textContent=publicados.length;document.getElementById('stat-categorias').textContent=categorias.length;document.getElementById('stat-destacados').textContent=destacados.length;document.getElementById('stat-plantillas').textContent=plantillas.length;renderCategoriasFiltros(categorias);renderPlantillas(plantillas);renderPlanUnico(cfg);filtrarNegocios('todas',null);iniciarObserver();cargarCategoriasEnSelect('solicitud-modal-categoria');document.getElementById('menu-toggle').addEventListener('click',function(){this.classList.toggle('active');document.getElementById('nav-links').classList.toggle('abierto');});window.addEventListener('scroll',function(){document.getElementById('btn-top').classList.toggle('visible',window.scrollY>500);document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>20);});document.addEventListener('keydown',function(e){if(e.key==='Escape')cerrarModalSolicitud();});}
-        function iniciarObserver(){if(observer)observer.disconnect();observer=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){var el=entry.target;el.classList.add('visible');observer.unobserve(el);}});},{threshold:0.15});document.querySelectorAll('.negocio-card,.plantilla-card,.paso-card,.plan-card-unico,.plan-card-gratuito').forEach(function(el){observer.observe(el);});}
-        document.querySelectorAll('.nav-link').forEach(function(link){link.addEventListener('click',function(){document.querySelectorAll('.nav-link').forEach(function(l){l.classList.remove('activo');});this.classList.add('activo');document.getElementById('nav-links').classList.remove('abierto');document.getElementById('menu-toggle').classList.remove('active');});});
-        aplicarConfig();cargarTodo();
-    </script>
+    function cargarCategoriasEnSelect(selectId){
+        var select=document.getElementById(selectId);
+        if(!select)return;
+        var cats=JSON.parse(localStorage.getItem(K_CATEGORIAS))||[];
+        select.innerHTML='<option value="">Selecciona una categoría</option>';
+        cats.sort(function(a,b){return a.orden-b.orden;});
+        cats.forEach(function(c){
+            select.innerHTML+='<option value="'+c.id+'">'+c.emoji+' '+c.nombre+'</option>';
+        });
+    }
+
+    function enviarSolicitud(e){
+        e.preventDefault();
+        var tipo=document.getElementById('solicitud-modal-tipo').value;
+        var nombre=document.getElementById('solicitud-modal-nombre').value.trim();
+        var tel=document.getElementById('solicitud-modal-telefono').value.trim();
+        var email=document.getElementById('solicitud-modal-email').value.trim();
+        var catId=document.getElementById('solicitud-modal-categoria').value;
+        var msg=document.getElementById('solicitud-modal-mensaje').value.trim();
+        var plantillaId=document.getElementById('solicitud-modal-plantilla').value;
+        var acepto=document.getElementById('solicitud-modal-acepto').checked;
+        
+        if(!nombre||!tel||!acepto){mostrarToast('⚠️ Completa todos los campos obligatorios.','error');return false;}
+        
+        guardarSolicitud(nombre,tel,email,catId,msg,plantillaId,tipo);
+        document.getElementById('form-solicitud-modal').reset();
+        cerrarModalSolicitud();
+        return false;
+    }
+
+    function enviarDesdeFormulario(e){
+        e.preventDefault();
+        var tipo=document.getElementById('solicitud-tipo').value;
+        var nombre=document.getElementById('solicitud-nombre').value.trim();
+        var tel=document.getElementById('solicitud-telefono').value.trim();
+        var email=document.getElementById('solicitud-email').value.trim();
+        var msg=document.getElementById('solicitud-mensaje').value.trim();
+        var acepto=document.getElementById('solicitud-acepto').checked;
+        
+        if(!nombre||!tel||!acepto){mostrarToast('⚠️ Completa todos los campos obligatorios.','error');return false;}
+        
+        guardarSolicitud(nombre,tel,email,null,msg,null,tipo);
+        document.getElementById('form-solicitud-directo').reset();
+        return false;
+    }
+
+    function guardarSolicitud(nombre,telefono,email,categoriaId,mensaje,plantillaId,tipo){
+        var solicitudes=JSON.parse(localStorage.getItem(K_SOLICITUDES))||[];
+        var solicitud={
+            id:Date.now(),fecha:new Date().toISOString(),
+            nombre:nombre,telefono:telefono,email:email,
+            categoriaId:categoriaId?parseInt(categoriaId):null,
+            plantillaId:plantillaId?parseInt(plantillaId):null,
+            mensaje:mensaje,estado:'nueva',leida:false,
+            origen:'pagina_principal',notas:'',tipoContacto:tipo||'consulta',contexto:{}
+        };
+        solicitudes.unshift(solicitud);
+        localStorage.setItem(K_SOLICITUDES,JSON.stringify(solicitudes));
+        
+        var emoji=tipo==='plan_gratuito'?'🎁':tipo==='plan_pago'?'💲':tipo==='soporte'?'🔧':'💬';
+        mostrarToast(emoji+' ¡Solicitud enviada! Te contactaremos pronto.','exito');
+    }
+
+    // ==========================================
+    // VALORACIONES
+    // ==========================================
+    function getValoraciones(){
+        return JSON.parse(localStorage.getItem(K_VALORACIONES))||[];
+    }
+
+    function obtenerValoracionUsuario(negocioId){
+        var telefono=localStorage.getItem('telefonoValoracion')||'';
+        if(!telefono)return null;
+        var valoraciones=getValoraciones();
+        return valoraciones.find(function(v){return v.negocioId===negocioId&&v.telefono===telefono;})||null;
+    }
+
+    function seleccionarEstrella(valor){
+        estrellasSeleccionadas=valor;
+        document.querySelectorAll('#estrellas-valoracion .estrella').forEach(function(el,i){
+            el.textContent=i<valor?'★':'☆';
+            el.style.color=i<valor?'#f59e0b':'#cbd5e1';
+        });
+    }
+
+    function obtenerPromedioValoracion(negocioId){
+        var valoraciones=getValoraciones().filter(function(v){return v.negocioId===negocioId;});
+        if(valoraciones.length===0)return 0;
+        var suma=valoraciones.reduce(function(s,v){return s+v.estrellas;},0);
+        return suma/valoraciones.length;
+    }
+
+    function obtenerTotalValoraciones(negocioId){
+        return getValoraciones().filter(function(v){return v.negocioId===negocioId;}).length;
+    }
+
+    // ==========================================
+    // MODAL DE TIENDA
+    // ==========================================
+    function abrirModalTienda(clienteId){
+        var clientes=JSON.parse(localStorage.getItem(K_CLIENTES))||[];
+        var categorias=JSON.parse(localStorage.getItem(K_CATEGORIAS))||[];
+        var cliente=clientes.find(function(c){return c.id===clienteId;});
+        if(!cliente)return;
+        
+        var cat=categorias.find(function(c){return c.id===cliente.categoriaId;})||{};
+        var promedio=obtenerPromedioValoracion(clienteId);
+        var totalVal=obtenerTotalValoraciones(clienteId);
+        var valoracionUsuario=obtenerValoracionUsuario(clienteId);
+        
+        estrellasSeleccionadas=0;
+        
+        var portadaHTML=(cliente.portada&&cliente.portada.startsWith('data:'))?
+            '<img src="'+cliente.portada+'" alt="'+cliente.nombre+'">':
+            '<div class="placeholder">🏢</div>';
+        
+        var logoHTML=(cliente.logo&&cliente.logo.startsWith('data:'))?
+            '<img src="'+cliente.logo+'" alt="'+cliente.nombre+'">':
+            (cliente.emoji||'🏪');
+        
+        var urlTienda = cliente.urlTienda && cliente.urlTienda !== '#' ? cliente.urlTienda : '';
+        var botonVisitar = urlTienda ? '<a href="'+urlTienda+'" target="_blank" class="btn-visitar" style="flex:1;text-align:center;text-decoration:none;">🌐 Ver Tienda</a>' : '';
+        
+        var lat = null, lng = null;
+        var mapaHTML = '';
+        var enlaceComoLlegar = '';
+        if (cliente.lat && cliente.lng) {
+            lat = parseFloat(cliente.lat);
+            lng = parseFloat(cliente.lng);
+            if (!isNaN(lat) && !isNaN(lng)) {
+                mapaHTML = `
+                    <div style="position:relative;margin-top:16px;border-radius:12px;overflow:hidden;">
+                        <div class="modal-tienda-mapa" id="mapa-tienda-${cliente.id}" style="width:100%;height:200px;"></div>
+                        <button onclick="expandirMapa('${cliente.id}')" style="position:absolute;top:10px;right:10px;z-index:500;background:var(--surface);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--text);">⛶</button>
+                    </div>`;
+                enlaceComoLlegar = '<a href="https://www.google.com/maps?q=' + lat + ',' + lng + '" target="_blank" class="btn-accion" style="margin-top:8px;text-decoration:none;">📍 Cómo llegar</a>';
+            }
+        }
+        
+        var modal=document.createElement('div');
+        modal.className='modal-tienda-overlay activo';
+        modal.innerHTML=`
+            <div class="modal-tienda">
+                <div class="modal-tienda-portada">${portadaHTML}</div>
+                <div class="modal-tienda-body">
+                    <div class="modal-tienda-logo">${logoHTML}</div>
+                    <h2>${cliente.nombre}</h2>
+                    <div class="modal-categoria">${cat.emoji||'📂'} ${cat.nombre||'Sin categoría'}</div>
+                    ${cliente.eslogan?'<div class="modal-eslogan">"'+cliente.eslogan+'"</div>':''}
+                    ${cliente.descripcion?'<div class="modal-descripcion">'+cliente.descripcion+'</div>':''}
+                    <div class="modal-tienda-info">
+                        ${cliente.direccion?'<span>📍 '+cliente.direccion+'</span>':''}
+                        ${cliente.horario?'<span>⏰ '+cliente.horario+'</span>':''}
+                        ${cliente.telefono?'<span>📞 '+cliente.telefono+'</span>':''}
+                        ${cliente.email?'<span>✉️ '+cliente.email+'</span>':''}
+                    </div>
+                    <div class="modal-tienda-acciones">
+                        ${botonVisitar}
+                        ${cliente.telefono?'<a href="tel:'+cliente.telefono.replace(/\\s/g,'')+'" class="btn-llamar"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Llamar</a>':''}
+                        ${cliente.whatsapp?'<a href="https://wa.me/'+cliente.whatsapp.replace(/\+/g,'').replace(/\s/g,'')+'" target="_blank" class="btn-whatsapp"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg> WhatsApp</a>':''}
+                        ${enlaceComoLlegar}
+                    </div>
+                    ${mapaHTML}
+                    <div class="modal-tienda-valoracion">
+                        <h4>⭐ Valorar este negocio</h4>
+                        ${valoracionUsuario?'<p style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;">Ya valoraste con '+valoracionUsuario.estrellas+' estrella(s). Puedes cambiar tu valoración.</p>':''}
+                        <div id="estrellas-valoracion" style="display:flex;gap:6px;justify-content:center;font-size:32px;cursor:pointer;">
+                            ${[1,2,3,4,5].map(function(i){
+                                var activa=valoracionUsuario&&i<=valoracionUsuario.estrellas;
+                                return '<span class="estrella" onclick="seleccionarEstrella('+i+')" style="color:'+(activa?'#f59e0b':'#cbd5e1')+';">'+(activa?'★':'☆')+'</span>';
+                            }).join('')}
+                        </div>
+                        <div class="form-group" style="margin-top:12px;">
+                            <label>Tu teléfono (8 dígitos)</label>
+                            <input type="tel" id="valoracion-telefono" maxlength="8" value="${localStorage.getItem('telefonoValoracion')||''}" placeholder="5XXXXXXXX">
+                        </div>
+                        <div class="form-group">
+                            <label>Comentario (opcional)</label>
+                            <textarea id="valoracion-comentario" maxlength="150" placeholder="¿Qué te pareció?">${valoracionUsuario?valoracionUsuario.comentario:''}</textarea>
+                        </div>
+                        <button class="btn-submit" onclick="enviarValoracionDesdeModal(${clienteId})">${valoracionUsuario?'Actualizar Valoración':'Enviar Valoración'}</button>
+                        ${promedio>0?'<div style="margin-top:12px;text-align:center;font-size:13px;color:var(--text-secondary);">⭐ '+promedio.toFixed(1)+'/5 · '+totalVal+' valoraciones</div>':''}
+                    </div>
+                    <button onclick="this.closest('.modal-tienda-overlay').remove();document.body.style.overflow='';" style="width:100%;margin-top:16px;padding:10px;border:none;background:var(--bg);border-radius:50px;font-weight:700;font-size:12px;cursor:pointer;color:var(--text-secondary);font-family:inherit;">Cerrar</button>
+                </div>
+            </div>`;
+        
+        document.body.appendChild(modal);
+        document.body.style.overflow='hidden';
+        modal.addEventListener('click',function(e){if(e.target===this){this.remove();document.body.style.overflow='';}});
+        
+        if (mapaHTML) {
+            setTimeout(function(){
+                var mapDiv = document.getElementById('mapa-tienda-'+cliente.id);
+                if(mapDiv && typeof L !== 'undefined'){
+                    var map = L.map(mapDiv).setView([lat, lng], 15);
+                    mapDiv._leaflet_map = map;
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; OpenStreetMap contributors'
+                    }).addTo(map);
+                    var icon = L.divIcon({
+                        className: 'custom-marker',
+                        html: '<span style="font-size:24px;">📍</span>',
+                        iconSize: [24, 24],
+                        iconAnchor: [12, 24]
+                    });
+                    L.marker([lat, lng], {icon: icon}).addTo(map);
+                }
+            }, 100);
+        }
+    }
+
+    function expandirMapa(clienteId) {
+        var mapDiv = document.getElementById('mapa-tienda-' + clienteId);
+        if (!mapDiv) return;
+        if (!mapDiv.classList.contains('mapa-expandido')) {
+            mapDiv.classList.add('mapa-expandido');
+            mapDiv.style.position = 'fixed';
+            mapDiv.style.top = '0';
+            mapDiv.style.left = '0';
+            mapDiv.style.width = '100vw';
+            mapDiv.style.height = '100vh';
+            mapDiv.style.zIndex = '9999';
+            mapDiv.style.borderRadius = '0';
+            setTimeout(function() { if(mapDiv._leaflet_map) mapDiv._leaflet_map.invalidateSize(); }, 100);
+        } else {
+            mapDiv.classList.remove('mapa-expandido');
+            mapDiv.style.position = '';
+            mapDiv.style.top = '';
+            mapDiv.style.left = '';
+            mapDiv.style.width = '';
+            mapDiv.style.height = '';
+            mapDiv.style.zIndex = '';
+            mapDiv.style.borderRadius = '';
+            setTimeout(function() { if(mapDiv._leaflet_map) mapDiv._leaflet_map.invalidateSize(); }, 100);
+        }
+    }
+
+    function enviarValoracionDesdeModal(negocioId){
+        if(estrellasSeleccionadas===0){mostrarToast('⚠️ Selecciona al menos una estrella','error');return;}
+        
+        var telefono=document.getElementById('valoracion-telefono').value.trim();
+        if(telefono.length!==8||!/^\d{8}$/.test(telefono)){mostrarToast('⚠️ Teléfono inválido (8 dígitos)','error');return;}
+        
+        localStorage.setItem('telefonoValoracion',telefono);
+        
+        var comentario=document.getElementById('valoracion-comentario').value.trim();
+        var valoraciones=getValoraciones();
+        var existente=valoraciones.find(function(v){return v.negocioId===negocioId&&v.telefono===telefono;});
+        
+        if(existente){
+            existente.estrellas=estrellasSeleccionadas;
+            existente.comentario=comentario||existente.comentario;
+            existente.fecha=new Date().toISOString();
+            mostrarToast('⭐ Valoración actualizada','exito');
+        } else {
+            valoraciones.push({
+                id:Date.now(),negocioId:negocioId,telefono:telefono,
+                estrellas:estrellasSeleccionadas,comentario:comentario,
+                fecha:new Date().toISOString()
+            });
+            mostrarToast('⭐ ¡Gracias por tu valoración!','exito');
+        }
+        
+        localStorage.setItem(K_VALORACIONES,JSON.stringify(valoraciones));
+        estrellasSeleccionadas=0;
+        document.querySelectorAll('.modal-tienda-overlay').forEach(function(m){m.remove();});
+        document.body.style.overflow='';
+        aplicarFiltros();
+    }
+
+    // ==========================================
+    // RENDER PLAN
+    // ==========================================
+    function renderPlanUnico(cfg){
+        var container=document.getElementById('plan-unico-container');
+        if(!container)return;
+        
+        var precioEfectivo=Math.round(cfg.planPrecio*(1-cfg.planDescuentoEfectivo/100));
+        var ahorro=cfg.planPrecio-precioEfectivo;
+        var precioUSD=(cfg.planPrecio/cfg.planTasa).toFixed(2);
+        var precioUSDdescuento=(precioEfectivo/cfg.planTasa).toFixed(2);
+        var ahorroUSD=(precioUSD-precioUSDdescuento).toFixed(2);
+        
+        container.innerHTML=`
+            <div class="plan-card-unico visible">
+                <div class="plan-badge">⭐ Incluye todo</div>
+                <span class="plan-emoji">${cfg.planEmoji}</span>
+                <h4>${cfg.planNombre}</h4>
+                <div class="plan-precio-tarjeta" style="margin:12px 0;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span>💳</span><span style="font-weight:700;font-size:14px;color:#1e40af;">Pago con Tarjeta (USD → CUP)</span></div>
+                    <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
+                        <span style="font-size:24px;font-weight:900;color:#1e40af;">$${cfg.planPrecio.toLocaleString()} CUP</span>
+                        <span style="font-size:15px;color:var(--text-secondary);">(≈ $${precioUSD} USD)</span>
+                    </div>
+                </div>
+                <div class="plan-precio-efectivo" style="margin:0 0 12px 0;">
+                    <span class="badge-descuento">-${cfg.planDescuentoEfectivo}%</span>
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span>💵</span><span style="font-weight:700;font-size:14px;color:#065f46;">Pago en Efectivo (CUP)</span></div>
+                    <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
+                        <span style="font-size:24px;font-weight:900;color:#065f46;">$${precioEfectivo.toLocaleString()} CUP</span>
+                        <span style="font-size:13px;color:#065f46;font-weight:600;">🎉 ¡Ahorras $${ahorro.toLocaleString()} CUP!</span>
+                    </div>
+                </div>
+                <div class="plan-precio-efectivo" style="margin:0 0 12px 0;">
+                    <span class="badge-descuento">-${cfg.planDescuentoEfectivo}%</span>
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span>💲</span><span style="font-weight:700;font-size:14px;color:#334155;">Pago en USD Efectivo</span></div>
+                    <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
+                        <span style="font-size:24px;font-weight:900;color:#334155;">$${precioUSDdescuento} USD</span>
+                        <span style="font-size:13px;color:#334155;font-weight:600;">🎉 ¡Ahorras $${ahorroUSD} USD!</span>
+                    </div>
+                </div>
+                ${cfg.planNota?'<div class="plan-nota">'+cfg.planNota+'</div>':''}
+                <p class="plan-desc">${cfg.planDescripcion}</p>
+                <ul class="plan-features">
+                    ${cfg.planCaracteristicas.map(function(f){
+                        return '<li><span class="check">✓</span> '+f.trim().replace(/^✓\s*/,'')+'</li>';
+                    }).join('')}
+                </ul>
+                <button class="btn-plan-unico" onclick="abrirContacto('plan_pago')">💲 Quiero contratar este plan</button>
+            </div>`;
+    }
+
+    // ==========================================
+    // FILTROS
+    // ==========================================
+    function renderCategoriasFiltros(categorias,clientes){
+        var container=document.getElementById('categorias-filtros');
+        var html='';
+        categorias.sort(function(a,b){return a.orden-b.orden;});
+        categorias.forEach(function(cat){
+            var count=clientes.filter(function(c){return c.categoriaId===cat.id && c.estado==='activo' && c.publicadoEnVitrina===true;}).length;
+            html+='<button class="filtro-chip" onclick="filtrarNegocios(\''+cat.id+'\',this)">'+cat.emoji+' '+cat.nombre+(count>0?' ('+count+')':'')+'</button>';
+        });
+        container.innerHTML=html;
+    }
+
+    function filtrarNegocios(catId,el){
+        if(catId!==undefined)categoriaActiva=catId;
+        document.querySelectorAll('.filtro-chip').forEach(function(c){c.classList.remove('activo');});
+        if(el)el.classList.add('activo');
+        else{document.querySelectorAll('.filtro-chip').forEach(function(c){if(c.textContent.includes('Todas'))c.classList.add('activo');});}
+        aplicarFiltros();
+    }
+
+    function aplicarFiltros(){
+        var clientes=JSON.parse(localStorage.getItem(K_CLIENTES))||[];
+        var categorias=JSON.parse(localStorage.getItem(K_CATEGORIAS))||[];
+        var filtro=(document.getElementById('buscador-input')?.value||'').toLowerCase().trim();
+        
+        var lista=clientes.filter(function(c){return c.estado==='activo'&&c.publicadoEnVitrina===true;});
+        
+        if(categoriaActiva==='destacados'){
+            lista=lista.filter(function(c){return c.destacado;});
+        } else if(categoriaActiva!=='todas'){
+            var catId=parseInt(categoriaActiva);
+            lista=lista.filter(function(c){return c.categoriaId===catId;});
+        }
+        
+        if(filtro){
+            lista=lista.filter(function(c){
+                return c.nombre.toLowerCase().includes(filtro)||
+                       (c.dueno||'').toLowerCase().includes(filtro)||
+                       (c.descripcion||'').toLowerCase().includes(filtro)||
+                       (c.eslogan||'').toLowerCase().includes(filtro);
+            });
+        }
+        
+        if(ordenActual==='relevancia'){
+            lista.sort(function(a,b){
+                if(a.destacado&&!b.destacado)return-1;
+                if(!a.destacado&&b.destacado)return 1;
+                return a.nombre.localeCompare(b.nombre);
+            });
+        } else if(ordenActual==='nombre-asc'){
+            lista.sort(function(a,b){return a.nombre.localeCompare(b.nombre);});
+        } else if(ordenActual==='valoracion'){
+            lista.sort(function(a,b){
+                var va=obtenerPromedioValoracion(a.id);
+                var vb=obtenerPromedioValoracion(b.id);
+                return vb-va;
+            });
+        }
+        
+        var listaMostrar=lista.slice(0,negociosVisibles);
+        var grid=document.getElementById('negocios-grid');
+        var empty=document.getElementById('empty-state');
+        var count=document.getElementById('grid-count');
+        
+        if(!listaMostrar.length){
+            grid.innerHTML='';
+            empty.style.display='block';
+            empty.innerHTML='<div style="font-size:60px;">🔍</div><h3>No se encontraron negocios</h3><p>Prueba con otra búsqueda o limpia los filtros.</p><button onclick="limpiarFiltros()" class="filtro-chip" style="margin-top:12px;">Limpiar filtros</button>';
+            count.textContent='0 negocios';
+        } else {
+            empty.style.display='none';
+            count.textContent=lista.length+' negocio'+(lista.length>1?'s':'');
+            grid.innerHTML=listaMostrar.map(function(c,i){return crearTarjetaNegocio(c,categorias,i);}).join('');
+            
+            if(lista.length>negociosVisibles){
+                grid.innerHTML+='<div style="grid-column:1/-1;text-align:center;padding:20px;"><button class="btn-demo" onclick="cargarMasNegocios()" style="display:inline-flex;">📦 Cargar más ('+(lista.length-negociosVisibles)+' restantes)</button></div>';
+            }
+            
+            setTimeout(function(){
+                document.querySelectorAll('.negocio-card').forEach(function(card,i){
+                    setTimeout(function(){card.classList.add('visible');},i*60);
+                });
+            },100);
+        }
+    }
+
+    function cargarMasNegocios(){
+        negociosVisibles+=8;
+        aplicarFiltros();
+    }
+
+    function limpiarFiltros(){
+        document.getElementById('buscador-input').value='';
+        categoriaActiva='todas';
+        ordenActual='relevancia';
+        negociosVisibles=8;
+        document.querySelectorAll('.filtro-chip').forEach(function(c){c.classList.remove('activo');});
+        document.querySelectorAll('.filtro-chip').forEach(function(c){if(c.textContent.includes('Todas'))c.classList.add('activo');});
+        aplicarFiltros();
+    }
+
+    // ==========================================
+    // TARJETA DE NEGOCIO
+    // ==========================================
+    function crearTarjetaNegocio(cliente,categorias,index){
+        var cat=categorias.find(function(c){return c.id===cliente.categoriaId;})||{};
+        
+        var badgesHTML='';
+        if(cliente.destacado)badgesHTML+='<span class="badge-card badge-destacado">⭐ Destacado</span>';
+        if(cliente.nuevo)badgesHTML+='<span class="badge-card badge-nuevo">🆕 Nuevo</span>';
+        
+        var logoHTML=(cliente.logo&&cliente.logo.startsWith('data:'))?
+            '<img src="'+cliente.logo+'" alt="'+cliente.nombre+'">':(cliente.emoji||'🏪');
+        
+        var portadaHTML=(cliente.portada&&cliente.portada.startsWith('data:'))?
+            '<img src="'+cliente.portada+'" alt="'+cliente.nombre+'">':
+            '<div class="placeholder-portada">🏢</div>';
+        
+        var tagsHTML='';
+        if(cliente.tags&&cliente.tags.length){
+            tagsHTML='<div class="card-tags">'+cliente.tags.map(function(t){return'<span>'+t.trim()+'</span>';}).join('')+'</div>';
+        }
+        
+        var promedio=obtenerPromedioValoracion(cliente.id);
+        var totalVal=obtenerTotalValoraciones(cliente.id);
+        var valoracionHTML='';
+        if(promedio>0){
+            var estrellas='';
+            for(var i=0;i<Math.round(promedio);i++)estrellas+='⭐';
+            for(var j=Math.round(promedio);j<5;j++)estrellas+='☆';
+            valoracionHTML='<div class="card-valoracion" style="cursor:pointer;" onclick="abrirModalTienda('+cliente.id+')">'+estrellas+' '+promedio.toFixed(1)+'/5 · '+totalVal+' valoraciones</div>';
+        } else {
+            valoracionHTML='<div class="card-valoracion" style="cursor:pointer;" onclick="abrirModalTienda('+cliente.id+')">⭐ Sin valoraciones · ¡Sé el primero!</div>';
+        }
+        
+        var ofertaHTML='';
+        if(cliente.oferta)ofertaHTML='<div class="card-oferta">🏷️ '+cliente.oferta+'</div>';
+        
+        var telefonoHTML='';
+        if(cliente.telefono){
+            telefonoHTML='<a href="tel:'+cliente.telefono.replace(/\s/g,'')+'" class="btn-llamar"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Llamar</a>';
+        }
+        
+        var whatsappHTML='';
+        var wn=cliente.whatsapp||'';
+        if(wn){
+            whatsappHTML='<a href="https://wa.me/'+wn.replace(/\+/g,'').replace(/\s/g,'')+'" target="_blank" class="btn-whatsapp"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg> WhatsApp</a>';
+        }
+        
+        var urlTienda = cliente.urlTienda && cliente.urlTienda !== '#' ? cliente.urlTienda : '';
+        var botonVisitar = urlTienda ? '<a href="'+urlTienda+'" target="_blank" class="btn-visitar">🌐 Ver Tienda</a>' : '';
+        
+        var socialHTML='';
+        var links=[];
+        if(cliente.instagram)links.push('<a href="https://instagram.com/'+cliente.instagram.replace('@','').trim()+'" target="_blank" class="social-link">📱</a>');
+        if(cliente.facebook)links.push('<a href="https://facebook.com/'+cliente.facebook.replace('/','').trim()+'" target="_blank" class="social-link">👍</a>');
+        if(links.length)socialHTML='<div class="card-social">'+links.join('')+'</div>';
+        
+        var footerButtons = [];
+        if(telefonoHTML)footerButtons.push(telefonoHTML);
+        if(whatsappHTML)footerButtons.push(whatsappHTML);
+        if(botonVisitar)footerButtons.push(botonVisitar);
+        
+        var footerHTML = footerButtons.length ? '<div class="card-footer">'+footerButtons.join('')+'</div>' : '';
+        
+        return `
+            <div class="negocio-card${cliente.destacado?' destacado':''}">
+                ${badgesHTML?'<div class="card-badges">'+badgesHTML+'</div>':''}
+                <div class="card-portada" onclick="abrirModalTienda(${cliente.id})" style="cursor:pointer;">
+                    ${portadaHTML}
+                    <div class="card-portada-overlay">
+                        <span class="card-categoria">${cat.emoji||'📂'} ${cat.nombre||'Sin categoría'}</span>
+                    </div>
+                </div>
+                <div class="card-header" onclick="abrirModalTienda(${cliente.id})" style="cursor:pointer;">
+                    <div class="card-logo">${logoHTML}</div>
+                    <div class="card-info">
+                        <h4>${cliente.nombre}</h4>
+                        ${cliente.direccion?'<span class="card-direccion">📍 '+cliente.direccion+'</span>':''}
+                        ${cliente.horario?'<span class="card-horario">⏰ '+cliente.horario+'</span>':''}
+                    </div>
+                </div>
+                ${cliente.eslogan?'<div class="card-eslogan">"'+cliente.eslogan+'"</div>':''}
+                ${tagsHTML}
+                ${valoracionHTML}
+                ${ofertaHTML}
+                ${footerHTML}
+                ${socialHTML}
+                <button class="btn-demo" style="margin-top:10px;width:100%;" onclick="abrirModalTienda(${cliente.id})">Más detalles</button>
+            </div>`;
+    }
+
+    // ==========================================
+    // PLANTILLAS
+    // ==========================================
+    function renderPlantillas(plantillas){
+        var grid=document.getElementById('plantillas-grid');
+        if(!plantillas.length){
+            grid.innerHTML='<div class="empty-state" style="grid-column:1/-1;text-align:center;padding:60px;"><div style="font-size:60px;">📦</div><h3>No hay plantillas disponibles</h3><p>Pronto agregaremos nuevas plantillas.</p></div>';
+            return;
+        }
+        
+        grid.innerHTML=plantillas.map(function(p,i){
+            var tags=p.tags?p.tags.split(',').map(function(t){return t.trim();}):[];
+            var disponible=p.disponible!==false;
+            var imagenHTML='';
+            
+            if(p.imagen&&p.imagen.startsWith('data:')){
+                imagenHTML='<img src="'+p.imagen+'" alt="'+p.nombre+'">';
+            } else {
+                imagenHTML='<div class="placeholder" style="width:100%;height:100%;background:linear-gradient(135deg,#eafaf1,#ccfbf1,#e6fffa);display:flex;align-items:center;justify-content:center;font-size:36px;color:rgba(46,204,113,0.25);">📷</div>';
+            }
+            
+            return `
+                <div class="plantilla-card" data-anim-delay="${i}" onclick="abrirModalPlantilla(${p.id})">
+                    <div class="plantilla-imagen">${imagenHTML}</div>
+                    <h4>${p.nombre}</h4>
+                    <p class="plantilla-desc">${p.descripcion||'Plantilla profesional para tu negocio.'}</p>
+                    ${tags.length?'<div class="plantilla-tags">'+tags.map(function(t){return'<span>'+t+'</span>';}).join('')+'</div>':''}
+                    <div class="plantilla-actions">
+                        ${disponible&&p.urlDemo&&p.urlDemo!=='#'?'<a href="'+p.urlDemo+'" target="_blank" class="btn-demo" onclick="event.stopPropagation();">Ver demo</a>':'<button class="btn-demo" disabled style="opacity:0.5;">Ver demo</button>'}
+                        ${disponible?'<button class="btn-alquilar-plantilla" onclick="event.stopPropagation(); solicitarPlantilla('+p.id+')">Solicitar esta plantilla</button>':'<button class="btn-alquilar-plantilla" disabled style="opacity:0.5;">No disponible</button>'}
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    function abrirModalPlantilla(id){
+        var plantillas=JSON.parse(localStorage.getItem(K_PLANTILLAS))||[];
+        var p=plantillas.find(function(x){return x.id===id;});
+        if(!p)return;
+        var imagen=(p.imagen&&p.imagen.startsWith('data:'))?'<img src="'+p.imagen+'" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;">':'<div style="width:100%;height:150px;background:linear-gradient(135deg,#eafaf1,#ccfbf1);display:flex;align-items:center;justify-content:center;font-size:60px;">📷</div>';
+        var tags=p.tags?p.tags.split(',').map(function(t){return '<span class="badge badge-primary" style="margin:2px;">'+t.trim()+'</span>';}).join(''):'';
+        var html=`
+            <div style="text-align:center;">
+                ${imagen}
+                <h3 style="font-size:22px;margin:12px 0 4px;">${p.nombre}</h3>
+                <p style="color:var(--text-secondary);font-size:14px;">${p.descripcion||'Plantilla profesional para tu negocio.'}</p>
+                ${tags?'<div style="margin-top:10px;">'+tags+'</div>':''}
+                <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+                    ${p.urlDemo&&p.urlDemo!=='#'?'<a href="'+p.urlDemo+'" target="_blank" class="btn-demo">Ver demo</a>':''}
+                    ${p.disponible!==false?'<button class="btn-alquilar-plantilla" onclick="solicitarPlantilla('+p.id+')">Solicitar esta plantilla</button>':'<button class="btn-alquilar-plantilla" disabled style="opacity:0.5;">No disponible</button>'}
+                </div>
+            </div>`;
+        var modal=document.createElement('div');
+        modal.className='modal-tienda-overlay activo';
+        modal.innerHTML=`
+            <div class="modal-tienda">
+                <div class="modal-tienda-body" style="padding:20px;">
+                    ${html}
+                    <button onclick="this.closest('.modal-tienda-overlay').remove();document.body.style.overflow='';" style="width:100%;margin-top:16px;padding:10px;border:none;background:var(--bg);border-radius:50px;font-weight:700;font-size:12px;cursor:pointer;color:var(--text-secondary);font-family:inherit;">Cerrar</button>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+        document.body.style.overflow='hidden';
+        modal.addEventListener('click',function(e){if(e.target===this){this.remove();document.body.style.overflow='';}});
+    }
+
+    // ==========================================
+    // CONTADORES ANIMADOS
+    // ==========================================
+    function animarContadores(publicados,categorias,destacados,plantillas){
+        var stats=[
+            {id:'stat-negocios',valor:publicados.length},
+            {id:'stat-categorias',valor:categorias.length},
+            {id:'stat-destacados',valor:destacados.length},
+            {id:'stat-plantillas',valor:plantillas.length}
+        ];
+        
+        stats.forEach(function(s){
+            var el=document.getElementById(s.id);
+            if(!el)return;
+            var actual=0;
+            var paso=Math.max(1,Math.ceil(s.valor/30));
+            var intervalo=setInterval(function(){
+                actual+=paso;
+                if(actual>=s.valor){actual=s.valor;clearInterval(intervalo);}
+                el.textContent=actual;
+            },30);
+        });
+    }
+
+    // ==========================================
+    // OBSERVER
+    // ==========================================
+    function iniciarObserver(){
+        if(observer)observer.disconnect();
+        observer=new IntersectionObserver(function(entries){
+            entries.forEach(function(entry){
+                if(entry.isIntersecting){
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        },{threshold:0.15});
+        
+        document.querySelectorAll('.negocio-card,.plantilla-card,.paso-card,.plan-card-unico,.plan-card-gratuito').forEach(function(el){
+            observer.observe(el);
+        });
+    }
+
+    // ==========================================
+    // INICIAR
+    // ==========================================
+    function cargarTodo(){
+        var clientes=JSON.parse(localStorage.getItem(K_CLIENTES))||[];
+        var categorias=JSON.parse(localStorage.getItem(K_CATEGORIAS))||[];
+        var plantillas=JSON.parse(localStorage.getItem(K_PLANTILLAS))||[];
+        var cfg=obtenerConfig();
+        
+        var publicados=clientes.filter(function(c){return c.estado==='activo'&&c.publicadoEnVitrina===true;});
+        var destacados=publicados.filter(function(c){return c.destacado;});
+        
+        animarContadores(publicados,categorias,destacados,plantillas);
+        renderCategoriasFiltros(categorias,publicados);
+        renderPlantillas(plantillas);
+        renderPlanUnico(cfg);
+        filtrarNegocios('todas',null);
+        cargarCategoriasEnSelect('solicitud-modal-categoria');
+        
+        document.getElementById('buscador-input').addEventListener('input',function(){
+            clearTimeout(debounceBusqueda);
+            debounceBusqueda=setTimeout(aplicarFiltros,300);
+        });
+        
+        document.getElementById('menu-toggle').addEventListener('click',function(){
+            this.classList.toggle('active');
+            document.getElementById('nav-links').classList.toggle('abierto');
+        });
+        
+        window.addEventListener('scroll',function(){
+            document.getElementById('btn-top').classList.toggle('visible',window.scrollY>500);
+            document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>20);
+        });
+        
+        document.addEventListener('keydown',function(e){
+            if(e.key==='Escape'){
+                cerrarModalSolicitud();
+                document.querySelectorAll('.modal-tienda-overlay').forEach(function(m){m.remove();});
+                document.body.style.overflow='';
+            }
+        });
+        
+        iniciarObserver();
+    }
+
+    document.querySelectorAll('.nav-link').forEach(function(link){
+        link.addEventListener('click',function(){
+            document.querySelectorAll('.nav-link').forEach(function(l){l.classList.remove('activo');});
+            this.classList.add('activo');
+            document.getElementById('nav-links').classList.remove('abierto');
+            document.getElementById('menu-toggle').classList.remove('active');
+        });
+    });
+
+    aplicarConfig();
+    cargarTodo();
+</script>
 </body>
 </html>
