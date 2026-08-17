@@ -321,7 +321,7 @@
     document.getElementById('modal-confirmar').addEventListener('click',function(e){if(e.target===this)cerrarModalConfirmar();});
     function notificarCliente(cid,txt){var clientes=JSON.parse(localStorage.getItem(K.CLIENTES))||[],idx=clientes.findIndex(function(c){return c.id===cid;});if(idx===-1)return;if(!clientes[idx].notificaciones)clientes[idx].notificaciones=[];clientes[idx].notificaciones.unshift({id:Date.now(),texto:txt,leida:false,fecha:new Date().toISOString()});if(clientes[idx].notificaciones.length>30)clientes[idx].notificaciones=clientes[idx].notificaciones.slice(0,30);localStorage.setItem(K.CLIENTES,JSON.stringify(clientes));}
     function toggleFormulario(id){var el=document.getElementById(id);if(el)el.classList.toggle('visible');}
-    function actualizarUsuariosLogin(){var clientes=JSON.parse(localStorage.getItem(K.CLIENTES))||[],ul={};clientes.forEach(function(c){if(c.usuario&&c.contrasena)ul[c.usuario]={contrasena:c.contrasena,pagina:c.urlAdmin};});localStorage.setItem('usuariosIslaMarket',JSON.stringify(ul));}
+    function actualizarUsuariosLogin(){var clientes=JSON.parse(localStorage.getItem(K.CLIENTES))||[],ul={};clientes.forEach(function(c){if(c.usuario&&c.contrasena)ul[c.usuario]={contrasena:c.contrasena,pagina:c.urlAdmin};});localStorage.setItem('usuariosTiendaPerfecta',JSON.stringify(ul));}
 
     function navegar(sec,el){
         document.querySelectorAll('.sidebar-nav a').forEach(function(a){a.classList.remove('activo');});
@@ -769,6 +769,14 @@
             html+='<div class="form-grupo"><label>Teléfono</label><input id="cl-telefono"></div>';
             html+='<div class="form-grupo"><label>Email</label><input id="cl-email"></div>';
             html+='<div class="form-grupo"><label>WhatsApp</label><input id="cl-whatsapp"></div>';
+            html+='<div class="form-grupo"><label>Emoji</label><input id="cl-emoji" value="🏪"></div>';
+            html+='<div class="form-grupo form-grupo-full"><label>Descripción</label><input id="cl-descripcion"></div>';
+            html+='<div class="form-grupo"><label>Dirección</label><input id="cl-direccion"></div>';
+            html+='<div class="form-grupo"><label>Horario</label><input id="cl-horario"></div>';
+            html+='<div class="form-grupo form-grupo-full"><label>Oferta</label><input id="cl-oferta"></div>';
+            html+='<div class="form-grupo form-grupo-full"><label>Tags (separadas por comas)</label><input id="cl-tags" placeholder="ej: Pizza,Delivery"></div>';
+            html+='<div class="form-grupo"><label>Instagram</label><input id="cl-instagram" placeholder="@usuario"></div>';
+            html+='<div class="form-grupo"><label>Facebook</label><input id="cl-facebook" placeholder="usuario"></div>';
             html+='<div class="form-grupo"><label>Usuario</label><input id="cl-usuario"></div>';
             html+='<div class="form-grupo"><label>Contraseña</label><input id="cl-contrasena"></div>';
             html+='<div class="form-grupo"><label>Tipo</label><select id="cl-tipo-cliente" onchange="toggleTipoCliente()"><option value="prueba">Prueba Gratis</option><option value="alquiler">Alquiler</option></select></div>';
@@ -791,9 +799,13 @@
             html+='<div class="form-grupo form-grupo-full"><label>Etiquetas</label><div class="etiqueta-select">';
             html+='<label style="font-size:11px;"><input type="checkbox" id="cl-etiqueta-vip"> VIP</label>';
             html+='<label style="font-size:11px;"><input type="checkbox" id="cl-etiqueta-moroso"> Moroso</label>';
-            html+='<label style="font-size:11px;"><input type="checkbox" id="cl-etiqueta-nuevo"> Nuevo</label>';
             html+='<label style="font-size:11px;"><input type="checkbox" id="cl-etiqueta-seguimiento"> En seguimiento</label>';
             html+='</div></div>';
+            html+='<div class="form-grupo-check" style="grid-column:1/-1;"><input type="checkbox" id="cl-destacado"><label>Destacado en vitrina</label></div>';
+            html+='<div class="form-grupo-check" style="grid-column:1/-1;"><input type="checkbox" id="cl-nuevo" checked><label>Etiqueta "Nuevo"</label></div>';
+            html+='<div class="form-grupo"><label>Latitud</label><input type="number" step="any" id="cl-lat" placeholder="ej: 23.113592"></div>';
+            html+='<div class="form-grupo"><label>Longitud</label><input type="number" step="any" id="cl-lng" placeholder="ej: -82.366592"></div>';
+            html+='<div class="form-grupo" style="grid-column:1/-1;"><button class="btn btn-outline btn-sm" onclick="obtenerCoordenadasDesdeDireccion()">📍 Obtener coordenadas desde dirección</button></div>';
             html+='<div class="form-grupo form-grupo-full"><label>Notas Internas</label><textarea id="cl-notas-internas" rows="2"></textarea></div>';
             html+='<button class="btn btn-primary" id="btn-guardar-cliente" onclick="guardarCliente()" style="grid-column:1/-1;">Guardar</button>';
             html+='</div></div></div>';
@@ -859,7 +871,6 @@
             var html='';
             if(etiquetas.indexOf('vip')!==-1)html+='<span class="badge badge-vip">VIP</span> ';
             if(etiquetas.indexOf('moroso')!==-1)html+='<span class="badge badge-danger">Moroso</span> ';
-            if(etiquetas.indexOf('nuevo')!==-1)html+='<span class="badge badge-info">Nuevo</span> ';
             if(etiquetas.indexOf('seguimiento')!==-1)html+='<span class="badge badge-warning">Seguimiento</span> ';
             return html||'—';
         }
@@ -968,11 +979,23 @@
             document.getElementById('cl-gracia-automatica').checked=cl.graciaAutomatica!==false;
             document.getElementById('cl-tienda-completa').checked=cl.tiendaCompleta||false;
             document.getElementById('cl-publicado-en-vitrina').checked=cl.publicadoEnVitrina||false;
+            document.getElementById('cl-acceso-panel').checked=cl.accesoPanel||false;
             document.getElementById('cl-notas-internas').value=cl.notasInternas||'';
+            document.getElementById('cl-emoji').value=cl.emoji||'🏪';
+            document.getElementById('cl-descripcion').value=cl.descripcion||'';
+            document.getElementById('cl-direccion').value=cl.direccion||'';
+            document.getElementById('cl-horario').value=cl.horario||'';
+            document.getElementById('cl-oferta').value=cl.oferta||'';
+            document.getElementById('cl-tags').value=(cl.tags||[]).join(',');
+            document.getElementById('cl-instagram').value=cl.instagram||'';
+            document.getElementById('cl-facebook').value=cl.facebook||'';
+            document.getElementById('cl-lat').value=cl.lat||'';
+            document.getElementById('cl-lng').value=cl.lng||'';
+            document.getElementById('cl-destacado').checked=cl.destacado||false;
+            document.getElementById('cl-nuevo').checked=cl.nuevo!==false;
             if(cl.etiquetas){
                 document.getElementById('cl-etiqueta-vip').checked=cl.etiquetas.indexOf('vip')!==-1;
                 document.getElementById('cl-etiqueta-moroso').checked=cl.etiquetas.indexOf('moroso')!==-1;
-                document.getElementById('cl-etiqueta-nuevo').checked=cl.etiquetas.indexOf('nuevo')!==-1;
                 document.getElementById('cl-etiqueta-seguimiento').checked=cl.etiquetas.indexOf('seguimiento')!==-1;
             }
             if(cl.logo&&cl.logo.startsWith('data:'))document.getElementById('cl-logo-preview').innerHTML='<img src="'+cl.logo+'">';
@@ -985,6 +1008,7 @@
                 document.getElementById('cl-precio-base').value=cl.precioContratado||obtenerConfig().planPrecio;
                 document.getElementById('cl-dias-pago').value=(cl.diasPago||[1]).join(',');
                 actualizarDiasPago();
+                actualizarFechasPreview();
             }
             toggleTipoCliente();toggleAccesoPanel();toggleFormulario('form-cliente');
             document.getElementById('btn-guardar-cliente').textContent='Actualizar';
@@ -1004,9 +1028,49 @@
             var etiquetas=[];
             if(document.getElementById('cl-etiqueta-vip').checked)etiquetas.push('vip');
             if(document.getElementById('cl-etiqueta-moroso').checked)etiquetas.push('moroso');
-            if(document.getElementById('cl-etiqueta-nuevo').checked)etiquetas.push('nuevo');
             if(document.getElementById('cl-etiqueta-seguimiento').checked)etiquetas.push('seguimiento');
-            var datos={nombre:n,dueno:document.getElementById('cl-dueno').value.trim(),categoriaId:parseInt(document.getElementById('cl-categoria').value)||null,eslogan:document.getElementById('cl-eslogan').value.trim(),telefono:document.getElementById('cl-telefono').value.trim(),email:document.getElementById('cl-email').value.trim(),whatsapp:document.getElementById('cl-whatsapp').value.trim(),usuario:u,contrasena:document.getElementById('cl-contrasena').value.trim(),tipoCliente:tc,diasPrueba:dp,fechaPruebaInicio:fpi,fechaPruebaFin:fpf.toISOString().split('T')[0],estado:'activo',destacado:false,nuevo:true,logo:logo,portada:portada,publicadoEnVitrina:document.getElementById('cl-publicado-en-vitrina').checked,tiendaCompleta:document.getElementById('cl-tienda-completa').checked,graciaAutomatica:document.getElementById('cl-gracia-automatica').checked,notasInternas:document.getElementById('cl-notas-internas').value.trim(),etiquetas:etiquetas,notificaciones:[]};
+            var accesoPanel=document.getElementById('cl-acceso-panel').checked;
+            var urlTienda=document.getElementById('cl-url-tienda').value.trim();
+            var urlAdmin=document.getElementById('cl-url-admin').value.trim();
+            var datos={
+                nombre:n,
+                dueno:document.getElementById('cl-dueno').value.trim(),
+                categoriaId:parseInt(document.getElementById('cl-categoria').value)||null,
+                eslogan:document.getElementById('cl-eslogan').value.trim(),
+                telefono:document.getElementById('cl-telefono').value.trim(),
+                email:document.getElementById('cl-email').value.trim(),
+                whatsapp:document.getElementById('cl-whatsapp').value.trim(),
+                usuario:u,
+                contrasena:document.getElementById('cl-contrasena').value.trim(),
+                tipoCliente:tc,
+                diasPrueba:dp,
+                fechaPruebaInicio:fpi,
+                fechaPruebaFin:fpf.toISOString().split('T')[0],
+                estado:'activo',
+                destacado:document.getElementById('cl-destacado').checked,
+                nuevo:document.getElementById('cl-nuevo').checked,
+                logo:logo,
+                portada:portada,
+                publicadoEnVitrina:document.getElementById('cl-publicado-en-vitrina').checked,
+                tiendaCompleta:document.getElementById('cl-tienda-completa').checked,
+                graciaAutomatica:document.getElementById('cl-gracia-automatica').checked,
+                notasInternas:document.getElementById('cl-notas-internas').value.trim(),
+                etiquetas:etiquetas,
+                notificaciones:[],
+                emoji:document.getElementById('cl-emoji').value.trim()||'🏪',
+                descripcion:document.getElementById('cl-descripcion').value.trim(),
+                direccion:document.getElementById('cl-direccion').value.trim(),
+                horario:document.getElementById('cl-horario').value.trim(),
+                oferta:document.getElementById('cl-oferta').value.trim(),
+                tags:document.getElementById('cl-tags').value.split(',').map(function(t){return t.trim();}).filter(function(t){return t;}),
+                instagram:document.getElementById('cl-instagram').value.trim(),
+                facebook:document.getElementById('cl-facebook').value.trim(),
+                lat:parseFloat(document.getElementById('cl-lat').value)||null,
+                lng:parseFloat(document.getElementById('cl-lng').value)||null,
+                accesoPanel:accesoPanel,
+                urlTienda:accesoPanel?urlTienda:'',
+                urlAdmin:accesoPanel?urlAdmin:''
+            };
             if(tc==='alquiler'){
                 var metodo=document.getElementById('cl-metodo-pago').value,meses=parseInt(document.getElementById('cl-meses-contratados').value)||1;
                 var ppm=parseInt(document.getElementById('cl-pagos-por-mes').value)||1;
@@ -1017,18 +1081,49 @@
                 datos.metodoPago=metodo;datos.mesesContratados=meses;datos.pagosPorMes=ppm;
                 datos.diasPago=diasPago;datos.fechaInicio=fechaInicio;datos.precioContratado=precioBase;
                 datos.enPeriodoGracia=false;datos.fechaInicioGracia=null;datos.plan='Alquiler';datos.precio=precioBase;
-                datos.cuotas=generarCuotas(precioBase,metodo,cfg.planDescuentoEfectivo||15,meses,ppm,diasPago,fechaInicio);
+                // Preservar cuotas existentes si no cambian los parámetros
+                if(ed){
+                    var existente=clientes.find(function(c){return c.id===parseInt(ed);});
+                    if(existente&&existente.cuotas&&existente.cuotas.length>0){
+                        var paramsIguales=existente.metodoPago===metodo&&existente.mesesContratados===meses&&existente.pagosPorMes===ppm&&existente.fechaInicio===fechaInicio&&existente.precioContratado===precioBase&&JSON.stringify(existente.diasPago)===JSON.stringify(diasPago);
+                        if(paramsIguales){
+                            datos.cuotas=existente.cuotas;
+                        }else{
+                            // Si cambiaron, confirmar antes de regenerar
+                            confirmarAccion('Cambio de contrato','Se modificarán los parámetros del contrato. Las cuotas existentes se regenerarán y se perderá el historial de pagos anterior.',function(){
+                                datos.cuotas=generarCuotas(precioBase,metodo,cfg.planDescuentoEfectivo||15,meses,ppm,diasPago,fechaInicio);
+                                // Continuar guardado
+                                continuarGuardadoCliente(ed,clientes,datos);
+                            });
+                            return;
+                        }
+                    }
+                }
+                if(!datos.cuotas)datos.cuotas=generarCuotas(precioBase,metodo,cfg.planDescuentoEfectivo||15,meses,ppm,diasPago,fechaInicio);
             }else{datos.plan='Básico';datos.precio=10;}
+            continuarGuardadoCliente(ed,clientes,datos);
+        }
+        function continuarGuardadoCliente(ed,clientes,datos){
             if(ed){
                 var idx=clientes.findIndex(function(c){return c.id===parseInt(ed);});
-                if(idx!==-1){datos.id=clientes[idx].id;datos.estado=clientes[idx].estado;datos.notificaciones=clientes[idx].notificaciones||[];datos.destacado=clientes[idx].destacado||false;datos.nuevo=clientes[idx].nuevo||false;datos.enPeriodoGracia=clientes[idx].enPeriodoGracia||false;datos.fechaInicioGracia=clientes[idx].fechaInicioGracia||null;clientes[idx]=datos;toast('Actualizado','exito');registrarLog('Cliente editado',n);}
+                if(idx!==-1){
+                    var old=clientes[idx];
+                    datos.id=old.id;
+                    datos.estado=old.estado;
+                    datos.notificaciones=old.notificaciones||[];
+                    datos.enPeriodoGracia=old.enPeriodoGracia||false;
+                    datos.fechaInicioGracia=old.fechaInicioGracia||null;
+                    clientes[idx]=datos;
+                    toast('Actualizado','exito');
+                    registrarLog('Cliente editado',datos.nombre);
+                }
             }else{
-                if(clientes.find(function(c){return c.usuario===u;})){toast('Usuario existe','error');return;}
+                if(clientes.find(function(c){return c.usuario===datos.usuario;})){toast('Usuario existe','error');return;}
                 datos.id=Date.now();
                 clientes.push(datos);
                 toast('Cliente creado','exito');
-                notificarCliente(datos.id,cfg.mensajeBienvenida||'¡Bienvenido! Usuario: '+u);
-                registrarLog('Cliente creado',n);
+                notificarCliente(datos.id,obtenerConfig().mensajeBienvenida||'¡Bienvenido! Usuario: '+datos.usuario);
+                registrarLog('Cliente creado',datos.nombre);
             }
             localStorage.setItem(K.CLIENTES,JSON.stringify(clientes));actualizarUsuariosLogin();
             document.getElementById('btn-guardar-cliente').removeAttribute('data-editando');
@@ -1044,6 +1139,24 @@
                 registrarLog('Cliente eliminado',cl?cl.nombre:'');
                 toast('Eliminado','exito');renderClientes(document.getElementById('contenido-principal'));
             });
+        }
+
+        // ===== FUNCIÓN PARA OBTENER COORDENADAS =====
+        function obtenerCoordenadasDesdeDireccion(){
+            var direccion=document.getElementById('cl-direccion').value.trim();
+            if(!direccion){toast('Escribe una dirección primero','error');return;}
+            fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(direccion))
+            .then(function(res){return res.json();})
+            .then(function(data){
+                if(data.length>0){
+                    document.getElementById('cl-lat').value=parseFloat(data[0].lat);
+                    document.getElementById('cl-lng').value=parseFloat(data[0].lon);
+                    toast('Coordenadas obtenidas','exito');
+                }else{
+                    toast('No se encontraron coordenadas para esa dirección','error');
+                }
+            })
+            .catch(function(){toast('Error al conectar con el servicio de geocodificación','error');});
         }
 
         // ===== PAGOS =====
@@ -1186,7 +1299,7 @@
             var html='<div class="topbar"><h1>Categorías</h1><button class="btn btn-primary btn-sm" onclick="toggleFormulario(\'form-cat\')">Nueva</button></div>';
             html+='<div class="formulario-colapsable" id="form-cat"><div class="seccion"><div class="form-grid">';
             html+='<div class="form-grupo"><label>Nombre</label><input id="cat-nombre"></div>';
-            html+='<div class="form-grupo"><label>Emoji</label><input id="cat-emoji" value="📂"></div>';
+            html+='<div class="form-grupo"><label>Emoji</label><input id="cat-emoji" value=""></div>';
             html+='<div class="form-grupo"><label>Orden</label><input type="number" id="cat-orden" value="1"></div>';
             html+='<button class="btn btn-primary" onclick="guardarCategoria()">Guardar</button></div></div></div>';
             html+='<div class="seccion">'+cats.sort(function(a,b){return a.orden-b.orden;}).map(function(cat){
@@ -1194,7 +1307,7 @@
             }).join('')+'</div>';
             c.innerHTML=html;
         }
-        function guardarCategoria(){var n=document.getElementById('cat-nombre').value.trim();if(!n){toast('Nombre obligatorio','error');return;}var cats=JSON.parse(localStorage.getItem(K.CATEGORIAS))||[];cats.push({id:Date.now(),nombre:n,emoji:document.getElementById('cat-emoji').value.trim()||'📂',orden:parseInt(document.getElementById('cat-orden').value)||1});localStorage.setItem(K.CATEGORIAS,JSON.stringify(cats));toast('Guardada','exito');renderCategorias(document.getElementById('contenido-principal'));}
+        function guardarCategoria(){var n=document.getElementById('cat-nombre').value.trim();if(!n){toast('Nombre obligatorio','error');return;}var cats=JSON.parse(localStorage.getItem(K.CATEGORIAS))||[];cats.push({id:Date.now(),nombre:n,emoji:document.getElementById('cat-emoji').value.trim()||'',orden:parseInt(document.getElementById('cat-orden').value)||1});localStorage.setItem(K.CATEGORIAS,JSON.stringify(cats));toast('Guardada','exito');renderCategorias(document.getElementById('contenido-principal'));}
         function eliminarCategoria(id){confirmarAccion('Eliminar','',function(){var cats=JSON.parse(localStorage.getItem(K.CATEGORIAS))||[];cats=cats.filter(function(c){return c.id!==id;});localStorage.setItem(K.CATEGORIAS,JSON.stringify(cats));toast('Eliminada','exito');renderCategorias(document.getElementById('contenido-principal'));});}
 
         // ===== REPORTES =====
@@ -1325,4 +1438,3 @@
     </script>
 </body>
 </html>
-    
